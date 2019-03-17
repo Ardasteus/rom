@@ -8,6 +8,7 @@ module ROM
 		GROUP_OPT = {
 			:want => []
 		}
+		BENCHMARK = true
 		
 		def initialize(root, &block)
 			@root  = root
@@ -16,7 +17,9 @@ module ROM
 			@group = false
 			@ctx   = root
 			instance_eval(&block) if block != nil
+			t = Time.now
 			@graph.import
+			puts "Imported in #{(Time.now - t).round(2)}!" if BENCHMARK
 		end
 		
 		def from(*dir)
@@ -139,10 +142,10 @@ module ROM
 			end
 			
 			def run
-				STDOUT.write "Importing '#{@req}'... "
+				STDOUT.write "Importing '#{@req}'... " if BENCHMARK
 				t = Time.now
 				require @req
-				puts "#{(Time.now - t).round(2)} s"
+				puts "#{(Time.now - t).round(2)} s" if BENCHMARK
 			end
 		end
 		
@@ -166,7 +169,16 @@ module ROM
 		end
 		
 		group :core, :want => :gems do
+			from 'diagnostics' do
+				files 'logger', 'short_formatter'
+				files 'text_logger'
+			end
+		end
+		
+		group :app, :want => :core do
 			files 'application'
 		end
 	end
 end
+
+ROM::Application.new('.')
