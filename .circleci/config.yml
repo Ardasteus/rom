@@ -1,0 +1,134 @@
+defaults: &defaults
+  working_directory: /tmp
+  docker:
+    - image: circleci/ruby:2.4.1-node-browsers
+      environment:
+        GEM_HOME: /tmp/.gem
+        GEM_PATH: /tmp/.gem
+        BUNDLE_PATH: /tmp/.gem
+        BUNDLE_BIN: /tmp/.gem/bin
+
+version: 2.1
+jobs:
+  setup:
+    <<: *defaults
+    steps:
+      - checkout:
+          path: rom
+      - run:
+          name: System environment
+          command: env
+      - run:
+          name: Ruby environment
+          command: gem environment
+      - run:
+          name: Create system environment
+          command: |
+              mkdir artifacts
+              mkdir tests
+      - run:
+          name: Create gem environment
+          command: |
+              mkdir /tmp/.gem
+              mkdir /tmp/.gem/bin
+              gem update --system
+              gem install bundler rspec_junit_formatter
+              gem update
+      - run:
+          name: Install dependencies
+          command: bundle install
+          working_directory: /tmp/rom
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - .gem
+            - rom
+            - artifacts
+            - tests
+  spec:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Spec
+          command: |
+              echo -e "\n--format RspecJunitFormatter\n--out ../tests/rspec/results.xml\n--format progress" >> .rspec
+              mkdir /tmp/tests/rspec -p
+              rake spec
+          working_directory: /tmp/rom
+      - run:
+          name: Copy artifacts
+          command: |
+              mkdir /tmp/artifacts/coverage -p
+              cp -rn coverage /tmp/artifacts/coverage
+          working_directory: /tmp/rom
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - tests
+            - artifacts
+  yard:
+      <<: *defaults
+      steps:
+        - attach_workspace:
+            at: /tmp
+        - run:
+            name: YARD
+            command: rake yard
+            working_directory: /tmp/rom
+        - run:
+            name: Copy artifacts
+            command: |
+                mkdir /tmp/artifacts/docs -p
+                cp -r doc /tmp/artifacts/docs
+            working_directory: /tmp/rom
+        - persist_to_workspace:
+            root: /tmp
+            paths:
+              - artifacts
+  package:
+      <<: *defaults
+      steps:
+        - attach_workspace:
+            at: /tmp
+        - run:
+            name: Create tar
+            command: tar -cvf --lzma --stip 2 /tmp/artifacts/rom.tar /tmp/rom/lib /tmp/artifacts/docs
+            working_directory: /tmp/rom
+        - persist_to_workspace:
+            root: /tmp
+            paths:
+              - artifacts
+  store_artifacts:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - store_test_results:
+          path: /tmp/tests
+      - run:
+          name: Copy tests to artifacts
+          command: cp -r tests artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
+
+
+workflows:
+  version: 2
+  master_deploy:
+    jobs:
+      - setup
+      - spec:
+          requires:
+            - setup
+      - yard:
+          requires:
+            - setup
+      - package:
+          requires:
+            - spec
+            - yard
+      - store_artifacts:
+          requires:
+            - package
