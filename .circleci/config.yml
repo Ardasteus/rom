@@ -33,7 +33,6 @@ jobs:
               mkdir /tmp/.gem/bin
               gem update --system
               gem install bundler rspec_junit_formatter
-              gem update
       - run:
           name: Install dependencies
           command: bundle install
@@ -60,8 +59,8 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-              mkdir /tmp/artifacts/coverage -p
-              cp -rn coverage /tmp/artifacts/coverage
+              mkdir /tmp/artifacts/cover -p
+              cp -rn cover /tmp/artifacts/cover
           working_directory: /tmp/rom
       - persist_to_workspace:
           root: /tmp
