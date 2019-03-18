@@ -59,6 +59,7 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
+              mkdir cover -p
               mkdir /tmp/artifacts/cover -p
               cp -rn cover /tmp/artifacts/cover
           working_directory: /tmp/rom
