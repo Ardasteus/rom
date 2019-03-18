@@ -6,6 +6,9 @@ module ROM
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exists?(data)
 			@data = File.expand_path(data)
 			@log  = TextLogger.new(ShortFormatter.new, STDOUT)
+			@itc  = Interconnect.new(@log)
+			
+			# TODO: Add all interconnect imports
 		end
 	end
 end

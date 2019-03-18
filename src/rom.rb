@@ -72,7 +72,7 @@ module ROM
 		end
 		
 		def all(glob, **opt)
-			files(Dir[path(glob)], opt)
+			files(*(Dir[path(glob)].collect { |i| i[@ctx.length..i.length - 1] }), opt)
 		end
 		
 		def gems(*gem)
@@ -165,13 +165,16 @@ module ROM
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
 		group :gems do
-			gems 'json', 'safe_yaml', 'mysql2'
+			gems 'json', 'safe_yaml', 'mysql2', 'set'
 		end
 		
 		group :core, :want => :gems do
 			from 'diagnostics' do
-				files 'logger', 'short_formatter'
-				files 'text_logger'
+				files 'logger', 'short_formatter', 'text_logger'
+			end
+			
+			from 'dynamic' do
+				files 'component', 'interconnect'
 			end
 		end
 		
