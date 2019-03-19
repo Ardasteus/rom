@@ -176,6 +176,10 @@ module ROM
 			from 'dynamic' do
 				files 'component', 'interconnect'
 			end
+
+			from 'jobs' do
+			  files 'job', 'job_pool', 'job_server'
+			end
 		end
 		
 		group :app, :want => :core do

@@ -7,6 +7,7 @@ module ROM
 			@data = File.expand_path(data)
 			@log  = TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc  = Interconnect.new(@log)
+			@itc.register(JobServer)
 			
 			# TODO: Add all interconnect imports
 		end

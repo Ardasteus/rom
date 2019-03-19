@@ -1,11 +1,14 @@
+require 'thread'
+
 module ROM
   class JobPool
 
     # Instantiates the {ROM::JobPool} class
     # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
     def initialize(capacity)
+      @semaphore = Mutex.new
       @capacity = capacity
-      @queue = Set.new
+      @queue = Array.new
       if @capacity == 0
         @running = Set.new
       else
@@ -17,7 +20,9 @@ module ROM
     # @param [{ROM::Job}] job Job to be added to the pool
     def add_job(job)
       if @capacity != 0 and @running.count == @capacity
-        @queue.push(job)
+        @semaphore.synchronize do
+          @queue.push(job)
+          end
       else
         job.attach_jobpool(self)
         Thread.new(job.run)
@@ -28,9 +33,9 @@ module ROM
     # Called when {ROM::Job} notifies the pool that its state has changed
     # @param [{ROM::Job}] job Job that raised the event
     def update_job(job)
-      if job.state == :finished
-        @running.delete(job)
-        add_job(@queue.pop)
+      @running.delete(job)
+      if job.state == :finished and @queue.length > 0
+          add_job(@queue.pop)
       elsif  job.state == :failed
         handle_failed(job)
       end
