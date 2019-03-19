@@ -5,11 +5,11 @@ module ROM
     # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
     def initialize(capacity)
       @capacity = capacity
-      @queue = Array.new
+      @queue = Set.new
       if @capacity == 0
-        @running = Array.new
+        @running = Set.new
       else
-        @running = Array.new(capacity)
+        @running = Set.new(capacity)
       end
     end
 
