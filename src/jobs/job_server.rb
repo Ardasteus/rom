@@ -20,15 +20,22 @@ module ROM
       return @job_pools.fetch(key)
     end
 
+    # Removes specified {ROM::JobPool} from the server
+    # @param [symbol] key Symbol defining the job pool
+    def remove_job_pool(key)
+      if get_job_pool(key) == nil
+        @job_pools.delete(key)
+      end
+    end
+
     # Adds {ROM::Job} to a specified {ROM::JobPool}, if the pool doesnt exist it is added
     # @param [symbol] key Symbol defining the job pool
     # # @param [{ROM::Job}] job Job to add to the pool
     def add_job_to_pool(key, job)
       pool = get_job_pool(key)
-      if pool == nil # I guess
-        add_job_pool(key)
+      if pool != nil # I guess
+        pool.add_job(job)
       end
-      pool.add_job(job)
     end
   end
 end
