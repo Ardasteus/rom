@@ -100,7 +100,7 @@ jobs:
             working_directory: /tmp/artifacts
         - run:
             name: Compress archive
-            command: xz rom.tar
+            command: xz -9 rom.tar
             working_directory: /tmp/artifacts
         - persist_to_workspace:
             root: /tmp
