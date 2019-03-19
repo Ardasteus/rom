@@ -93,9 +93,16 @@ jobs:
         - attach_workspace:
             at: /tmp
         - run:
-            name: Create tar
-            command: tar -cv --lzma -C /tmp/artifacts -f /tmp/artifacts/rom.tar.xz src docs
-            working_directory: /tmp/rom
+            name: Create archive
+            command: 
+              tar -cv -C /tmp/rom -f rom.tar src
+              tar -rv -C /tmp/artifacts -f rom.tar docs
+            working_directory: /tmp/artifacts
+        - run:
+            name: Compress archive
+            command: 
+              xz rom.tar
+            working_directory: /tmp/artifacts
         - persist_to_workspace:
             root: /tmp
             paths:
