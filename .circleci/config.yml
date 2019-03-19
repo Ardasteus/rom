@@ -60,8 +60,8 @@ jobs:
           name: Copy artifacts
           command: |
               mkdir cover -p
-              mkdir /tmp/artifacts/cover -p
               cp -rn cover /tmp/artifacts/cover
+              mkdir /tmp/artifacts/cover -p
           working_directory: /tmp/rom
       - persist_to_workspace:
           root: /tmp
@@ -80,8 +80,8 @@ jobs:
         - run:
             name: Copy artifacts
             command: |
-                mkdir /tmp/artifacts/docs -p
                 cp -r doc /tmp/artifacts/docs
+                mkdir /tmp/artifacts/docs -p
             working_directory: /tmp/rom
         - persist_to_workspace:
             root: /tmp
