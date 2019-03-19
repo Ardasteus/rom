@@ -94,7 +94,7 @@ jobs:
             at: /tmp
         - run:
             name: Create tar
-            command: tar -cv --lzma --strip 2 -f /tmp/artifacts/rom.tar /tmp/rom/lib /tmp/artifacts/docs
+            command: tar -cv --lzma --strip 2 -f /tmp/artifacts/rom.tar /tmp/rom/src /tmp/artifacts/docs
             working_directory: /tmp/rom
         - persist_to_workspace:
             root: /tmp
