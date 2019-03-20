@@ -14,7 +14,6 @@ module ROM
     def run(job_server, job_pool)
       @job_server = job_server
       @job_pool = job_pool
-      begin
         @state = :running
         @thread = Thread.new do
           begin
@@ -26,7 +25,6 @@ module ROM
           ensure
             notify_job_pool
           end
-        end
       end
     end
 
@@ -36,7 +34,7 @@ module ROM
     end
 
     def await
-      @thread.join
+      @thread.join if @state == :running
     end
     #  Notifies {ROM::JobPool} about a state change
     def notify_job_pool
