@@ -4,8 +4,8 @@ module ROM
   class HTTPServer
     include Component
 
-    def initialize(itc, jobserver, pool_name, pool_capacity, address, port)
-      @job_server = jobserver
+    def initialize(itc, job_server, pool_name, pool_capacity, address, port)
+      @job_server = job_server
       @tcp_server = TCPServer.new(address, port)
       @job_pool = pool_name
       @address = address

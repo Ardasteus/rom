@@ -1,7 +1,7 @@
 module ROM
   class HTTPListenerJob < ROM::Job
-    def initialize(tcpserver)
-      @tcp_server = tcpserver
+    def initialize(tcp_server)
+      @tcp_server = tcp_server
     end
     def job_task
       loop do

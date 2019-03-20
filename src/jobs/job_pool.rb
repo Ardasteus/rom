@@ -21,7 +21,7 @@ module ROM
           @queue.push(job)
           end
       else
-        job.attach_jobpool(self)
+        job.attach_job_pool(self)
         @running.add(job)
         job.run(@job_server, self)
       end

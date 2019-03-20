@@ -24,7 +24,7 @@ module ROM
             @state = :failed
             @exception = ex
           ensure
-            notify_jobpool()
+            notify_job_pool
           end
         end
       end
@@ -39,12 +39,12 @@ module ROM
       @thread.join
     end
     #  Notifies {ROM::JobPool} about a state change
-    def notify_jobpool
+    def notify_job_pool
       @observer.update_job(self) unless @observer == nil
     end
 
     # Attaches {ROM::JobPool} as an observer, {ROM::JobPool} calls this when adding the job
-    def attach_jobpool(pool)
+    def attach_job_pool(pool)
       @observer = pool
     end
   end

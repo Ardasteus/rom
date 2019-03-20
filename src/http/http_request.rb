@@ -16,15 +16,15 @@ module ROM
       @io
     end
 
-    def initialize(httprequest, io)
-      @method, @path, @version = httprequest.lines[0].split
+    def initialize(http_request, io)
+      @method, @path, @version = http_request.lines[0].split
       @io = io
-      parse_headers(httprequest)
+      parse_headers(http_request)
     end
 
-    def parse_headers(httprequest)
+    def parse_headers(http_request)
       @headers = {}
-      httprequest.lines[1..-1].each do |line|
+      http_request.lines[1..-1].each do |line|
         header, value = line.split
         header = header.gsub("-", "_").downcase.to_sym
         headers[header] = value
