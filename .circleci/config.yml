@@ -96,6 +96,7 @@ jobs:
             name: Create archive
             command: |
               tar -cv -C /tmp/rom -f rom.tar src
+              tar -cv -C /tmp/rom -f rom.tar bin
               tar -rv -C /tmp/artifacts -f rom.tar docs
             working_directory: /tmp/artifacts
         - run:
