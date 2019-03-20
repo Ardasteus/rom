@@ -244,5 +244,3 @@ module ROM
 		end
 	end
 end
-
-ROM::Application.new('.')

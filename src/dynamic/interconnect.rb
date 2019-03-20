@@ -14,8 +14,8 @@ module ROM
 		# @param [Module] mod Module to scan
 		# @return [void]
 		def load(mod)
-			mod.constants.collect { |i| mod.const_get(i) }.select { |i| i.class == Class or i.class == Module }.each do |com|
-				register(com) if com.class == Class and com.include?(Component)
+			mod.constants.collect { |i| mod.const_get(i) }.select { |i| i.is_a?(Module) }.each do |com|
+				register(com) if com.is_a?(Class) and com.include?(Component)
 				load(com) if com.class == Module
 			end
 		end
