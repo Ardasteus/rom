@@ -5,6 +5,8 @@ require 'inch/rake'
 
 RSpec::Core::RakeTask.new(:spec)
 
-YARD::Rake::YardocTask.new
+YARD::Rake::YardocTask.new do |yard|
+	yard.files = ['src/**/*.rb']
+end
 
 Inch::Rake::Suggest.new('inch')

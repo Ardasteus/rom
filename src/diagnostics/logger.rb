@@ -8,7 +8,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def trace(msg, ex = nil)
-			; log(Severity::TRACE, msg || '', ex);
+			log(Severity::TRACE, msg || '', ex)
 		end
 		
 		# Logs a {ROM::Logger::Severity::DEBUG} level message
@@ -16,7 +16,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def debug(msg, ex = nil)
-			; log(Severity::DEBUG, msg || '', ex);
+			log(Severity::DEBUG, msg || '', ex)
 		end
 		
 		# Logs a {ROM::Logger::Severity::INFO} level message
@@ -24,7 +24,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def info(msg, ex = nil)
-			; log(Severity::INFO, msg || '', ex);
+			log(Severity::INFO, msg || '', ex)
 		end
 		
 		# Logs a {ROM::Logger::Severity::WARNING} level message
@@ -32,7 +32,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def warning(msg, ex = nil)
-			; log(Severity::WARNING, msg || '', ex);
+			log(Severity::WARNING, msg || '', ex)
 		end
 		
 		# Logs a {ROM::Logger::Severity::ERROR} level message
@@ -40,7 +40,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def error(msg, ex = nil)
-			; log(Severity::ERROR, msg || '', ex);
+			log(Severity::ERROR, msg || '', ex)
 		end
 		
 		# Logs a {ROM::Logger::Severity::FATAL} level message
@@ -48,7 +48,7 @@ module ROM
 		# @param [Exception, nil] ex Exception of entry
 		# @return [void]
 		def fatal(msg, ex = nil)
-			; log(Severity::FATAL, msg || '', ex);
+			log(Severity::FATAL, msg || '', ex)
 		end
 		
 		# Logs a message
