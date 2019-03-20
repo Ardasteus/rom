@@ -2,7 +2,8 @@ module ROM
   class JobServer
     include Component
     # Instantiates the {ROM::JobServer} class
-    def initialize()
+    # @param [ROM::Interconnect] itc Interconnect
+    def initialize(itc)
       @job_pools = {}
     end
 
