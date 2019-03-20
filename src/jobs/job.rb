@@ -14,12 +14,17 @@ module ROM
     def run
       begin
         @state = :running
-        job_task()
-        @state = :finished
-      rescue
-        @state = :failed
-      ensure
-        notify_jobpool()
+        @thread = Thread.new do
+          begin
+            job_task
+            @state = :finished
+          rescue Exception => ex
+            @state = :failed
+            @exception = ex
+          ensure
+            notify_jobpool()
+          end
+        end
       end
     end
 
@@ -28,9 +33,12 @@ module ROM
       puts "Hello there I am a job"
     end
 
+    def await
+      @thread.join
+    end
     #  Notifies {ROM::JobPool} about a state change
     def notify_jobpool
-      @observer.update(self)
+      @observer.update_job(self) unless @observer == nil
     end
 
     # Attaches {ROM::JobPool} as an observer, {ROM::JobPool} calls this when adding the job

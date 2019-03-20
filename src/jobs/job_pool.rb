@@ -9,24 +9,20 @@ module ROM
       @semaphore = Mutex.new
       @capacity = capacity
       @queue = Array.new
-      if @capacity == 0
-        @running = Set.new
-      else
-        @running = Set.new(capacity)
-      end
+      @running = Set.new
     end
 
     # Adds a new {ROM::Job} to the job pool, if pool is full, job will be added to a queue
     # @param [ROM::Job] job Job to be added to the pool
     def add_job(job)
-      if @capacity != 0 and @running.count == @capacity
+      if @capacity != 0 and @running.length == @capacity
         @semaphore.synchronize do
           @queue.push(job)
           end
       else
         job.attach_jobpool(self)
-        Thread.new(job.run)
-        @running.push(job)
+        @running.add(job)
+        job.run
       end
     end
 
@@ -40,6 +36,12 @@ module ROM
         end
       elsif  job.state == :failed
         handle_failed(job)
+      end
+    end
+
+    def await_jobs
+      until @queue.count + @running.count == 0
+        @running.first.await
       end
     end
 
