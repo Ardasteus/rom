@@ -35,7 +35,9 @@ module ROM
     def update_job(job)
       @running.delete(job)
       if job.state == :finished and @queue.length > 0
-          add_job(@queue.pop)
+        @semaphore.synchronize do
+            add_job(@queue.pop)
+        end
       elsif  job.state == :failed
         handle_failed(job)
       end
