@@ -11,7 +11,7 @@ module ROM
     # @param [symbol] key Symbol defining the job pool
     # # @param [int] capacity Capacity of the newly created pool, defaults to 0, check {ROM::JobPool} initialize for more info
     def add_job_pool(key, capacity = 0)
-      if get_job_pool(key) == nil
+      if self[key] == nil
         @job_pools[key] = JobPool.new(self, capacity)
       end
     end
