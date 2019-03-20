@@ -12,14 +12,14 @@ module ROM
     # # @param [int] capacity Capacity of the newly created pool, defaults to 0, check {ROM::JobPool} initialize for more info
     def add_job_pool(key, capacity = 0)
       if get_job_pool(key) == nil
-        @job_pools[key] = JobPool.new(capacity)
+        @job_pools[key] = JobPool.new(self, capacity)
       end
     end
 
     # Returns {ROM::JobPool} from the server
     # @param [symbol] key Symbol defining the job pool
-    def get_job_pool(key)
-      @job_pools.fetch(key)
+    def [](key)
+      @job_pools[key]
     end
 
     # Removes specified {ROM::JobPool} from the server
@@ -32,7 +32,7 @@ module ROM
     # @param [symbol] key Symbol defining the job pool
     # # @param [{ROM::Job}] job Job to add to the pool
     def add_job_to_pool(key, job)
-        pool = get_job_pool(key)
+        pool = self[key]
         raise 'The specified job pool does not exist.' if pool == nil
         pool.add_job(job) unless pool == nil
     end

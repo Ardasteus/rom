@@ -4,13 +4,22 @@ module ROM
   class HTTPServer
     include Component
 
-    def initialize(jobserver, pool_name, pool_capacity, address, port)
-      @jobserver = jobserver
-      @server = TCPServer.new(address, port)
+    def initialize(itc, jobserver, pool_name, pool_capacity, address, port)
+      @job_server = jobserver
+      @tcp_server = TCPServer.new(address, port)
       @job_pool = pool_name
       @address = address
       @port = port
-      @jobserver.add_job_pool(@job_pool, pool_capacity)
+      @job_server.add_job_pool(@job_pool, pool_capacity)
+      @state = :not_running
+    end
+
+    def run
+      unless @state == :not_running
+        @state == :running
+        listener_job = HTTPListenerJob.new(@tcp_server)
+        @job_server[:services].add_job(listener_job)
+      end
     end
   end
 end

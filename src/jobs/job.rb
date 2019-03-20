@@ -11,7 +11,9 @@ module ROM
     end
 
     # Encapsulates and starts the job, automatically notifies the {ROM::JobPool} at the end
-    def run
+    def run(job_server, job_pool)
+      @job_server = job_server
+      @job_pool = job_pool
       begin
         @state = :running
         @thread = Thread.new do
