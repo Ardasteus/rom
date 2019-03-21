@@ -19,11 +19,11 @@ module ROM
         hdrs = {}
 
         content.headers.each_pair do |key, value|
-          hrds[header_key(key)] = value
+          hdrs[header_key(key)] = value
         end
 
         headers.each_pair do |key, value|
-          hrds[header_key(key)] = value
+          hdrs[header_key(key)] = value
         end
 
         hdrs["content-length"] = 0 if hdrs["content-length"] == nil
@@ -35,12 +35,11 @@ module ROM
     end
 
     def stringify
-      response = "HTTP/1.1 #{@code} #{EOL}" 
+      response = "HTTP/1.1 #{@code} OK#{EOL}"
 
       @headers.each_pair do |key, value|
-        repsonse += key + ": " + value + EOL
+        response += key + ": " + value + EOL
       end
-
       response += EOL
       response += content.stream.read
 

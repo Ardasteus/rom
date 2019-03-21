@@ -2,7 +2,7 @@ module ROM
   class HTTPServer
     include Component
 
-    def initialize(itc, address, port, pool_name = :clients, pool_capacity = 0)
+    def initialize(itc, address, port, pool_name = :clients)
       @job_server = itc.lookup(JobServer).first
       @tcp_server = TCPServer.new(address, port)
       @address = address
