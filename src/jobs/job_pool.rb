@@ -5,12 +5,11 @@ module ROM
 
     # Instantiates the {ROM::JobPool} class
     # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
-    def initialize(server, capacity)
+    def initialize(capacity)
       @semaphore = Mutex.new
       @capacity = capacity
       @queue = Array.new
       @running = Set.new
-      @job_server = server
     end
 
     # Adds a new {ROM::Job} to the job pool, if pool is full, job will be added to a queue
@@ -23,7 +22,7 @@ module ROM
       else
         job.attach_job_pool(self)
         @running.add(job)
-        job.run(@job_server, self)
+        job.run
       end
     end
 

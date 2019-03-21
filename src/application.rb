@@ -13,6 +13,8 @@ module ROM
 			@log  = TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc  = Interconnect.new(@log)
 			@itc.register(JobServer)
+			@itc.register(HTTPServer)
+			@itc.lookup(HTTPServer).each(&:run)
 			
 			# TODO: Add all interconnect imports
 		end

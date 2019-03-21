@@ -1,15 +1,50 @@
 module ROM
   class HTTPResponse
-    def response
-      @response
+    EOL = "\r\n"
+    def code
+      @code
     end
 
-    def initialize(code:, data: "")
-        @response =
-            "HTTP/1.1 #{code}\r\n" +
-                "Content-Length: #{data.size}\r\n" +
-                "\r\n" +
-                "#{data}\r\n"
+    def headers
+      @headers
+    end
+
+    def initialize(code, content, **headers)
+        @code = code
+        @headers = create_headers(content, headers)
+        @content = content
+    end
+
+    def create_headers(content, headers)
+        hdrs = {}
+
+        content.headers.each_pair do |key, value|
+          hrds[header_key(key)] = value
+        end
+
+        headers.each_pair do |key, value|
+          hrds[header_key(key)] = value
+        end
+
+        hdrs["content-length"] = 0 if hdrs["content-length"] == nil
+        return hdrs
+    end
+
+    def header_key(header)
+      header.to_s.gsub("_", "-")
+    end
+
+    def stringify
+      response = "HTTP/1.1 #{@code} #{EOL}" 
+
+      @headers.each_pair do |key, value|
+        repsonse += key + ": " + value + EOL
+      end
+
+      response += EOL
+      response += content.stream.read
+
+      return response
     end
   end
 end

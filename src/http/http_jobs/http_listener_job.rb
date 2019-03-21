@@ -1,7 +1,8 @@
 module ROM
   class HTTPListenerJob < ROM::Job
-    def initialize(tcp_server)
+    def initialize(tcp_server, job_pool)
       @tcp_server = tcp_server
+      @job_pool = job_pool
     end
     def job_task
       loop do
@@ -18,7 +19,7 @@ module ROM
           request += part
         end
         respond_job = HTTPRespondJob.new(client, request)
-        @job_server[@job_pool].add_job(respond_job)
+        @job_pool.add_job(respond_job)
       end
     end
   end

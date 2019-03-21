@@ -1,25 +1,26 @@
-require 'socket'
-
 module ROM
   class HTTPServer
     include Component
 
-    def initialize(itc, job_server, pool_name, pool_capacity, address, port)
-      @job_server = job_server
+    def initialize(itc, address, port, pool_name = :clients, pool_capacity = 0)
+      @job_server = itc.lookup(JobServer).first
       @tcp_server = TCPServer.new(address, port)
       @address = address
       @job_pool_name = pool_name
       @port = port
-      @job_server.add_job_pool(@job_pool_name, HTTPJobPool.new(@job_server ,pool_capacity))
       @state = :not_running
     end
 
-    def run
+    def run()
       unless @state == :running
         @state == :running
-        listener_job = HTTPListenerJob.new(@tcp_server)
-        @job_server[:services].add_job(listener_job)
+        listener_job = HTTPListenerJob.new(@tcp_server, @job_server[@job_pool_name])
+        @job_server.add_job_to_pool(:services, listener_job)
       end
+    end
+
+    def self.register(itc)
+      [self.new(itc, 'localhost', 80)]
     end
   end
 end
