@@ -17,7 +17,7 @@ module ROM
         @state = :running
         @thread = Thread.new do
           begin
-            job_task
+            @value = job_task
             @state = :finished
           rescue Exception => ex
             @state = :failed
@@ -35,6 +35,7 @@ module ROM
 
     def await
       @thread.join if @state == :running
+      @value
     end
     #  Notifies {ROM::JobPool} about a state change
     def notify_job_pool

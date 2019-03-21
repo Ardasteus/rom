@@ -26,7 +26,7 @@ module ROM
       @headers = {}
       http_request.lines[1..-1].each do |line|
         header, value = line.split
-        header = header.gsub("-", "_").downcase.to_sym
+        header = header.gsub("_", "-").downcase.to_sym
         headers[header] = value
       end
     end
