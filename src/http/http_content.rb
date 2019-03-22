@@ -1,7 +1,7 @@
 module ROM
 	class HTTPContent
 
-		def header
+		def headers
 			@headers
 		end
 
@@ -9,7 +9,7 @@ module ROM
 			@io
 		end
 		
-		def intiliiaze(io, headers)
+		def initialize(io, **headers)
 			@io = io
 			@headers = headers
 		end

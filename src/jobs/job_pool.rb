@@ -3,6 +3,10 @@ require 'thread'
 module ROM
   class JobPool
 
+    def count
+      @running.length
+    end
+
     # Instantiates the {ROM::JobPool} class
     # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
     def initialize(capacity)

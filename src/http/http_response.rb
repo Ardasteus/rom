@@ -9,6 +9,10 @@ module ROM
       @headers
     end
 
+    def content
+      @content
+    end
+
     def initialize(code, content, **headers)
         @code = code
         @headers = create_headers(content, headers)
@@ -38,10 +42,10 @@ module ROM
       response = "HTTP/1.1 #{@code} OK#{EOL}"
 
       @headers.each_pair do |key, value|
-        response += key + ": " + value + EOL
+        response += key + ": " + value.to_s + EOL
       end
       response += EOL
-      response += content.stream.read
+      response += @content.stream.read
 
       return response
     end

@@ -10,7 +10,9 @@ module ROM
       @state
     end
 
-    def 
+    def value
+      @value
+    end
 
     # Encapsulates and starts the job, automatically notifies the {ROM::JobPool} at the end
     def run()
@@ -30,7 +32,7 @@ module ROM
 
     # Task that the job is supposed to perform
     def job_task
-      puts "Hello there I am a job"
+      # pass
     end
 
     def await
