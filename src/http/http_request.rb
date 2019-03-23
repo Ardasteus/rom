@@ -16,16 +16,20 @@ module ROM
       @io
     end
 
+    # Instantiates the {ROM::HTTPRequest} class
+    # @param [stream] io Client stream from which the class extracts all the parts of HTTP request. The leftover is the content of the request.
     def initialize(io)
       @io = io
       @method, @path, @version = io.readline.split
       parse_headers(io)
     end
 
-    def parse_headers(http_request)
+    # Parses headers using {stream} provided in the constructor
+    # @param [stream] io Client stream that the method parses the headers from
+    def parse_header(io)
       @headers = {}
       loop do
-        ln = http_request.readline
+        ln = io.readline
         break if ln.strip.chomp == ''
         header, value = ln.split
         header = header.gsub("_", "-").downcase.to_sym

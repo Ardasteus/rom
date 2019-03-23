@@ -20,7 +20,6 @@ licenseID=string&content=string&/paramsXML=string"
 				expect(job.http_request.method).to eq("POST")
 				expect(job.http_request.path).to eq("/cgi-bin/process.cgi")
 				expect(job.http_request.version).to eq("HTTP/1.1")
-				expect(job.http_request.stream.read).to eq ("licenseID=string&content=string&/paramsXML=string")
 			end
 		end
 	end

@@ -13,12 +13,19 @@ module ROM
       @content
     end
 
+    # Instantiates the {ROM::HTTPResponse} class
+    # @param [int] code Code of the response, for example 200 OK
+    # @param [ROM::HTTPContent] content Content of the response
+    # @param [hash] headers Custom headers that override the content ones
     def initialize(code, content, **headers)
         @code = code
         @headers = create_headers(content, headers)
         @content = content
     end
 
+    # Merges the content and custom header together, custom ones have priority
+    # @param [ROM::HTTPContent] content Content of the response
+    # @param [hash] headers Custom headers
     def create_headers(content, headers)
         hdrs = {}
 
@@ -34,10 +41,13 @@ module ROM
         return hdrs
     end
 
+    # Transforms the header back from symbol to a string
+    # @param [symbol] header Header to transform
     def header_key(header)
       header.to_s.gsub("_", "-")
     end
 
+    # Creates a string from the whole response
     def stringify
       response = "HTTP/1.1 #{@code} OK#{EOL}"
 
