@@ -3,7 +3,7 @@ module ROM
 
 	describe HTTPRespondJob do
 		context "When responding to a client request" do
-				it 'should respond succesfuly' do
+				it 'should respond successful' do
 				request = "POST /cgi-bin/process.cgi HTTP/1.1
 User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
 Host: www.tutorialspoint.com
