@@ -26,7 +26,7 @@ module ROM
 
     # Parses headers using {stream} provided in the constructor
     # @param [stream] io Client stream that the method parses the headers from
-    def parse_header(io)
+    def parse_headers(io)
       @headers = {}
       loop do
         ln = io.readline

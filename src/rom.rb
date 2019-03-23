@@ -222,7 +222,7 @@ module ROM
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
 		group :gems do
-			gems 'json', 'safe_yaml','mysql2' 'set', 'socket'
+			gems 'json', 'safe_yaml','mysql2', 'set', 'socket'
 		end
 		
 		group :core, :want => :gems do

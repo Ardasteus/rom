@@ -16,14 +16,9 @@ module ROM
     end
     
     def job_task
-      method = @http_request.method
-      if method == "GET"
-        msg = "Cool and good"
-        http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
-        http_response = HTTPResponse.new(200, http_content)
-      elsif method == "POST"
-
-      end
+      msg = "Cool and good"
+      http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
+      http_response = HTTPResponse.new(200, http_content)
       client.write(http_response.stringify)
       client.close
       return http_response
