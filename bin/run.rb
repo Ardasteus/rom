@@ -2,4 +2,6 @@
 
 require_relative '../src/rom'
 
-ROM::Application.new('.')
+app = ROM::Application.new('.')
+
+app.start
