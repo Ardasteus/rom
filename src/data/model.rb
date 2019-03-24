@@ -92,7 +92,7 @@ module ROM
 		def self.assign_property(prop, value)
 			# TODO: Attribute value checking
 			raise("Property '#{prop.name}' is required!") if prop.required? and nil == value
-			raise("Attempt to assign value of type '#{value.class}' into '#{prop.type}' on property '#{prop.name}'!") unless prop.type.is(value)
+			raise(ConversionException.new(value, prop.type, "Assignment to property '#{prop}'!")) unless prop.type.is(value)
 			return prop
 		end
 		
@@ -134,7 +134,7 @@ module ROM
 			end
 			
 			define_method "#{prop.name}=".to_sym do |value|
-				assign_property(prop, value)
+				self.class.assign_property(prop, value)
 				@values[nm] = value
 			end
 			
@@ -158,7 +158,7 @@ module ROM
 			end
 			
 			define_method "#{prop.name}=".to_sym do |value|
-				assign_property(prop, value)
+				self.class.assign_property(prop, value)
 				@values[nm] = value
 			end
 			
@@ -288,6 +288,8 @@ module ROM
 			@att  = (att == nil ? [] : att)
 			@req  = req
 			@def  = df
+			
+			@att.each { |i| raise("Attributes must inherit the class #{Attribute.name}, got #{i.class.name}!") unless i.is_a?(Attribute) }
 		end
 		
 		# Gets first attribute that matches block
@@ -306,7 +308,7 @@ module ROM
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Boolean] True if matching attribute was found; false otherwise
 		def attribute?(&block)
-			return @att.any(&block)
+			return @att.any?(&block)
 		end
 	end
 end
