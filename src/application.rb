@@ -15,6 +15,8 @@ module ROM
 			@log  = TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc  = Interconnect.new(@log)
 			@itc.register(JobServer)
+			@itc.register(HTTPConfig)
+			@itc.register(HTTPService)
 			
 			# TODO: Add all interconnect imports
 		end

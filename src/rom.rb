@@ -222,7 +222,7 @@ module ROM
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
 		group :gems do
-			gems 'json', 'safe_yaml', 'mysql2', 'set'
+			gems 'json', 'safe_yaml','mysql2', 'set', 'socket'
 		end
 		
 		group :core, :want => :gems do
@@ -240,6 +240,13 @@ module ROM
 
 			from 'jobs' do
 			  files 'job', 'job_pool', 'job_server'
+			end
+
+			from 'http' do
+				from 'http_jobs' do
+					files 'http_job_pool', 'http_listener_job', 'http_respond_job'
+				end
+				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service'
 			end
 		end
 		
