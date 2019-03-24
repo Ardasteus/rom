@@ -231,7 +231,7 @@ module ROM
 			end
 			
 			from 'data' do
-			  files 'model', 'types'
+			  files 'attribute', 'model', 'types'
 			end
 			
 			from 'dynamic' do
