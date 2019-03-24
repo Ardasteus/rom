@@ -230,8 +230,12 @@ module ROM
 				files 'logger', 'short_formatter', 'text_logger'
 			end
 			
+			from 'data' do
+			  files 'model', 'types'
+			end
+			
 			from 'dynamic' do
-				files 'component', 'interconnect'
+				files 'component', 'interconnect', 'service', 'config'
 			end
 
 			from 'jobs' do
