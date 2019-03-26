@@ -9,4 +9,6 @@ YARD::Rake::YardocTask.new do |yard|
 	yard.files = ['src/**/*.rb']
 end
 
-Inch::Rake::Suggest.new('inch')
+Inch::Rake::Suggest.new('inch') do |inch|
+	inch.args << 'src/**/*.rb'
+end
