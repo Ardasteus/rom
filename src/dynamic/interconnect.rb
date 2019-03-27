@@ -8,6 +8,12 @@ module ROM
 		def initialize(log)
 			@log = log
 			@reg = Set.new
+			@hooks = []
+		end
+
+		def hook(type, &block)
+			@log.trace("Setting interconnect hook for '#{type.name}'...")
+			@hooks << { :type => type, :hook => block }
 		end
 		
 		# Loads all components in a module
@@ -25,7 +31,11 @@ module ROM
 		# @return [void]
 		def register(com)
 			@log.trace("Importing '#{com.name}'...")
-			com.register(self).each(&@reg.method(:add))
+			hooks = @hooks.collect { |i| com < i.type }
+			com.register(self).each do |i| 
+				@reg << i
+				hooks.each { |h| h[:hook].call(i) }
+			end
 		end
 		
 		# Looks up all components of specified base type

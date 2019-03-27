@@ -17,6 +17,9 @@ module ROM
 			@itc.register(JobServer)
 			@itc.register(HTTPConfig)
 			@itc.register(HTTPService)
+			@itc.load(ROM::API)
+			
+			@itc.register(ApiGateway)
 			
 			# TODO: Add all interconnect imports
 		end
