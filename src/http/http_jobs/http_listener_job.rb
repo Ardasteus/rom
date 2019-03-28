@@ -9,19 +9,19 @@ module ROM
         @server = tcp_server
       else
         if cert == ""
-          certificate = generate_cert
+          cft = generate_cert
         else
           raw = File.read cert
-          certificate = OpenSSL::X509::Certificate.new raw
+					cft = OpenSSL::X509::Certificate.new raw
         end
-        server_context = OpenSSL::SSL::SSLContext.new
-        server_context.add_certificate(certificate, @key)
-        server_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        server_context.security_level = 0
-        @server = OpenSSL::SSL::SSLServer.new tcp_server, server_context
+        ctx = OpenSSL::SSL::SSLContext.new
+				ctx.cert = cft
+				ctx.key = @key
+				ctx.npn_protocols = ['http/1.1']
+        @server = OpenSSL::SSL::SSLServer.new tcp_server, ctx
+				@server.start_immediately = true
       end
       @job_pool = job_pool
-
     end
 
     # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
@@ -35,22 +35,23 @@ module ROM
     def generate_cert
       @key = OpenSSL::PKey::RSA.new 2048
       public_key = @key.public_key
-      subject = "/C=BE/O=Test/OU=Test/CN=Test"
+      subject = "/C=CZ/O=company.com/OU=company.com/CN=localhost/L=Prague/ST=Prague"
 
       cert = OpenSSL::X509::Certificate.new
       cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
       cert.not_before = Time.now
       cert.not_after = Time.now + 365 * 24 * 60 * 60
       cert.public_key = public_key
-      cert.serial = 0x0
+      cert.serial = 1
       cert.version = 2
 
-      ef = OpenSSL::X509::ExtensionFactory.new
-      ef.subject_certificate = cert
+      ef = OpenSSL::X509::ExtensionFactory.new(nil, cert)
       ef.issuer_certificate = cert
       cert.extensions = [
-          ef.create_extension("basicConstraints","CA:TRUE", true),
-          ef.create_extension("subjectKeyIdentifier", "hash")
+				ef.create_extension("basicConstraints","CA:TRUE"),
+				ef.create_extension("keyUsage", "keyEncipherment"),
+				ef.create_extension("subjectKeyIdentifier", "hash"),
+				ef.create_extension("extendedKeyUsage", "serverAuth")
       ]
       cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
 
