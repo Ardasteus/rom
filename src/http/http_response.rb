@@ -49,7 +49,7 @@ module ROM
 
     # Creates a string from the whole response
     def stringify
-      response = "HTTP/1.1 #{@code} OK#{EOL}"
+      response = "HTTP/1.1 #{@code.code} #{@code.note}{EOL}"
 
       @headers.each_pair do |key, value|
         response += key + ": " + value.to_s + EOL

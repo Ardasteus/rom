@@ -15,7 +15,7 @@ module ROM
           certificate = OpenSSL::X509::Certificate.new raw
         end
         server_context = OpenSSL::SSL::SSLContext.new
-        server_context.cert = certificate
+        server_context.add_certificate(certificate, @key)
         @server = OpenSSL::SSL::SSLServer.new tcp_server, server_context
       end
       @job_pool = job_pool
@@ -31,8 +31,8 @@ module ROM
     end
 
     def generate_cert
-      key = OpenSSL::PKey::RSA.new 2048
-      public_key = key.public_key
+      @key = OpenSSL::PKey::RSA.new 2048
+      public_key = @key.public_key
       subject = "/C=BE/O=Test/OU=Test/CN=Test"
 
       cert = OpenSSL::X509::Certificate.new
@@ -52,7 +52,7 @@ module ROM
       ]
       cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
 
-      cert.sign key, OpenSSL::Digest::SHA1.new
+      cert.sign @key, OpenSSL::Digest::SHA1.new
 
       return cert
     end
