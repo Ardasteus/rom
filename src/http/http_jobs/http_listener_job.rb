@@ -2,8 +2,8 @@ module ROM
   class HTTPListenerJob < ROM::Job
 
     # Instantiates the {ROM::HTTPListenerJob} class
-    # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPServer} class
-    # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPServer} class
+    # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
+    # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
     def initialize(tcp_server, job_pool, https = false, cert = "")
       if https == false
         @server = tcp_server
@@ -16,6 +16,8 @@ module ROM
         end
         server_context = OpenSSL::SSL::SSLContext.new
         server_context.add_certificate(certificate, @key)
+        server_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        server_context.security_level = 0
         @server = OpenSSL::SSL::SSLServer.new tcp_server, server_context
       end
       @job_pool = job_pool
