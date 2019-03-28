@@ -14,10 +14,7 @@ module ROM
           raw = File.read cert
           certificate = OpenSSL::X509::Certificate.new raw
         end
-
-        key = OpenSSL::PKey::RSA.new 2048
         server_context = OpenSSL::SSL::SSLContext.new
-        #server_context.key = key
         server_context.cert = certificate
         @server = OpenSSL::SSL::SSLServer.new tcp_server, server_context
       end
