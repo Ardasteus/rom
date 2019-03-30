@@ -36,7 +36,8 @@ module ROM
 		def self.action(name, ret, *att, **sig, &block)
 			raise('Action with same name already defined!') if @act.has_key?(name.to_s)
 			raise('Action name cannot contain path separator!') if name.to_s.include?(PATH_SEPARATOR)
-			act = ResourceAction.new(name.to_s, ActionSignature.new(ret, sig), att, &block)
+			raise('Action may only return models, primitives or another resources!') unless Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[]]].accepts(ret)
+			act = ResourceAction.new(name.to_s, self, ActionSignature.new(ret, sig), att, &block)
 			if att.any? { |i| i.is_a?(DefaultAction) }
 				raise("Default action '#{act.name}' collides with '#{@def.name}'!") unless @def == nil
 				@def = act
@@ -69,12 +70,17 @@ module ROM
 			@att
 		end
 
+		def resource
+			@res
+		end
+
 		def invoke(*args)
 			@action.call(*args)
 		end
 
-		def initialize(nm, sig, att, &block)
+		def initialize(nm, res, sig, att, &block)
 			@name = nm
+			@res = res
 			@action = block
 			@att = att
 			@sig = sig
@@ -86,6 +92,10 @@ module ROM
 		
 		def attribute?(klass)
 			@att.any? { |i| i.is_a?(klass) }
+		end
+
+		def to_s
+			@name
 		end
 	end
 

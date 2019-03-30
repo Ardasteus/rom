@@ -20,22 +20,63 @@ module ROM
 			if rsc == nil
 				return @root.resolve(*path)
 			else
-				act = rsc.class[path.shift.to_s]
-				if act == nil and rsc.class.default != nil
-					act = WrappedResourceAction.new(rsc.class.default, path.shift.to_s)
+				act = rsc[path.shift.to_s]
+				if act == nil and rsc.default != nil
+					act = WrappedResourceAction.new(rsc.default, path.shift.to_s)
 				end
 				return act
 			end
 		end
 		
+		def plan(*path)
+			ret  = ApiPlan.new
+			last = path.reduce(@root) do |last, part|
+				n = nil
+				case last
+					when ResourceModule
+						n = last.resolve(part)
+						raise("Unable to find object '#{part}' in module '#{last.to_s}'!") if n == nil
+					when ResourceAction
+						res = last.signature.return_type
+						raise("Action '#{last.to_s}' returns final value! It cannot be called!") unless Types::Just[Resource].accepts(res)
+						n = res.type[part]
+						n = WrappedResourceAction.new(res.default, part) if n == nil and res.default != nil
+						raise("Action '#{part}' not found in resource '#{res.name}'!") if n == nil
+				end
+				ret << n if n.is_a?(ResourceAction)
+				next n
+			end
+			raise("Path doesn't specify an action!") if last.is_a?(ResourceModule)
+			return ret
+		end
+		
 		private :index
+		
+		class ApiPlan
+			def initialize
+				@plan = []
+			end
+			
+			def run(*args)
+				@plan.reduce(nil) do |last, act|
+					if last == nil
+						next act.invoke(*args)
+					end
+					next last.method(act.name).call
+				end
+			end
+			
+			def <<(act)
+				@plan << act
+			end
+		end
 		
 		class WrappedResourceAction < ResourceAction
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
-				super(@act.name, @act.signature, @act.attributes) do |*args|
-				  @act.invoke(*prepend, *args)
+				super(@act.name, @act.resource, @act.signature, @act.attributes) do |*args|
+					@act.invoke(*prepend, *args)
 				end
 			end
 		end
@@ -78,11 +119,11 @@ module ROM
 				end
 			end
 			
-			def resolve(*path)
-				p = path.shift.to_s
+			def resolve(p, *path)
 				if @actions.has_key?(p)
 					@actions[p]
 				elsif @modules.has_key?(p)
+					return @modules[p] if path.length == 0
 					@modules[p].resolve(*path)
 				else
 					@def
