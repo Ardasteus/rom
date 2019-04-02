@@ -8,10 +8,10 @@ module ROM
     # @param [String] cert Certification location, used for HTTPS
     # @param [String] redirect Location where to redirect all requests, if empty then no redirect
     def initialize(tcp_server, job_pool, https = false, cert = "", redirect = "")
-      if https == false
+      if !https
         @server = tcp_server
       else
-        if cert == ""
+        if cert == nil
           cft = generate_cert
         else
           raw = File.read cert
