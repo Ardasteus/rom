@@ -36,6 +36,7 @@ module ROM
       end
     end
 
+    # Generates a self-signed certificate. Only used when one is not provided.
     def generate_cert
       @key = OpenSSL::PKey::RSA.new 2048
       public_key = @key.public_key

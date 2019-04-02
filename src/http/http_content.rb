@@ -1,6 +1,5 @@
 module ROM
 	class HTTPContent
-
 		def headers
 			@headers
 		end
