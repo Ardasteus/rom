@@ -4,6 +4,7 @@ module ROM
       super(itc, "HTTP Service", "Magic")
     end
 
+    # Initializes {HTTPListenerJob} classes based on data from config
     def up
       conf = @itc.lookup(HTTPConfig).first
       job_server = @itc.lookup(JobServer).first
@@ -26,6 +27,7 @@ module ROM
 
     end
 
+    # Transforms HTTP address to HTTPS one
     def transform_address(address)
       transformed = address
       if transformed.include? "http"
