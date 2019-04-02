@@ -49,13 +49,13 @@ module ROM
 
     # Creates a string from the whole response
     def stringify
-      response = "HTTP/1.1 #{@code} OK#{EOL}"
+      response = "HTTP/1.1 #{@code}#{EOL}"
 
       @headers.each_pair do |key, value|
         response += key + ": " + value.to_s + EOL
       end
       response += EOL
-      response += @content.stream.read
+      response += @content.stream.read unless @content.stream == nil
 
       return response
     end

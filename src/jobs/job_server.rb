@@ -7,9 +7,14 @@ module ROM
       @job_pools = {}
     end
 
-    # Adds a new {ROM::JobPool} to the server
-    # @param [symbol] key Symbol defining the job pool
-    # @overload [int, JobPool] job_pool Capacity of the newly created pool, defaults to 0, check {ROM::JobPool} initialize for more info
+    # @overload add_job_pool(key, capacity)
+    #   Adds a new {ROM::JobPool} to the server
+    #   @param [symbol] key Symbol defining the job pool
+    #   @param [Integer] capacity Capacity of the newly created pool
+    # @overload add_job_pool(key, job_pool)
+    #   Adds a {ROM::JobPool} to the server
+    #   @param [symbol] key Symbol defining the job pool
+    #   @param [ROM::JobPool] job_pool Pool to add
     def add_job_pool(key, job_pool)
       job_pool = JobPool.new(job_pool) if job_pool.is_a?(Integer)
       if self[key] == nil

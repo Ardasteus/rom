@@ -16,9 +16,17 @@ module ROM
       @bind = config.binding
     end
 
+		class BindingModel < Model
+			property! :address, String
+			property :port, Integer, 80
+			property :https, Types::Boolean[], false
+			property :cert_path, String
+      property :redirect, String
+		end
+
     # Model defining the properties of {HTTPConfig} class
     class ConfigModel < Model
-      property(:binding, Types::Array[String], [])
+      property :binding, Types::Array[BindingModel], []
     end
   end
 end
