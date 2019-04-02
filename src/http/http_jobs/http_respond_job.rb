@@ -19,13 +19,13 @@ module ROM
 
     # Responds to the client, if redirect is turned on it redirects him.
     def job_task
-      if @redirect == ""
+      if @redirect == nil
         msg = "Cool and good"
         http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
         http_response = HTTPResponse.new(ROM::StatusCode::OK, http_content)
       else
         http_content = HTTPContent.new(nil , :location => "#{@redirect}#{@http_request.path}")
-        http_response = HTTPResponse.new(ROM::StatusCode::Moved_Permanently, http_content)
+        http_response = HTTPResponse.new(ROM::StatusCode::MOVED_PERMANENTLY, http_content)
       end
       resp = http_response.stringify
       client.write(resp)

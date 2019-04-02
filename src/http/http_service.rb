@@ -1,10 +1,13 @@
 module ROM
   class HTTPService < ROM::Service
+
+    # Instantiates the {HTTPService} class
+    # @param [Interconnect] itc Interconnect
     def initialize(itc)
       super(itc, "HTTP Service", "Magic")
     end
 
-    # Initializes {HTTPListenerJob} classes based on data from config
+    # Starts up the service, which then proceeds to create {HTTPListenerJob} jobs as defined in config
     def up
       conf = @itc.lookup(HTTPConfig).first
       job_server = @itc.lookup(JobServer).first

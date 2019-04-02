@@ -12,14 +12,18 @@ module ROM
     def initialize(code, text)
       @code = code
       @note = text
-    end
+		end
+		
+		def to_s
+			"#{@code} #{@note}"
+		end
 
-    Continue = self.new(100, "Continue")
-    Switching_Protocols = self.new(101, "Switching Protocols")
-    OK = self.new(200, "OK")
-    Created = self.new(201, "Created")
-    Moved_Permanently = self.new(301, "Moved Permanently")
-    Bad_Request = self.new(400,"Bad Request")
-    Not_Found = self.new(404, "Not Found")
+    CONTINUE            = self.new(100, "Continue")
+    SWITCHING_PROTOCOLS = self.new(101, "Switching Protocols")
+    OK                  = self.new(200, "OK")
+    CREATED             = self.new(201, "Created")
+    MOVED_PERMANENTLY   = self.new(301, "Moved Permanently")
+    BAD_REQUEST         = self.new(400, "Bad Request")
+    NOT_FOUND           = self.new(404, "Not Found")
   end
 end
