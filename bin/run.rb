@@ -2,6 +2,6 @@
 
 require_relative '../src/rom'
 
-app = ROM::Application.new('.')
+app = ROM::Application.new('.', :debug => ARGV.include?('-d'))
 
 app.start

@@ -12,6 +12,11 @@ module ROM
 				raise('Method not implemented!')
 			end
 			
+			# @abstract
+			def accepts(klass)
+				raise('Method not implemented!')
+			end
+
 			# Ensures given value is a type
 			# @param [Class, ROM::Types::Type] x Value to convert to type
 			# @return [ROM::Types::Type] Converted type
@@ -20,6 +25,10 @@ module ROM
 				return x if x.is_a?(Type)
 				return Just[x] if x.is_a?(Class)
 				raise('Given value is neither class nor type!')
+			end
+
+			def <=(other)
+				accepts(other)
 			end
 		end
 		
@@ -50,6 +59,10 @@ module ROM
 				@type.to_s
 			end
 			
+			def accepts(klass)
+				((klass.is_a?(Just) ? klass.type : klass) <= @type) or false
+			end
+
 			# Instantiates the {ROM::Types::Just} class
 			# @param [Class] type Class of type
 			# @return [ROM::Types::Just] New instance
@@ -66,6 +79,14 @@ module ROM
 				@types
 			end
 			
+			def accepts(klass)
+				if klass.is_a?(Union)
+					return klass.types.all? { |i| @types.any? { |j| j.accepts(i) }}
+				else
+					return @types.any? { |i| i.accepts(klass) }
+				end
+			end
+
 			# Instantiates the {ROM::Types::Union} class
 			# @param [Class, ROM::Types::Type] types List of types
 			# @raise [Exception] When given list is nil or empty
@@ -107,6 +128,10 @@ module ROM
 				@type
 			end
 			
+			def accepts(klass)
+				klass.is_a?(Types::Array) and @type.accepts(klass.type)
+			end
+
 			# Instantiates the {ROM::Types::Array} class
 			# @param [Class, ROM::Types::Type] type Type of elements
 			def initialize(type)
@@ -146,6 +171,10 @@ module ROM
 			# @return [ROM::Types::Type] Type of values
 			def value
 				@value
+			end
+			
+			def accepts(klass)
+				klass.is_a?(Types::Hash) and @key.accepts(klass.key) and @value.accepts(klass.value)
 			end
 			
 			# Instantiates the {ROM::Types::Map} class

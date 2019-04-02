@@ -235,7 +235,7 @@ module ROM
 			end
 			
 			from 'dynamic' do
-				files 'component', 'interconnect', 'service', 'config'
+				files 'component', 'interconnect', 'service', 'config', 'resource', 'api_gateway'
 			end
 
 			from 'jobs' do
@@ -251,6 +251,8 @@ module ROM
 		end
 		
 		group :app, :want => :core do
+			all 'api/**/*.rb'
+
 			files 'application'
 		end
 	end

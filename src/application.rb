@@ -8,15 +8,19 @@ module ROM
 		# Instantiates the {ROM::Application} class
 		# @param [String] data Path to data directory
 		# @param [Hash] opt Startup options
-		# @option opt [Bool] :debug Indicates how much debug information the application logs
+		# @option opt [Bool] :debug Indicates that the application is in debug mode
 		def initialize(data, **opt)
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exists?(data)
-			@data = File.expand_path(data)
-			@log  = TextLogger.new(ShortFormatter.new, STDOUT)
-			@itc  = Interconnect.new(@log)
+			@data  = File.expand_path(data)
+			@debug = (opt[:debug] or false)
+			@log   = TextLogger.new(ShortFormatter.new, STDOUT)
+			@itc   = Interconnect.new(@log)
 			@itc.register(JobServer)
 			@itc.register(HTTPConfig)
 			@itc.register(HTTPService)
+			@itc.register(ApiGateway)
+			
+			@itc.load(ROM::API)
 			
 			# TODO: Add all interconnect imports
 		end
@@ -26,7 +30,7 @@ module ROM
 			@log.info('Starting...')
 			@log.trace('Loading configuration...')
 			SafeYAML::OPTIONS[:default_mode] = :safe
-			conf = File.join(@data, FILE_CONFIG)
+			conf                             = File.join(@data, FILE_CONFIG)
 			raise("Configuration file '#{FILE_CONFIG}' not found!") unless File.exists?(conf)
 			conf = SafeYAML.load_file(conf)
 			@itc.lookup(Config).each do |cfg|
@@ -38,6 +42,12 @@ module ROM
 			
 			@log.trace('Suspending master thread...')
 			sleep
+		rescue Exception => ex
+			@log.fatal('Application failed to start!', ex)
+			if @debug
+				sleep 0.25 # Wait for debug output to catch up
+				raise
+			end
 		end
 	end
 end
