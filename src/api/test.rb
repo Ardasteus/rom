@@ -16,6 +16,10 @@ module ROM
 			action :test, InstanceTest, :val => String do |val|
 				InstanceTest.new(val)
 			end
+			
+			action :default, String, DefaultAction[] do |name|
+				"yo!: #{name}"
+			end
 		end
 	end
 end

@@ -126,7 +126,7 @@ module ROM
 					return @modules[p] if path.length == 0
 					@modules[p].resolve(*path)
 				else
-					@def
+					WrappedResourceAction.new(@def, p)
 				end
 			end
 			
