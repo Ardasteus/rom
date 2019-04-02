@@ -55,7 +55,7 @@ module ROM
         response += key + ": " + value.to_s + EOL
       end
       response += EOL
-      response += @content.stream.read
+      response += @content.stream.read unless @content.stream == nil
 
       return response
     end

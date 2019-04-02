@@ -17,6 +17,7 @@ module ROM
 			property :port, Integer
 			property :https, Types::Boolean[], false
 			property :cert_path, String
+      property :redirect, String
 		end
 		
     class ConfigModel < Model

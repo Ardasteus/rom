@@ -4,7 +4,7 @@ module ROM
     # Instantiates the {ROM::HTTPListenerJob} class
     # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
     # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
-    def initialize(tcp_server, job_pool, https = false, cert = "")
+    def initialize(tcp_server, job_pool, https = false, cert = "", redirect = "")
       if https == false
         @server = tcp_server
       else
@@ -22,12 +22,13 @@ module ROM
 				@server.start_immediately = true
       end
       @job_pool = job_pool
+      @redirect = redirect
     end
 
     # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
     def job_task
       loop do
-        respond_job = HTTPRespondJob.new(@server.accept)
+        respond_job = HTTPRespondJob.new(@server.accept, @redirect)
         @job_pool.add_job(respond_job)
       end
     end

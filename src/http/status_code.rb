@@ -18,6 +18,7 @@ module ROM
     Switching_Protocols = self.new(101, "Switching Protocols")
     OK = self.new(200, "OK")
     Created = self.new(201, "Created")
+    Moved_Permanently = self.new(301, "Moved Permanently")
     Bad_Request = self.new(400,"Bad Request")
     Not_Found = self.new(404, "Not Found")
   end
