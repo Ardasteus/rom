@@ -35,10 +35,10 @@ module ROM
 				case last
 					when ResourceModule
 						n = last.resolve(part)
-						raise("Unable to find object '#{part}' in module '#{last.to_s}'!") if n == nil
+						raise("Unable to find object '#{part}' in module '#{last}'!") if n == nil
 					when ResourceAction
 						res = last.signature.return_type
-						raise("Action '#{last.to_s}' returns final value! It cannot be called!") unless Types::Just[Resource].accepts(res)
+						raise("Action '#{last}' returns final value! It cannot be called!") unless Types::Just[Resource].accepts(res)
 						n = res.type[part]
 						n = WrappedResourceAction.new(res.default, part) if n == nil and res.default != nil
 						raise("Action '#{part}' not found in resource '#{res.name}'!") if n == nil
@@ -104,16 +104,16 @@ module ROM
 			
 			def add(action, *mod)
 				if mod.length == 0
-					raise("Action name '#{action.name}' from '#{self.to_s}' collides with sub-module of same name!") if @modules.has_key?(action.name)
-					raise("Action name '#{action.name}' from '#{self.to_s}' collides with another action of same name!") if @actions.has_key?(action.name)
+					raise("Action name '#{action.name}' from '#{self}' collides with sub-module of same name!") if @modules.has_key?(action.name)
+					raise("Action name '#{action.name}' from '#{self}' collides with another action of same name!") if @actions.has_key?(action.name)
 					if action.attribute?(DefaultAction)
-						raise("Default action '#{d.name}' collides with '#{@def.name}' in '#{self.to_s}'!") unless @def == nil
+						raise("Default action '#{d.name}' collides with '#{@def.name}' in '#{self}'!") unless @def == nil
 						@def = action
 					end
 					@actions[action.name] = action
 				else
 					m = mod.shift
-					raise("Module name '#{m}' from '#{self.to_s}' collides with action of same name!") if @actions.has_key?(m)
+					raise("Module name '#{m}' from '#{self}' collides with action of same name!") if @actions.has_key?(m)
 					m = (@modules.has_key?(m) ? @modules[m] : @modules[m] = ResourceModule.new(m, self))
 					m.add(action, *mod)
 				end
@@ -131,7 +131,7 @@ module ROM
 			end
 			
 			def to_s
-				(@parent == nil ? @name.to_s : "#{@parent.to_s}#{Resource::PATH_SEPARATOR}#{@name.to_s}")
+				(@parent == nil ? @name.to_s : "#{@parent}#{Resource::PATH_SEPARATOR}#{@name}")
 			end
 		end
 	end
