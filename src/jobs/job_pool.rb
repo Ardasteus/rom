@@ -43,6 +43,7 @@ module ROM
       end
     end
 
+    # Waits for all jobs to finish, including the queue.
     def await_jobs
       until @queue.count + @running.count == 0
         @running.first.await
