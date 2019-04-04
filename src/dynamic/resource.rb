@@ -124,6 +124,7 @@ module ROM
 	end
 	
 	# Represents a resource which can be statically registered
+	# @see ROM::Resource
 	class StaticResource < Resource
 		include Component
 		
@@ -143,7 +144,7 @@ module ROM
 		end
 
 		# Gets the signature of the action
-		# @return [ActionSignature] Signature of the action
+		# @return [ROM::ActionSignature] Signature of the action
 		def signature
 			@sig
 		end
@@ -169,7 +170,7 @@ module ROM
 
 		# Instantiates the {ROM::ResourceAction} class
 		# @param [Symbol] nm Name of action
-		# @param [ROM::Resource] res Parent resource
+		# @param [Class] res Parent resource
 		# @param [ROM::ActionSignature] sig Signature of the action
 		# @param [Array<ROM::Attribute>] att Metadata attributes of the action
 		# @yield [] Block of the action
@@ -195,10 +196,11 @@ module ROM
 			@att.any? { |i| i.is_a?(klass) }
 		end
 
-		# Gets the name of the action as string
-		# @return [String] Name of action as string
+		# Gets the path and signature of the action
+		# @return [String] Path and signature of the action
 		def to_s
-			@name.to_s
+			p = @res.path
+			"#{(p == '' ? '' : "#{p}.")}#{@name}#{@sig}"
 		end
 	end
 
@@ -245,6 +247,12 @@ module ROM
 						raise("Argument signature for '#{name}' expects to be either a #{Class.name} or #{Hash.name}!")
 				end
 				order += 1
+			end
+			
+			# Gets the string representation of the signature
+			# @return [String] String representation fo the signature
+			def to_s
+				"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
 			end
 		end
 

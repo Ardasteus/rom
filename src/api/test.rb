@@ -13,12 +13,12 @@ module ROM
 		class Test < StaticResource
 			namespace :api, :v1
 			
-			action :test, InstanceTest, :val => String do |val|
+			action :test, InstanceTest, :val! => String do |val|
 				InstanceTest.new(val)
 			end
 			
-			action :default, String, DefaultAction[] do |name|
-				"yo!: #{name}"
+			action :default, InstanceTest, DefaultAction[] do |name|
+				InstanceTest.new(name)
 			end
 		end
 	end

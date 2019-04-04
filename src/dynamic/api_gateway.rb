@@ -1,5 +1,14 @@
 module ROM
 	# Represents an entry point for the abstract API
+	#
+	# @see ROM::Resource
+	# @example Generating a plan
+	# 	# This example is using resources from the ROM::Resource dynamic example
+	#
+	# 	gtw = @itc.fetch(ApiGateway) # Fetch gateway from interconnect
+	# 	plan = gtw.plan('api', 'v1', 'first', 'data') # Plan a call. 'api.v1.first.data(): String' in this case
+	# 	plan.signature # => (): String
+	# 	plan.run # => '1st'
 	class ApiGateway
 		include Component
 		
@@ -71,6 +80,23 @@ module ROM
 				@plan = []
 			end
 			
+			# Gets the length of the call chain
+			# @return [Integer] Length of the call chain
+			def length
+				@plan.length
+			end
+			
+			# Gets the signature of call chain
+			# @return [ROM::ActionSignature] Signature of call chain
+			def signature
+				f = @plan.first.signature
+				args = {}
+				f.arguments.each do |i|
+					args[i] = f[i]
+				end
+				ActionSignature.new(@plan.last.signature.return_type, args)
+			end
+			
 			# Executes the API call plan
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
@@ -87,6 +113,13 @@ module ROM
 			# @param [ROM::ResourceAction] act Action to add
 			def <<(act)
 				@plan << act
+			end
+			
+			# Gets an action of call chain
+			# @param [Integer] idx Order of action
+			# @return [ROM::ResourceAction] Requested action; nil if not found
+			def [](idx)
+				@plan[idx]
 			end
 		end
 		
