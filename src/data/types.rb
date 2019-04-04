@@ -12,6 +12,9 @@ module ROM
 				raise('Method not implemented!')
 			end
 			
+			# Validates whether given type can be assigned to this type
+			# @param [Class, Type] klass Class or type to check
+			# @return [Bool] True if class can be assigned to this type; false otherwise
 			# @abstract
 			def accepts(klass)
 				raise('Method not implemented!')
@@ -59,6 +62,9 @@ module ROM
 				@type.to_s
 			end
 			
+			# Validates whether given type can be assigned to the given type
+			# @param [Class, Type] klass Class or type to check
+			# @return [Bool] True if class can be assigned to the given type; false otherwise
 			def accepts(klass)
 				((klass.is_a?(Just) ? klass.type : klass) <= @type) or false
 			end
@@ -79,6 +85,9 @@ module ROM
 				@types
 			end
 			
+			# Validates whether given type can be assigned to any of the given types
+			# @param [Class, Type] klass Class or type to check
+			# @return [Bool] True if class can be assigned to any of the given types; false otherwise
 			def accepts(klass)
 				if klass.is_a?(Union)
 					return klass.types.all? { |i| @types.any? { |j| j.accepts(i) }}
@@ -128,6 +137,9 @@ module ROM
 				@type
 			end
 			
+			# Validates whether given type can be assigned to this type
+			# @param [Class, Type] klass Type to check
+			# @return [Bool] True if class can be assigned to this type; false otherwise
 			def accepts(klass)
 				klass.is_a?(Types::Array) and @type.accepts(klass.type)
 			end
@@ -173,6 +185,9 @@ module ROM
 				@value
 			end
 			
+			# Validates whether given type can be assigned to this type
+			# @param [Class, Type] klass Type to check
+			# @return [Bool] True if class can be assigned to this type; false otherwise
 			def accepts(klass)
 				klass.is_a?(Types::Hash) and @key.accepts(klass.key) and @value.accepts(klass.value)
 			end

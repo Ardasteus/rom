@@ -1,7 +1,10 @@
 module ROM
+	# Represents an entry point for the abstract API
 	class ApiGateway
 		include Component
 		
+		# Instantiates the {ROM::ApiGateway} class
+		# @param [ROM::Interconnect] itc Interconnect that registers this instance
 		def initialize(itc)
 			@root = ResourceModule.new(:root)
 			
@@ -9,6 +12,8 @@ module ROM
 			itc.hook(Resource, &method(:index))
 		end
 		
+		# Indexes a resource class
+		# @param [ROM::Resource] rsc Resource to index
 		def index(rsc)
 			mod = rsc.class.path.split(Resource::PATH_SEPARATOR)
 			rsc.class.actions.each do |act|
@@ -16,6 +21,10 @@ module ROM
 			end
 		end
 		
+		# Resolves a path
+		# @param [Array<String>] path Path to resolve
+		# @param [ROM::Resource, nil] rsc Resource to resolve the path relative to. If nil given, path is resolved with respect to root module
+		# @return [ROM::ResourceAction] Resolved action; nil if not found
 		def resolve(path, rsc = nil)
 			if rsc == nil
 				return @root.resolve(*path)
@@ -28,6 +37,9 @@ module ROM
 			end
 		end
 		
+		# Generates an API call plan
+		# @param [String] path Path to plan
+		# @return [ROM::ApiGateway::ApiPlan] Plan of the API call
 		def plan(*path)
 			ret  = ApiPlan.new
 			last = path.reduce(@root) do |last, part|
@@ -52,11 +64,16 @@ module ROM
 		
 		private :index
 		
+		# Represents a chain call of APIs
 		class ApiPlan
+			# Instantiates the {ROM::ApiGateway::ApiPlan} class
 			def initialize
 				@plan = []
 			end
 			
+			# Executes the API call plan
+			# @param [Object] args Arguments to invoke the API plan with
+			# @return [Object, nil] Result of API call
 			def run(*args)
 				@plan.reduce(nil) do |last, act|
 					if last == nil
@@ -66,12 +83,18 @@ module ROM
 				end
 			end
 			
+			# Adds a resource action call to the plan
+			# @param [ROM::ResourceAction] act Action to add
 			def <<(act)
 				@plan << act
 			end
 		end
 		
+		# Prepends arguments to an action call 
 		class WrappedResourceAction < ResourceAction
+			# Instantiates the {ROM::ApiGateway::WrappedResourceAction} class
+			# @param [ROM::ResourceActoin] act Action to wrap
+			# @param [Object] prepend Arguments to prepend to the call
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
@@ -81,19 +104,29 @@ module ROM
 			end
 		end
 		
+		# Represents a single module of resources
 		class ResourceModule
+			# Gets the name of the module
+			# @return [String] Name of the module
 			def name
 				@name
 			end
 			
+			# Gets the submodules in this module
+			# @return [Array<ROM::ApiGateway::ResourceModule>] Submodules of this module
 			def modules
 				@modules
 			end
 			
+			# Gets the actions in this module
+			# @return [Array<ROM::ResourceAction>] Actions of this module
 			def actions
 				@actions
 			end
 			
+			# Instantiates the {ROM::ApiGateway::ResourceModule} class
+			# @param [String] name Name of module
+			# @param [ROM::ApiGateway::ResourceModule, nil] parent Parent module
 			def initialize(name, parent = nil)
 				@name    = name
 				@parent  = parent
@@ -102,6 +135,9 @@ module ROM
 				@def     = nil
 			end
 			
+			# Adds a resource action to the module
+			# @param [ROM::ResourceAction] action Action to add
+			# @param [String] mod Path of the action to add, relative to this module
 			def add(action, *mod)
 				if mod.length == 0
 					raise("Action name '#{action.name}' from '#{self}' collides with sub-module of same name!") if @modules.has_key?(action.name)
@@ -119,6 +155,9 @@ module ROM
 				end
 			end
 			
+			# Resolves a path relative to this module
+			# @param [String] p Name within this module
+			# @param [String] path Path relative to this module
 			def resolve(p, *path)
 				if @actions.has_key?(p)
 					@actions[p]
@@ -130,6 +169,8 @@ module ROM
 				end
 			end
 			
+			# Gets the name of this module as string
+			# @return [String] Name of this module
 			def to_s
 				(@parent == nil ? @name.to_s : "#{@parent}#{Resource::PATH_SEPARATOR}#{@name}")
 			end
