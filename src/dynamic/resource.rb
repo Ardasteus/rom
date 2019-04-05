@@ -1,42 +1,116 @@
 module ROM
+	# Represents a resource
+	#
+	# @example Static API
+	# 	module ROM
+	# 		module API
+	# 			class StatusApi < StaticResource
+	# 				# Static resource classes are registered at the interconnect, thus instantiated once
+	# 				
+	# 				path :api, :v1
+	# 				
+	# 				# Endpoint available as 'api.v1.status(): String'
+	# 				action :status, String do 
+	# 					return 'Server is running...'
+	# 				end
+	# 			end
+	# 		end
+	# 	end
+	# @example Call-chain API
+	# 	module ROM
+	# 		module API
+	# 			class Data < Resource
+	# 				# Dynamic resources are returned by static resources
+	# 				
+	# 				def initialize(data)
+	# 					@data = data
+	# 				end
+	# 				
+	# 				action :data, String do
+	# 					return @data
+	# 				end
+	# 			end
+	# 			
+	# 			class DataApi < StaticResource
+	# 				path :api, :v1
+	#
+	# 				def initialize(itc)
+	# 					super(itc)
+	# 					@hash = { 'first' => Data.new('1st'), 'last' => Data.new('2nd') }
+	# 				end
+	# 				
+	# 				# Endpoint marked as default will be called when action on the resource cannot be found
+	# 				# The requested name is prepended as a string argument
+	# 				action :default, Data, DefaultAction[] do |name|
+	# 					return @hash[name]
+	# 				end
+	# 				
+	# 				# Call 'api.v1.first.data(): String' is available and it will return '1st'
+	# 				# Call 'api.v1.second.data(): String' is available and it will return '2nd'
+	# 			end
+	# 		end
+	# 	end
 	class Resource
+		# Separator character of modules and actions
 		PATH_SEPARATOR = '.'
+		# Gets the union type that is allowed as arguments and return values
+		ALLOWED_TYPE = Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[], IO]]
 
+		# Gets actions declared within the resource
+		# @return [Array<ROM::ResourceAction>] Actions declared within the resource
 		def self.actions
 			@act.values
 		end
 		
+		# Gets the path of this resource
+		# @return [Array<String>] Path of this resource
 		def self.path
 			@path
 		end
 		
+		# Gets the default resource action
+		# @return [ROM::ResourceAction, nil] Default resource action; nil if none
 		def self.default
 			@def = nil
 		end
 		
+		# Gets an action in this resource
+		# @param [String, Symbol] name Name of the action to get
+		# @return [ROM::ResourceAction, nil] Action of given name; nil of not found
 		def self.[](name)
 			@act[name.to_s]
 		end
 		
+		# Prepares the resource class
 		def self.prepare_resource
 			@act = {}
 			@path = ''
 			@def = nil
 		end
 
+		# Invoked when the class is inherited
+		# @param [Class] klass Inheriting class
 		def self.inherited(klass)
 			klass.prepare_resource
 		end
 
+		# Sets the path of the resource
+		# @param [String] path Path of the resource
 		def self.namespace(*path)
 			raise('Path parts cannot contain path separator!') if path.include?(PATH_SEPARATOR)
 			@path = path.collect(&:to_s).join(PATH_SEPARATOR)
 		end
 
+		# Defines an action
+		# @param [String, Symbol] name Name of the action
+		# @param [Class, ROM::Types::Type] ret Return type of the action
+		# @param [ROM::Attribute] att Metadata attributes of the action
+		# @param [Hash{Symbol => [Class, ROM::Types::Type, Hash]}] sig Signature of the action
+		# @yield [] Block of action
 		def self.action(name, ret, *att, **sig, &block)
 			raise('Action with same name already defined!') if @act.has_key?(name.to_s)
 			raise('Action name cannot contain path separator!') if name.to_s.include?(PATH_SEPARATOR)
-			raise('Action may only return models, primitives or another resources!') unless Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[]]].accepts(ret)
+			raise('Action may only return models, primitives or another resources!') unless ALLOWED_TYPE.accepts(ret)
 			act = ResourceAction.new(name.to_s, self, ActionSignature.new(ret, sig), att, &block)
 			if att.any? { |i| i.is_a?(DefaultAction) }
 				raise("Default action '#{act.name}' collides with '#{@def.name}'!") unless @def == nil
@@ -49,35 +123,57 @@ module ROM
 		end
 	end
 	
+	# Represents a resource which can be statically registered
+	# @see ROM::Resource
 	class StaticResource < Resource
 		include Component
 		
+		# Instantiates the {ROM::StaticResource} class
+		# @param [ROM::Interconnect] itc Interconnect which register the instance
 		def initialize(itc)
 		
 		end
 	end
 
+	# Represents an API action
 	class ResourceAction
+		# Gets the name of action
+		# @return [Symbol] Name of action
 		def name
 			@name
 		end
 
+		# Gets the signature of the action
+		# @return [ROM::ActionSignature] Signature of the action
 		def signature
 			@sig
 		end
 
+		# Gets the metadata attributes of the action
+		# @return [Array<ROM::Attribute>] Attributes of the action
 		def attributes
 			@att
 		end
 
+		# Gets the resource to which this action is bound
+		# @return [ROM::Resource] Parent resource
 		def resource
 			@res
 		end
 
+		# Invokes the action with given arguments
+		# @param [Object, nil] args Arguments to invoke the action with
+		# @return [Object, nil] Result of the action
 		def invoke(*args)
 			@action.call(*args)
 		end
 
+		# Instantiates the {ROM::ResourceAction} class
+		# @param [Symbol] nm Name of action
+		# @param [Class] res Parent resource
+		# @param [ROM::ActionSignature] sig Signature of the action
+		# @param [Array<ROM::Attribute>] att Metadata attributes of the action
+		# @yield [] Block of the action
 		def initialize(nm, res, sig, att, &block)
 			@name = nm
 			@res = res
@@ -86,28 +182,45 @@ module ROM
 			@sig = sig
 		end
 		
+		# Gets a metadata attribute of the given class
+		# @param [Class] klass Class of the attribute to fetch
+		# @return [ROM::Attribute, nil] First attribute of the given type; nil of no such attribute could be found
 		def attribute(klass)
 			@att.each { |i| return i if i.is_a?(klass) }
 			end
 		
+		# Gets whether the action has a metadata attribute of the given type
+		# @param [Class] klass Class of the attribute to look for
+		# @return [Bool] True if attribute of given type is found; false otherwise
 		def attribute?(klass)
 			@att.any? { |i| i.is_a?(klass) }
 		end
 
+		# Gets the path and signature of the action
+		# @return [String] Path and signature of the action
 		def to_s
-			@name
+			p = @res.path
+			"#{(p == '' ? '' : "#{p}.")}#{@name}#{@sig}"
 		end
 	end
 
+	# Represents the signature of the action
 	class ActionSignature
+		# Gets the type which the action returns
+		# @return [ROM::Types::Type] Type which the action returns
 		def return_type
 			@ret
 		end
 
+		# Gets the specification of the action arguments
+		# @return [Hash{Symbol => Hash{Symbol => Object}}] Specification of the action arguments
 		def arguments
 			@sig.keys
 		end
 
+		# Instantiates the {ROM::ActionSignature} class
+		# @param [ROM::Types::Type] ret Return type of the action
+		# @param [Hash{Symbol => Hash}] sig Specification of the action arguments
 		def initialize(ret, sig)
 			@sig = {}
 			@ret = Types::Type.to_t(ret)
@@ -135,8 +248,22 @@ module ROM
 				end
 				order += 1
 			end
+			
+			# Gets the string representation of the signature
+			# @return [String] String representation fo the signature
+			def to_s
+				"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
+			end
 		end
 
+		# @overload [](arg)
+		# 	Gets specification of an argument based on its name
+		# 	@param [Symbol] arg Name of the argument
+		# 	@return [Hash, nil] Specification of the given argument; nil if not found
+		# @overload [](arg)
+		# 	Gets specification of an argument based on its order
+		# 	@param [Integer] arg Order of the argument
+		# 	@return [Hash, nil] Specification of the given argument; nil if not found
 		def [](arg)
 			case arg
 				when Symbol
@@ -150,6 +277,7 @@ module ROM
 		end
 	end
 	
+	# Marks resource actions as defaults
 	class DefaultAction < Attribute
 	
 	end
