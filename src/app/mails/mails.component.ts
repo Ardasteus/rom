@@ -39,6 +39,10 @@ export class MailsComponent implements OnInit {
       }
     };
   }
+
+  OpenMail(elem){
+    console.log(elem);
+  }
   constructor() { }
 
   ngOnInit() {

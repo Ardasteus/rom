@@ -24,6 +24,7 @@
     background-color: #ffffff;
     border: 1px solid #707070;
     padding-left: 20px;
+    cursor: pointer;
 }
 .mail img{
     margin-right: 20px;
