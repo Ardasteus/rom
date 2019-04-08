@@ -7,7 +7,7 @@ module ROM
     # @param [Boolean] https Indicates if HTTPS is turned on
     # @param [String] cert Certification location, used for HTTPS
     # @param [String] redirect Location where to redirect all requests, if empty then no redirect
-    def initialize(tcp_server, job_pool, https = false, cert = "", redirect = "")
+    def initialize(api_resolver, tcp_server, job_pool, https = false, cert = "", redirect = "")
       if !https
         @server = tcp_server
       else
@@ -24,6 +24,7 @@ module ROM
         @server = OpenSSL::SSL::SSLServer.new tcp_server, ctx
 				@server.start_immediately = true
       end
+      @api_resolver = api_resolver
       @job_pool = job_pool
       @redirect = redirect
     end
@@ -31,7 +32,7 @@ module ROM
     # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
     def job_task
       loop do
-        respond_job = HTTPRespondJob.new(@server.accept, @redirect)
+        respond_job = HTTPRespondJob.new(@api_resolver, @server.accept, @redirect)
         @job_pool.add_job(respond_job)
       end
     end

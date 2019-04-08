@@ -246,7 +246,7 @@ module ROM
 				from 'http_jobs' do
 					files 'http_job_pool', 'http_listener_job', 'http_respond_job'
 				end
-				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service', 'status_code'
+				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service', 'httpapi_resolver', 'status_code'
 			end
 		end
 		

@@ -19,6 +19,7 @@ module ROM
 			@itc.register(HTTPConfig)
 			@itc.register(HTTPService)
 			@itc.register(ApiGateway)
+			@itc.register(HTTPAPIResolver)
 			
 			@itc.load(ROM::API)
 			
