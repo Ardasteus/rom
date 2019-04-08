@@ -38,7 +38,7 @@ module ROM
     end
 
     def [](header)
-      header[header]
+      @headers[header]
     end
   end
 end
