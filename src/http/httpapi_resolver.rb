@@ -3,6 +3,7 @@ module ROM
     include Component
     def initialize(itc)
       @gateway = itc.lookup(ApiGateway).first
+      @serializers = itc.lookup(Serializer)
     end
 
     def resolve(http_request)
@@ -17,11 +18,10 @@ module ROM
           plan = @gateway.plan(*path)
           plan = @gateway.plan(*path.push(:fetch)) unless plan != nil
           value = plan.run()
-          if http_request[:accepts] == "application/json"
-            json_string = JSON.generate(value.to_object)
-            http_content = HTTPContent.new(StringIO.new(json_string), :content_type => "application/json" ,:content_length => json_string.length)
-            response = HTTPResponse.new(StatusCode::OK, http_content)
-          end
+          serializer = @serializers.select{|srl| srl.is_content_type(request.headers[:accepts])}.first
+          response_content = serializer.from_object(value)
+          http_content = HTTPContent.new(response_content, :content_type => request.headers[:accepts])
+          response = HTTPResponse.new(StatusCode::OK, http_content)
         rescue Exception => ex
         msg = ex.message
         #http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
@@ -34,14 +34,14 @@ module ROM
           plan = @gateway.plan(*path)
           plan = @gateway.plan(*path.push(:create)) unless plan != nil
           type = plan.signature.return_type
-          if http_request[:content_type] == "application/json"
-            value = JSON.parse(request.stream)
-            value = type.from_object(value)
-            plan.run(value)
-            json_string = JSON.generate(value.to_object)
-            http_content = HTTPContent.new(StringIO.new(json_string), :content_type => "application/json" ,:content_length => json_string.length)
-            response = HTTPResponse.new(StatusCode::OK, http_content)
-          end
+          serializer = @serializers.select{|srl| srl.is_content_type(request.headers[:content_type])}.first
+          value = serializer.to_object(request.stream)
+          value = type.from_object(value)
+          plan.run(value)
+          serializer = @serializers.select{|srl| srl.is_content_type(request.headers[:accepts])}.first
+          response_content = serializer.from_object(value)
+          http_content = HTTPContent.new(response_content, :content_type => request.headers[:accepts])
+          response = HTTPResponse.new(StatusCode::OK, http_content)
         end
       end
       return response

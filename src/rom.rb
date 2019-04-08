@@ -247,6 +247,10 @@ module ROM
 					files 'http_job_pool', 'http_listener_job', 'http_respond_job'
 				end
 				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service', 'httpapi_resolver', 'status_code'
+      end
+
+			from 'serializers' do
+				files 'serializer', 'json_serializer'
 			end
 		end
 		
