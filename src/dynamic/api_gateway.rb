@@ -197,8 +197,10 @@ module ROM
 				elsif @modules.has_key?(p)
 					return @modules[p] if path.length == 0
 					@modules[p].resolve(*path)
-				else
+				elsif @def != nil
 					WrappedResourceAction.new(@def, p)
+				else
+					return nil
 				end
 			end
 			
