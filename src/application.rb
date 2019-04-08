@@ -21,7 +21,9 @@ module ROM
 			@itc.register(ApiGateway)
 			@itc.register(HTTPAPIResolver)
 			@itc.register(JSONSerializer)
-			
+			@itc.register(GetMethod)
+			@itc.register(PostMethod)
+
 			@itc.load(ROM::API)
 			
 			# TODO: Add all interconnect imports

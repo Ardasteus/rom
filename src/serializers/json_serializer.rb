@@ -1,6 +1,11 @@
 module ROM
   class JSONSerializer < Serializer
 
+    def initialize(itc)
+      super(itc)
+      @content_types = ['application/json']
+    end
+
     def to_object(stream)
       obj = JSON.parse(stream)
       return obj

@@ -22,11 +22,6 @@ module ROM
     def job_task
       if @redirect == nil
         http_response = @resolver.resolve(@http_request)
-        if http_response == nil
-          msg = "Cool and good"
-          http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
-          http_response = HTTPResponse.new(ROM::StatusCode::OK, http_content)
-        end
       else
         http_content = HTTPContent.new(nil , :location => "#{@redirect}#{@http_request.path}")
         http_response = HTTPResponse.new(ROM::StatusCode::MOVED_PERMANENTLY, http_content)

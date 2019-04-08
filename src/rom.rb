@@ -245,7 +245,12 @@ module ROM
 			from 'http' do
 				from 'http_jobs' do
 					files 'http_job_pool', 'http_listener_job', 'http_respond_job'
-				end
+        end
+
+        from 'http_method_handlers' do
+					files 'http_method', 'get_method', 'post_method'
+        end
+
 				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service', 'httpapi_resolver', 'status_code'
       end
 
