@@ -21,8 +21,7 @@ module ROM
             http_content = ObjectContent.new(value, output_serializer)
             response = HTTPResponse.new(StatusCode::CREATED, http_content)
           rescue Exception => ex
-            http_content = HTTPContent.new(nil)
-            response = HTTPResponse.new(StatusCode::NOT_FOUND, http_content)
+            response = HTTPResponse.new(StatusCode::NOT_FOUND)
           ensure
             return response
           end

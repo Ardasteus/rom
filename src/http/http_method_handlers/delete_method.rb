@@ -13,11 +13,9 @@ module ROM
           begin
             plan = @gateway.plan(*path.push(:delete))
             plan.run()
-            http_content = HTTPContent.new(nil)
-            response = HTTPResponse.new(StatusCode::NO_CONTENT, http_content)
+            response = HTTPResponse.new(StatusCode::NO_CONTENT)
           rescue Exception => ex
-            http_content = HTTPContent.new(nil)
-            response = HTTPResponse.new(StatusCode::NOT_FOUND, http_content)
+            response = HTTPResponse.new(StatusCode::NOT_FOUND)
           ensure
             return response
           end
