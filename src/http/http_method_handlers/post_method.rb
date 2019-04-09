@@ -18,8 +18,7 @@ module ROM
               plan = @gateway.plan(*path.push(:create))
             end
             value = run_plan(plan, request, input_serializer)
-            response_content = output_serializer.from_object(value)
-            http_content = HTTPContent.new(response_content, :content_type => request[:accepts])
+            http_content = ObjectContent.new(value, output_serializer)
             response = HTTPResponse.new(StatusCode::CREATED, http_content)
           rescue Exception => ex
             http_content = HTTPContent.new(nil)

@@ -1,7 +1,10 @@
 module ROM
   module DataSerializers
     class JSONSerializer < Serializer
-
+			def type
+				@content_types.first
+			end
+			
       def initialize(itc)
         super(itc)
         @content_types = ['application/json']
@@ -14,7 +17,7 @@ module ROM
 
       def from_object(obj)
         json_string = JSON.generate(obj)
-        return json_string
+        return StringIO.new(json_string)
       end
     end
   end

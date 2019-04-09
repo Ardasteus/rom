@@ -6,6 +6,7 @@ module ROM
 
         def initialize(itc)
           @itx = itc
+					@gateway = itc.fetch(ApiGateway)
         end
 
         def resolve(http_request, input_serializer, output_serializer)

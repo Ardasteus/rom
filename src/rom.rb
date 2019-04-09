@@ -251,7 +251,7 @@ module ROM
 					files 'http_method', 'get_method', 'post_method'
         end
 
-				files 'http_content', 'http_request', 'http_response', 'http_config', 'http_service', 'httpapi_resolver', 'status_code'
+				files 'http_content', 'object_content', 'http_request', 'http_response', 'http_config', 'http_service', 'httpapi_resolver', 'status_code'
       end
 
 			from 'serializers' do
