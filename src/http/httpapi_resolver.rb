@@ -16,18 +16,18 @@ module ROM
     def resolve(http_request)
       request = http_request
 
-      method = @http_methods.select{|mtd| mtd.is_name(request.method)}.first
-
-      if method != nil
+      begin
+        method = @http_methods.select{|mtd| mtd.is_name(request.method)}.first
+        raise("Method '#{request.method}' is not supported !") if method == nil
         input_serializer = @serializers.select{|srl| srl.is_content_type(request[:content_type])}.first
         output_serializer = @serializers.select{|srl| srl.is_content_type(request[:accepts])}.first
         response = method.resolve(request, input_serializer, output_serializer)
-      else
+      rescue
         http_content = HTTPContent.new(nil)
         response = HTTPResponse.new(StatusCode::BAD_REQUEST, http_content)
+      ensure
+        return response
       end
-
-      return response
     end
   end
 end

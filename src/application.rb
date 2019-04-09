@@ -23,6 +23,8 @@ module ROM
 			@itc.register(JSONSerializer)
 			@itc.register(GetMethod)
 			@itc.register(PostMethod)
+			@itc.register(DeleteMethod)
+			@itc.register(PutMethod)
 
 			@itc.load(ROM::API)
 			
