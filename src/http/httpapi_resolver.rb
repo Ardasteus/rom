@@ -3,7 +3,8 @@ module ROM
     class HTTPAPIResolver
       include Component
       def initialize(itc)
-        @gateway = itc.lookup(ApiGateway).first
+        @itc = itc
+        @gateway = itc.fetch(ApiGateway)
         @serializers = itc.lookup(DataSerializers::Serializer)
         itc.hook(DataSerializers::Serializer) do |serializer|
           @serializers.push(serializer)
@@ -22,6 +23,7 @@ module ROM
           raise("Method '#{request.method}' is not supported !") if method == nil
           input_serializer = @serializers.select{|srl| srl.is_content_type(request[:content_type])}.first
           output_serializer = @serializers.select{|srl| srl.is_content_type(request[:accepts])}.first
+          output_serializer = (output_serializer or @itc.fetch(DataSerializers::JSONSerializer))
           response = method.resolve(request, input_serializer, output_serializer)
         rescue
           http_content = HTTPContent.new(nil)

@@ -30,9 +30,9 @@ module ROM
       def initialize(io)
         @io = io
         @method, @path, @version = io.readline.split
-        @query = @path.split('?')[1] if @path.include('?')
-        @query = parse_query(@query)
-        @fragment = @path.split('#')[1] if @path.include('#')
+        @query = @path.split('?')[1] if @path.include?('?')
+        @query = parse_query((@query or ''))
+        @fragment = @path.split('#')[1] if @path.include?('#')
         @path = @path.split('?').first
         parse_headers(io)
       end

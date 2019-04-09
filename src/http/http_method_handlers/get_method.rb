@@ -10,7 +10,6 @@ module ROM
         def resolve(http_request, input_serializer, output_serializer)
           request = http_request
           path = format_path(request.path)
-          raise("This output type: '#{request[:accepts]}' is not supported !") if output_serializer == nil
           begin
             begin
               plan = @gateway.plan(*path)

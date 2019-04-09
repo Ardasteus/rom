@@ -11,7 +11,6 @@ module ROM
           request = http_request
           path = format_path(request.path)
           raise("This input type: '#{request[:content_type]}' is not supported !") if input_serializer == nil
-          raise("This output type: '#{request[:accepts]}' is not supported !") if output_serializer == nil
           begin
             begin
               plan = @gateway.plan(*path)
