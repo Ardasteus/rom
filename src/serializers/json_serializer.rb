@@ -1,19 +1,21 @@
 module ROM
-  class JSONSerializer < Serializer
+  module DataSerializers
+    class JSONSerializer < Serializer
 
-    def initialize(itc)
-      super(itc)
-      @content_types = ['application/json']
-    end
+      def initialize(itc)
+        super(itc)
+        @content_types = ['application/json']
+      end
 
-    def to_object(stream)
-      obj = JSON.parse(stream)
-      return obj
-    end
+      def to_object(stream)
+        obj = JSON.parse(stream)
+        return obj
+      end
 
-    def from_object(obj)
-      json_string = JSON.generate(obj)
-      return json_string
+      def from_object(obj)
+        json_string = JSON.generate(obj)
+        return json_string
+      end
     end
   end
 end

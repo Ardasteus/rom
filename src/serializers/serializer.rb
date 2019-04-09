@@ -1,22 +1,24 @@
 module ROM
-  class Serializer
-  include Component
+  module DataSerializers
+    class Serializer
+    include Component
 
-    def initialize(itc)
-      @itc = itc
-      @content_types = []
-    end
+      def initialize(itc)
+        @itc = itc
+        @content_types = []
+      end
 
-    def to_object(stream)
+      def to_object(stream)
 
-    end
+      end
 
-    def from_object(obj)
+      def from_object(obj)
 
-    end
+      end
 
-    def is_content_type(content_types)
-      @content_types.include?(content_types)
+      def is_content_type(content_types)
+        @content_types.include?(content_types)
+      end
     end
   end
 end
