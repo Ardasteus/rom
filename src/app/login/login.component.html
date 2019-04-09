@@ -1,8 +1,10 @@
-<div class="Form">
-    <label for="uname"><b>Username</b></label>
-    <input name="uname" type="text" placeholder="username" required>
-
-    <label for="pass"><b>Password</b></label>
-    <input name="pass" type="password" placeholder="heslo" required>
+<div class="up-spacer"></div>
+<div class="login">
+    <form class="login-form" (submit)="Submit()">
+        <input name="uname" type="text" placeholder="username" required>
+        <input name="pass" type="password" placeholder="heslo" required><br>
+        <button>Login</button>
+    </form>
 </div>
+
 <!--<router-outlet></router-outlet>-->

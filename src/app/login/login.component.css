@@ -1,9 +1,26 @@
 a:hover {
     text-decoration: underline;
 }
-.form{
-    display: block;
+.login{
+    width: 400px;
+    position: relative;
+    background: #FFF;
+    text-align: center;
+    margin: 0 auto 100px;
+    padding: 45px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 input[type=text], input[type=password]{
     padding: 6px;
+    margin: 0 auto;
+    font-size: 25px;
+    height: 25px;
+    margin-bottom: 15px;
+}
+.up-spacer{
+    height: 25%;
+}
+button{
+    height: 30px;
+    
 }
