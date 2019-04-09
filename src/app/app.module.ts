@@ -14,9 +14,6 @@ import { SentComponent } from './sent/sent.component';
 import { SpamComponent } from './spam/spam.component';
 import { MailsComponent } from './mails/mails.component';
 
-import { AuthService } from 'angularx-social-login'
-import { getAuthServiceConfigs } from '../socialConfig';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,15 +26,13 @@ import { getAuthServiceConfigs } from '../socialConfig';
     FolderComponent,
     SentComponent,
     SpamComponent,
-    MailsComponent,
-    AuthService
+    MailsComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    AuthService
+    AppRoutingModule
   ],
-  providers: [{provide: getAuthServiceConfigs, useFactory: getAuthServiceConfigs}],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
