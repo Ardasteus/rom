@@ -31,20 +31,21 @@ module ROM
 			def create_headers(content, headers)
 				hdrs = {}
 				
-				content.headers.each_pair { |key, value| hdrs[header_key(key)] = value } unless content == nil
+				content.headers.each_pair { |key, value| hdrs[key] = value } unless content == nil
 				
 				headers.each_pair do |key, value|
-					hdrs[header_key(key)] = value
+					hdrs[key] = value
 				end
 				
-				hdrs["content-length"] = 0 if hdrs["content-length"] == nil
+				hdrs[:content_length] = 0 unless hdrs.has_key?(:content_length)
+				hdrs[:server] = "Ruby on Mails v#{ROM::VERSION}" unless hdrs.has_key?(:server)
 				return hdrs
 			end
 			
 			# Transforms the header back from symbol to a string
 			# @param [symbol] header Header to transform
 			def header_key(header)
-				header.to_s.gsub("_", "-")
+				header.to_s.split('_').collect(&:capitalize).join('-')
 			end
 			
 			# Creates a string from the whole response
@@ -52,7 +53,7 @@ module ROM
 				response = "HTTP/1.1 #{@code}#{EOL}"
 				
 				@headers.each_pair do |key, value|
-					response += key + ": " + value.to_s + EOL
+					response += header_key(key) + ": " + value.to_s + EOL
 				end
 				response += EOL
 				response += @content.stream.read unless @content&.stream == nil
