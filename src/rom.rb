@@ -227,7 +227,7 @@ module ROM
 		
 		group :core, :want => :gems do
 			from 'diagnostics' do
-				files 'logger', 'short_formatter', 'text_logger'
+				files 'logger', 'short_formatter', 'text_logger', 'log_config', 'log_manager'
 			end
 			
 			from 'data' do
