@@ -10,6 +10,8 @@ module ROM
 			end
 
 			# Instantiates the {ROM::HTTPContent} class
+			# @param [Stream] io Content
+			# @param [Hash] headers Optional headers
 			def initialize(io, **headers)
 				@io = io
 				@headers = headers

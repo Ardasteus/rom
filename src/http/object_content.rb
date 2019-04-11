@@ -3,6 +3,11 @@
 module ROM
 	module HTTP
 		class ObjectContent < HTTPContent
+
+			# Instantiates the {ROM::HTTPContent} class
+			# @param [Object] obj Object used to create the content
+			# @param [ROM::DataSerializers] ser Serializer to serialize the object with
+			# @param [Hash] headers Optional headers
 			def initialize(obj, ser, **headers)
 				@obj = obj
 				@ser = ser

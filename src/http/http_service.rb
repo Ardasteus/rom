@@ -2,7 +2,7 @@ module ROM
   module HTTP
     class HTTPService < ROM::Service
 
-      # Instantiates the {HTTPService} class
+      # Instantiates the {ROM::HTTP::HTTPService} class
       # @param [Interconnect] itc Interconnect
       def initialize(itc)
         super(itc, "HTTP Service", "Magic")
@@ -29,6 +29,7 @@ module ROM
       end
 
       # Transforms HTTP address to HTTPS one
+      # @param [String] address Address to transform
       def transform_address(address)
         transformed = address
         if transformed.include? "http"

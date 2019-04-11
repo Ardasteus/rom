@@ -11,6 +11,8 @@ module ROM
       end
 
       # Instantiates the {ROM::HTTPResponseJob} class
+      # @param [ROM::HTTP::HTTPAPIResolver] resolver HTTP-API resolver
+      # @param [Client] client Client connection stream
       # @param [String] redirect Location where to redirect all requests, if empty then no redirect
       def initialize(resolver, client, redirect = "")
         @client = client

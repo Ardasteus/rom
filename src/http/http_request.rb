@@ -50,6 +50,8 @@ module ROM
         end
       end
 
+      # Parses the query into a hash containing all queries
+      # @param [String] query Query to parse
       def parse_query(query)
         ret = {}
 

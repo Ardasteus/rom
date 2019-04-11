@@ -3,10 +3,11 @@ module ROM
     class HTTPListenerJob < ROM::Job
 
       # Instantiates the {ROM::HTTPListenerJob} class
+      # @param [ROM::HTTP::HTTPAPIResolver] api_resolver HTTP-API resolver
       # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
       # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
       # @param [Boolean] https Indicates if HTTPS is turned on
-      # @param [String] cert Certification location, used for HTTPS
+      # @param [String] cert Certification location
       # @param [String] redirect Location where to redirect all requests, if empty then no redirect
       def initialize(api_resolver, tcp_server, job_pool, https = false, cert = "", redirect = "")
         if !https

@@ -2,6 +2,9 @@ module ROM
   module HTTP
     class HTTPAPIResolver
       include Component
+
+      # Instantiates the {ROM::HTTP::HTTPAPIResolver} class
+      # @param [ROM::Interconnect] itc Interconnect
       def initialize(itc)
         @itc = itc
         @gateway = itc.fetch(ApiGateway)
@@ -15,6 +18,9 @@ module ROM
         end
       end
 
+      # Resolves the given http request, fetching the correct {ROM::HTTP::Methods::HTTPMethod} and input/output {ROM::DataSerializers::Serializer} based on the http request headers
+      # @param [ROM::HTTP::HTTPRequest] http_request HTTP request to resolve
+      # @return [ROM:HTTP::HTTPResponse]
       def resolve(http_request)
         request = http_request
 

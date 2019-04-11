@@ -10,6 +10,9 @@ module ROM
         @note
       end
 
+      # Instantiates the {ROM::HTTP::StatusCode} class
+      # @param [Integer] code Status code number
+      # @param [String] text Text of the status code
       def initialize(code, text)
         @code = code
         @note = text
