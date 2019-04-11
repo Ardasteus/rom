@@ -13,6 +13,8 @@ import { FolderComponent } from './folder/folder.component';
 import { SentComponent } from './sent/sent.component';
 import { SpamComponent } from './spam/spam.component';
 import { MailsComponent } from './mails/mails.component';
+import { HeaderComponent } from './header/header.component';
+import { MailBodyComponent } from './mail-body/mail-body.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { MailsComponent } from './mails/mails.component';
     FolderComponent,
     SentComponent,
     SpamComponent,
-    MailsComponent
+    MailsComponent,
+    HeaderComponent,
+    MailBodyComponent
   ],
   imports: [
     BrowserModule,
