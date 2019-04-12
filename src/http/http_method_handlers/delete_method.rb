@@ -1,6 +1,8 @@
 module ROM
   module HTTP
     module Methods
+
+      # Class that handles all DELETE HTTP requests
       class DeleteMethod < HTTPMethod
 
         # Instantiates the {ROM::HTTP::Methods::HTTPMethod} class

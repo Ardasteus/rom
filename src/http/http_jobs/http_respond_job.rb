@@ -1,11 +1,17 @@
 module ROM
   module HTTP
+
+    # [ROM::Job] that either redirects the client (if told to) or pases the client's request to [HTTPApiResolver]
     class HTTPRespondJob < ROM::Job
 
+      # HTTP requests that this job is handling
+      # @return [HTTPRequest]
       def http_request
         @http_request
       end
 
+      # Client stream
+      # @return [IO]
       def client
         @client
       end

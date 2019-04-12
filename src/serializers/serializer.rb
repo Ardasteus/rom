@@ -1,5 +1,7 @@
 module ROM
   module DataSerializers
+
+    #Base class for all data serializers
     class Serializer
     include Component
 

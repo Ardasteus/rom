@@ -2,6 +2,8 @@
 
 module ROM
 	module HTTP
+
+		# {HTTPContent} that accepts a raw object and serializes it
 		class ObjectContent < HTTPContent
 
 			# Instantiates the {ROM::HTTPContent} class

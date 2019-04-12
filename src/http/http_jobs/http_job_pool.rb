@@ -1,5 +1,7 @@
 module ROM
 	module HTTP
+
+		# Custom job pool to hold http jobs
 		class HTTPJobPool < ROM::JobPool
 
 			# Totally useful override

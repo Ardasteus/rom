@@ -1,5 +1,7 @@
 module ROM
   module HTTP
+
+    # Config used to initiliaze all HTTP servers with the given parameters in a config file
     class HTTPConfig < Config
       # Instantiates the {HTTPConfig} class
       # @param [Interconnect] itc Interconnect
@@ -7,6 +9,8 @@ module ROM
         super("http", ConfigModel)
       end
 
+      # Bound data
+      # @return [BindingModel]
       def bind
         @bind
       end
@@ -17,6 +21,7 @@ module ROM
         @bind = config.binding
       end
 
+      # Model defining the data binding
       class BindingModel < Model
         property! :address, String
         property :port, Integer, 80

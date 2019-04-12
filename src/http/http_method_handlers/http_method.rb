@@ -1,6 +1,8 @@
 module ROM
   module HTTP
     module Methods
+
+      # Base class for all HTTP method handlers
       class HTTPMethod
         include Component
 
@@ -18,6 +20,8 @@ module ROM
         def resolve(http_request, input_serializer, output_serializer)
         end
 
+        # Checks if the given method is corresponding to the method of [HTTPMethod] class
+        # @return [Boolean]
         def is_name(method_name)
           @name == method_name
         end

@@ -1,26 +1,41 @@
 module ROM
   module HTTP
+
+    # Class that encapsulates a HTTP request
     class HTTPRequest
+
+      # Method of the HTTP request
+      # @return [String]
       def method
         @method
       end
 
+      # Path of the HTTP request
+      # @return [String]
       def path
         @path
       end
 
+      # HTTP version of the request
+      # @return [String]
       def version
         @version
       end
 
+      # Hash of all queries
+      # @return [Hash]
       def query
         @query
       end
 
+      # Fragment of the HTTP request
+      # @return [String]
       def fragment
         @fragment
       end
 
+      # Content of the HTTP request
+      # @return [IO]
       def stream
         @io
       end
@@ -63,6 +78,8 @@ module ROM
         return ret
       end
 
+      # Gets the header specified by its name
+      # @param [Symbol] header Symbol defining the name of the header
       def [](header)
         @headers[header]
       end

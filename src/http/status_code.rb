@@ -1,11 +1,17 @@
 module ROM
   module HTTP
+
+    # Class encapsuling the number and text of the HTTP response status codes. Used to create constants
     class StatusCode
 
+      # Status code number
+      # @return [Integer]
       def code
         @code
       end
 
+      # Text of the status code
+      # @return [String]
       def note
         @note
       end
@@ -18,6 +24,7 @@ module ROM
         @note = text
       end
 
+      # Converts the status code into a string format
       def to_s
         "#{@code} #{@note}"
       end

@@ -1,6 +1,8 @@
 module ROM
   module HTTP
     module Methods
+
+      # Class that handles all POST HTTP requests
       class PostMethod < HTTPMethod
 
         # Instantiates the {ROM::HTTP::Methods::PostMethod} class

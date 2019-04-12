@@ -1,7 +1,12 @@
 module ROM
   module DataSerializers
+
+    # JSON Serializer/Deserializer class
     class JSONSerializer < Serializer
-			def type
+			
+      # Preffered content type 
+      # @return [String]
+      def type
 				@content_types.first
       end
 

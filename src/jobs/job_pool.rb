@@ -1,8 +1,12 @@
 require 'thread'
 
 module ROM
+
+  # Holds [Job] classes in either a collection of currently running jobs or in a queue
   class JobPool
 
+    # Count of currently running jobs
+    # @return [integer]
     def count
       @running.length
     end

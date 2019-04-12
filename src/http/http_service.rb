@@ -1,5 +1,7 @@
 module ROM
   module HTTP
+
+    # Service that uses [HTTPConfig] to create HTTP servers
     class HTTPService < ROM::Service
 
       # Instantiates the {ROM::HTTP::HTTPService} class

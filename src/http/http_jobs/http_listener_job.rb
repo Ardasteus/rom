@@ -1,5 +1,7 @@
 module ROM
   module HTTP
+
+    # [ROM::Job] that listens and accepts clients and then creates a [HTTPRespondJob] to resolve the client's request
     class HTTPListenerJob < ROM::Job
 
       # Instantiates the {ROM::HTTPListenerJob} class

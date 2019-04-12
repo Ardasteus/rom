@@ -1,5 +1,7 @@
 module ROM
   module HTTP
+
+    # Class that handles the routing of HTTP calls into API calls
     class HTTPAPIResolver
       include Component
 

@@ -1,6 +1,8 @@
 module ROM
   module HTTP
     module Methods
+
+      # Class that handles all GET HTTP requests
       class GetMethod < HTTPMethod
 
         # Instantiates the {ROM::HTTP::Methods::GetMethod} class

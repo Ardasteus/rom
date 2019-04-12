@@ -2,9 +2,11 @@ module ROM
   module HTTP
     module Methods
 
-      # Instantiates the {ROM::HTTP::Methods::PutMethod} class
-      # @param [ROM::Interconnect] itc Interconnect
+      # Class that handles all PUT HTTP requests
       class PutMethod < HTTPMethod
+
+        # Instantiates the {ROM::HTTP::Methods::PutMethod} class
+        # @param [ROM::Interconnect] itc Interconnect
         def initialize(itc)
           super(itc)
           @name = "PUT"

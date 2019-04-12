@@ -1,16 +1,25 @@
 module ROM
 	module HTTP
+
+		# Class that encapsulates a HTTP response
 		class HTTPResponse
+			# End of line constant
 			EOL = "\r\n"
 			
+			# Status code of the HTTP response
+			# @return [StatusCode]
 			def code
 				@code
 			end
 			
+			# Headers of the HTTP response
+			# @return [Hash]
 			def headers
 				@headers
 			end
 			
+			# Content of the HTTP response
+			# @return [HTTPContent]
 			def content
 				@content
 			end
@@ -49,6 +58,7 @@ module ROM
 			end
 			
 			# Creates a string from the whole response
+			# @return [String]
 			def stringify
 				response = "HTTP/1.1 #{@code}#{EOL}"
 				
