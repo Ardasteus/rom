@@ -60,7 +60,7 @@ module ROM
     # Called when {ROM::Job} failed executing its task
     # @param [ROM::Job] job Job that raised the event
     def handle_failed(job)
-			@log&.error("Job '#{job.name}' (#{job.class.name}) failed!", job.exception)
+			@log&.error("Job #{(job.name == nil ? job.class.name : "'#{job.name}' (#{job.class.name})")} failed!", job.exception)
     end
   end
 end

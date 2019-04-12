@@ -17,7 +17,7 @@ module ROM
 		end
 		
     # Instantiates the {ROM::Job} class
-    def initialize(nm)
+    def initialize(nm = nil)
 			@name = nm
 			@state = :not_started
     end
