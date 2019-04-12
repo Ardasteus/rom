@@ -35,7 +35,7 @@ module ROM
 		
 		describe '#load' do
 			it 'searches for components in a module' do
-				itc = Interconnect.new(TextLogger.new(ShortFormatter.new, StringIO.new))
+				itc = Interconnect.new
 				
 				[Extension::Right, Extension::Nested::SecondaryRight, Extension::Wrong].each do |i|
 					allow(i).to receive(:register).and_call_original
@@ -53,7 +53,7 @@ module ROM
 		
 		describe '#lookup' do
 			it 'looks up all components of given type' do
-				itc = Interconnect.new(TextLogger.new(ShortFormatter.new, StringIO.new))
+				itc = Interconnect.new
 				itc.load(Extension)
 				expect(itc.lookup(Component)).to contain_exactly(Extension::Right, Extension::Nested::SecondaryRight)
 				expect(itc.lookup(Extension::Type)).to contain_exactly(Extension::Nested::SecondaryRight)

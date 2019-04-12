@@ -12,13 +12,14 @@ module ROM
     # Instantiates the {ROM::HTTPResponseJob} class
     # @param [String] redirect Location where to redirect all requests, if empty then no redirect
     def initialize(client, redirect = "")
+			super('HTTP connection handler job')
       @client = client
       @http_request = HTTPRequest.new(client)
       @redirect = redirect
     end
 
     # Responds to the client, if redirect is turned on it redirects him.
-    def job_task
+    def job_task(log)
       if @redirect == nil
         msg = "Cool and good"
         http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)

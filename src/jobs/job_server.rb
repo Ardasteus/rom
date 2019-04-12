@@ -4,7 +4,8 @@ module ROM
     # Instantiates the {ROM::JobServer} class
     # @param [ROM::Interconnect] itc Interconnect
     def initialize(itc)
-      @job_pools = {}
+			@itc = itc
+			@job_pools = {}
     end
 
     # @overload add_job_pool(key, capacity)
@@ -19,7 +20,8 @@ module ROM
       job_pool = JobPool.new(job_pool) if job_pool.is_a?(Integer)
       if self[key] == nil
         @job_pools[key] = job_pool
-      end
+			end
+			job_pool.logger = @itc.fetch(LogServer)
     end
 
     # Returns {ROM::JobPool} from the server

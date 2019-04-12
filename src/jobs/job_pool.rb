@@ -2,10 +2,17 @@ require 'thread'
 
 module ROM
   class JobPool
-
     def count
       @running.length
-    end
+		end
+		
+		def logger
+			@log
+		end
+		
+		def logger=(log)
+			@log = log
+		end
 
     # Instantiates the {ROM::JobPool} class
     # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
@@ -26,7 +33,7 @@ module ROM
       else
         job.attach_job_pool(self)
         @running.add(job)
-        job.run
+        job.run((@log or BufferLogger.new))
       end
     end
 
@@ -53,6 +60,7 @@ module ROM
     # Called when {ROM::Job} failed executing its task
     # @param [ROM::Job] job Job that raised the event
     def handle_failed(job)
+			@log&.error("Job '#{job.name}' (#{job.class.name}) failed!", job.exception)
     end
   end
 end

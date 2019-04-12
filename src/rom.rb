@@ -15,7 +15,7 @@ module ROM
 			@ctx   = root
 			t = Time.new
 			instance_eval(&block) if block != nil
-			puts "Imported in #{(Time.now - t).round(2)}!" if BENCHMARK
+			puts "Ready in #{(Time.now - t).round(2)}!" if BENCHMARK
 		end
 		
 		# Imports file
@@ -31,7 +31,7 @@ module ROM
 					end
 					next con
 				end
-				puts "Linking #{k} to '#{path(file)}'..."
+				# puts "Linking #{k} to '#{path(file)}'..."
 				mod.autoload(kl.to_sym, path(file)) 
 			end
 		end
@@ -56,11 +56,12 @@ module ROM
 		private :path
 	end
 	
+	# noinspection RubyStringKeysInHashInspection, RubyLiteralArrayInspection
 	MAP = {
 		'data' => {
 			'attribute' => 'ROM::Attribute' ,
 			'model' => [ 'ROM::Model', 'ROM::ModelProperty' ],
-			'types' => [ 
+			'types' => [
 				'ROM::Types::Type',
 				'ROM::Types::Just',
 				'ROM::Types::Union',
@@ -71,6 +72,7 @@ module ROM
 			]
 		},
 		'diagnostics' => {
+			'buffer_logger' => 'ROM::BufferLogger',
 			'log_server' => 'ROM::LogServer',
 			'logger' => 'ROM::Logger',
 			'short_formatter' => 'ROM::ShortFormatter',
@@ -112,7 +114,7 @@ module ROM
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

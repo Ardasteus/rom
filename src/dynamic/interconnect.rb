@@ -4,19 +4,26 @@ module ROM
 	# Connects components together
 	class Interconnect
 		# Instantiates the {ROM::Interconnect} class
-		# @param [Object] log Logger
-		def initialize()
-			@log = nil
-			@reg = Set.new
+		def initialize
+			@log   = BufferLogger.new
+			@reg   = Set.new
 			@hooks = []
+			
+			hook(LogServer) do |log|
+				if @log.is_a?(BufferLogger)
+					@log.trace('Bound log for interconnect! Flushing buffer logger...')
+					@log.flush(log)
+					@log = log
+				end
+			end
 		end
-
+		
 		# Sets up a hook which is called whenever a new component of a given type is registered
 		# @param [Class] type Type of component to set the hook for
 		# @yield [item] Block of the hook
 		# @yieldparam [Object] item The registered item
 		def hook(type, &block)
-			@log&.trace("Setting interconnect hook for '#{type.name}'...")
+			@log.trace("Setting interconnect hook for '#{type.name}'...")
 			@hooks << { :type => type, :hook => block }
 		end
 		
@@ -34,9 +41,9 @@ module ROM
 		# @param [Class] com Component class
 		# @return [void]
 		def register(com)
-			@log&.trace("Importing '#{com.name}'...")
-			hooks = @hooks.select { |i| com < i[:type] }
-			com.register(self).each do |i| 
+			@log.trace("Importing '#{com.name}'...")
+			hooks = @hooks.select { |i| com <= i[:type] }
+			com.register(self).each do |i|
 				@reg << i
 				hooks.each { |h| h[:hook].call(i) }
 			end
@@ -56,7 +63,7 @@ module ROM
 		def lookup(type)
 			@reg.select { |i| i.is_a?(type) and (not block_given? or yield(i)) }
 		end
-
+		
 		# @overload fetch(type)
 		# 	Gets the first occurrence of a component of the given type
 		# 	@param [Class] type Type to lookup
