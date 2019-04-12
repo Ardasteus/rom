@@ -57,6 +57,7 @@ module ROM
 		# Starts the service
 		def start
 			return unless @status == :not_started
+			@itc.fetch(LogServer).debug("Starting service '#{@name}'...")
 			@status = :starting
 			up
 			@status = :running
@@ -71,6 +72,7 @@ module ROM
 		# Stops the service
 		def stop
 			return unless @status == :running
+			@itc.fetch(LogServer).debug("Stopping server '#{@name}'...")
 			@status = :stopping
 			down
 			@status = :not_started

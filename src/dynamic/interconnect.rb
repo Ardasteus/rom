@@ -5,8 +5,8 @@ module ROM
 	class Interconnect
 		# Instantiates the {ROM::Interconnect} class
 		# @param [Object] log Logger
-		def initialize(log)
-			@log = log
+		def initialize()
+			@log = nil
 			@reg = Set.new
 			@hooks = []
 		end
@@ -16,7 +16,7 @@ module ROM
 		# @yield [item] Block of the hook
 		# @yieldparam [Object] item The registered item
 		def hook(type, &block)
-			@log.trace("Setting interconnect hook for '#{type.name}'...")
+			@log&.trace("Setting interconnect hook for '#{type.name}'...")
 			@hooks << { :type => type, :hook => block }
 		end
 		
@@ -34,7 +34,7 @@ module ROM
 		# @param [Class] com Component class
 		# @return [void]
 		def register(com)
-			@log.trace("Importing '#{com.name}'...")
+			@log&.trace("Importing '#{com.name}'...")
 			hooks = @hooks.select { |i| com < i[:type] }
 			com.register(self).each do |i| 
 				@reg << i
