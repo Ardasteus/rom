@@ -28,11 +28,10 @@ module ROM
             value = run_plan(plan, request, input_serializer)
             http_content = ObjectContent.new(value, output_serializer)
             response = HTTPResponse.new(StatusCode::OK, http_content)
-          rescue Exception => ex
+          rescue
             response = HTTPResponse.new(StatusCode::NOT_FOUND)
-          ensure
-            return response
           end
+          return response
         end
       end
     end

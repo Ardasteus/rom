@@ -72,7 +72,7 @@ module ROM
 
         query.split('&').each do |part|
           key, value = part.split('=')
-          ret[URI::decode(key)] = URI::decode(value)
+          ret[URI::decode_www_form_component(key)] = URI::decode_www_form_component(value)
         end
 
         return ret

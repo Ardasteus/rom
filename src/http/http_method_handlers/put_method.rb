@@ -27,9 +27,8 @@ module ROM
             response = HTTPResponse.new(StatusCode::OK, http_content)
           rescue
             response = HTTPResponse.new(StatusCode::NOT_FOUND)
-          ensure
-            return response
           end
+          return response
         end
       end
     end
