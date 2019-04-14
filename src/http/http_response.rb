@@ -63,7 +63,7 @@ module ROM
 				response = "HTTP/1.1 #{@code}#{EOL}"
 				
 				@headers.each_pair do |key, value|
-          if value.is_a(Array)
+          if value.is_a?(Array)
 						value.each do |val|
 							response += header_key(key) + ": " + val.to_s + EOL
 						end

@@ -94,21 +94,34 @@ module ROM
 		},
 		'http' => {
 			'http_jobs' => {
-				'http_job_pool' => 'ROM::HTTPJobPool',
-				'http_listener_job' => 'ROM::HTTPListenerJob',
-				'http_respond_job' => 'ROM::HTTPRespondJob'
+				'http_job_pool' => 'ROM::HTTP::HTTPJobPool',
+				'http_listener_job' => 'ROM::HTTP::HTTPListenerJob',
+				'http_respond_job' => 'ROM::HTTP::HTTPRespondJob'
 			},
-			'http_config' => 'ROM::HTTPConfig',
-			'http_content' => 'ROM::HTTPContent',
-			'http_request' => 'ROM::HTTPRequest',
-			'http_response' => 'ROM::HTTPResponse',
-			'http_service' => 'ROM::HTTPService',
-			'status_code' => 'ROM::StatusCode'
+			'http_method_handlers' => {
+				'delete_method' => 'ROM::HTTP::Methods::DeleteMethod',
+				'get_method' => 'ROM::HTTP::Methods::GetMethod',
+				'http_method' => 'ROM::HTTP::Methods::HTTPMethod',
+				'post_method' => 'ROM::HTTP::Methods::PostMethod',
+				'put_method' => 'ROM::HTTP::Methods::PutMethod'
+			},
+			'http_config' => 'ROM::HTTP::HTTPConfig',
+			'http_content' => 'ROM::HTTP::HTTPContent',
+			'http_request' => 'ROM::HTTP::HTTPRequest',
+			'http_response' => 'ROM::HTTP::HTTPResponse',
+			'http_service' => 'ROM::HTTP::HTTPService',
+			'httpapi_resolver' => 'ROM::HTTP::HTTPAPIResolver',
+			'object_content' => 'ROM::HTTP::ObjectContent',
+			'status_code' => 'ROM::HTTP::StatusCode'
 		},
 		'jobs' => {
 			'job' => 'ROM::Job',
 			'job_pool' => 'ROM::JobPool',
 			'job_server' => 'ROM::JobServer'
+		},
+		'serializers' => {
+			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
+			'serializer' => 'ROM::DataSerializers::Serializer'
 		},
 		'application' => 'ROM::Application'
 	}
