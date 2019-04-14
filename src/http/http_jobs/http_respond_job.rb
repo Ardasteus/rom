@@ -1,36 +1,44 @@
 module ROM
-  class HTTPRespondJob < ROM::Job
+  module HTTP
 
-    def http_request
-      @http_request
-    end
+    # [ROM::Job] that either redirects the client (if told to) or pases the client's request to [HTTPApiResolver]
+    class HTTPRespondJob < ROM::Job
 
-    def client
-      @client
-    end
-
-    # Instantiates the {ROM::HTTPResponseJob} class
-    # @param [String] redirect Location where to redirect all requests, if empty then no redirect
-    def initialize(client, redirect = "")
-      @client = client
-      @http_request = HTTPRequest.new(client)
-      @redirect = redirect
-    end
-
-    # Responds to the client, if redirect is turned on it redirects him.
-    def job_task
-      if @redirect == nil
-        msg = "Cool and good"
-        http_content = HTTPContent.new(StringIO.new(msg), :content_length => msg.length)
-        http_response = HTTPResponse.new(ROM::StatusCode::OK, http_content)
-      else
-        http_content = HTTPContent.new(nil , :location => "#{@redirect}#{@http_request.path}")
-        http_response = HTTPResponse.new(ROM::StatusCode::MOVED_PERMANENTLY, http_content)
+      # HTTP requests that this job is handling
+      # @return [HTTPRequest]
+      def http_request
+        @http_request
       end
-      resp = http_response.stringify
-      client.write(resp)
-      client.close
-      return http_response
+
+      # Client stream
+      # @return [IO]
+      def client
+        @client
+      end
+
+      # Instantiates the {ROM::HTTPResponseJob} class
+      # @param [ROM::HTTP::HTTPAPIResolver] resolver HTTP-API resolver
+      # @param [Client] client Client connection stream
+      # @param [String] redirect Location where to redirect all requests, if empty then no redirect
+      def initialize(resolver, client, redirect = "")
+        @client = client
+        @http_request = HTTPRequest.new(client)
+        @redirect = redirect
+        @resolver = resolver
+      end
+
+      # Responds to the client, if redirect is turned on it redirects him.
+      def job_task
+        if @redirect == nil
+          http_response = @resolver.resolve(@http_request)
+        else
+          http_response = HTTPResponse.new(ROM::HTTP::StatusCode::MOVED_PERMANENTLY, nil, :location => "#{@redirect}#{@http_request.path}")
+        end
+        return http_response
+      ensure
+        client.write(http_response.stringify)
+        client.close
+      end
     end
   end
 end

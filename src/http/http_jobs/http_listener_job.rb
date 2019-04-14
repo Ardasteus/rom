@@ -1,68 +1,74 @@
 module ROM
-  class HTTPListenerJob < ROM::Job
+  module HTTP
 
-    # Instantiates the {ROM::HTTPListenerJob} class
-    # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
-    # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
-    # @param [Boolean] https Indicates if HTTPS is turned on
-    # @param [String] cert Certification location, used for HTTPS
-    # @param [String] redirect Location where to redirect all requests, if empty then no redirect
-    def initialize(tcp_server, job_pool, https = false, cert = "", redirect = "")
-      if https == false
-        @server = tcp_server
-      else
-        if cert == ""
-          cft = generate_cert
+    # [ROM::Job] that listens and accepts clients and then creates a [HTTPRespondJob] to resolve the client's request
+    class HTTPListenerJob < ROM::Job
+
+      # Instantiates the {ROM::HTTPListenerJob} class
+      # @param [ROM::HTTP::HTTPAPIResolver] api_resolver HTTP-API resolver
+      # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
+      # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
+      # @param [Boolean] https Indicates if HTTPS is turned on
+      # @param [String] cert Certification location
+      # @param [String] redirect Location where to redirect all requests, if empty then no redirect
+      def initialize(api_resolver, tcp_server, job_pool, https = false, cert = "", redirect = "")
+        if !https
+          @server = tcp_server
         else
-          raw = File.read cert
-					cft = OpenSSL::X509::Certificate.new raw
+          if cert == nil
+            cft = generate_cert
+          else
+            raw = File.read cert
+            cft = OpenSSL::X509::Certificate.new raw
+          end
+          ctx = OpenSSL::SSL::SSLContext.new
+          ctx.cert = cft
+          ctx.key = @key
+          ctx.npn_protocols = ['http/1.1']
+          @server = OpenSSL::SSL::SSLServer.new tcp_server, ctx
+          @server.start_immediately = true
         end
-        ctx = OpenSSL::SSL::SSLContext.new
-				ctx.cert = cft
-				ctx.key = @key
-				ctx.npn_protocols = ['http/1.1']
-        @server = OpenSSL::SSL::SSLServer.new tcp_server, ctx
-				@server.start_immediately = true
+        @api_resolver = api_resolver
+        @job_pool = job_pool
+        @redirect = redirect
       end
-      @job_pool = job_pool
-      @redirect = redirect
-    end
 
-    # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
-    def job_task
-      loop do
-        respond_job = HTTPRespondJob.new(@server.accept, @redirect)
-        @job_pool.add_job(respond_job)
+      # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
+      def job_task
+        loop do
+          respond_job = HTTPRespondJob.new(@api_resolver, @server.accept, @redirect)
+          @job_pool.add_job(respond_job)
+        end
       end
-    end
 
-    # Generates a self-signed certificate. Only used when one is not provided.
-    def generate_cert
-      @key = OpenSSL::PKey::RSA.new 2048
-      public_key = @key.public_key
-      subject = "/C=CZ/O=company.com/OU=company.com/CN=localhost/L=Prague/ST=Prague"
+      # Generates a self-signed certificate. Only used when one is not provided.
+      def generate_cert
+        @key = OpenSSL::PKey::RSA.new 2048
+        public_key = @key.public_key
+        subject = "/C=CZ/O=company.com/OU=company.com/CN=localhost/L=Prague/ST=Prague"
 
-      cert = OpenSSL::X509::Certificate.new
-      cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
-      cert.not_before = Time.now
-      cert.not_after = Time.now + 365 * 24 * 60 * 60
-      cert.public_key = public_key
-      cert.serial = 1
-      cert.version = 2
+        cert = OpenSSL::X509::Certificate.new
+        cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
+        cert.not_before = Time.now
+        cert.not_after = Time.now + 365 * 24 * 60 * 60
+        cert.public_key = public_key
+        cert.serial = 1
+        cert.version = 2
 
-      ef = OpenSSL::X509::ExtensionFactory.new(nil, cert)
-      ef.issuer_certificate = cert
-      cert.extensions = [
-				ef.create_extension("basicConstraints","CA:TRUE"),
-				ef.create_extension("keyUsage", "keyEncipherment"),
-				ef.create_extension("subjectKeyIdentifier", "hash"),
-				ef.create_extension("extendedKeyUsage", "serverAuth")
-      ]
-      cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
+        ef = OpenSSL::X509::ExtensionFactory.new(nil, cert)
+        ef.issuer_certificate = cert
+        cert.extensions = [
+          ef.create_extension("basicConstraints","CA:TRUE"),
+          ef.create_extension("keyUsage", "keyEncipherment"),
+          ef.create_extension("subjectKeyIdentifier", "hash"),
+          ef.create_extension("extendedKeyUsage", "serverAuth")
+        ]
+        cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
 
-      cert.sign @key, OpenSSL::Digest::SHA1.new
+        cert.sign @key, OpenSSL::Digest::SHA1.new
 
-      return cert
+        return cert
+      end
     end
   end
 end
