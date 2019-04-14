@@ -18,11 +18,12 @@ module ROM
 			@log = @itc.fetch(LogServer)
 			@log << TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc.register(JobServer)
-			@itc.register(HTTPConfig)
-			@itc.register(HTTPService)
 			@itc.register(ApiGateway)
-			
+
 			@itc.load(ROM::API)
+			@itc.load(ROM::DataSerializers)
+			@itc.load(ROM::HTTP)
+			@itc.load(ROM::HTTP::Methods)
 			
 			# TODO: Add all interconnect imports
 		end

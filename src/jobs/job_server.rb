@@ -1,4 +1,6 @@
 module ROM
+
+  # Class that manages all [JobPool] classes
   class JobServer
     include Component
     # Instantiates the {ROM::JobServer} class

@@ -51,7 +51,7 @@ module ROM
 		# @return [ROM::ApiGateway::ApiPlan] Plan of the API call
 		def plan(*path)
 			ret  = ApiPlan.new
-			last = path.reduce(@root) do |last, part|
+			last = path.collect(&:to_s).reduce(@root) do |last, part|
 				n = nil
 				case last
 					when ResourceModule

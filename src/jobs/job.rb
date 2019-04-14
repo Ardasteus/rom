@@ -1,9 +1,15 @@
 module ROM
+
+  # Class that encapsulates a task that needs to be executed
   class Job
+        # Current state of the job
+        # @return [Symbol]
 		def state
 			@state
 		end
 	
+	    # Return value of the job
+        # @return [Object]
 		def value
 			@value
 		end
@@ -18,8 +24,20 @@ module ROM
 		
     # Instantiates the {ROM::Job} class
     def initialize(nm = nil)
-			@name = nm
-			@state = :not_started
+      @name = nm
+      @state = :not_started
+    end
+
+    # Current state of the job
+    # @return [Symbol]
+    def state
+      @state
+    end
+
+    # Return value of the job
+    # @return [Object]
+    def value
+      @value
     end
 
     # Encapsulates and starts the job, automatically notifies the {ROM::JobPool} at the end
@@ -43,6 +61,8 @@ module ROM
       # pass
     end
 
+    # Blocks the current thread and waits for the job to finish and returns the value
+    # @return [Object]
     def await
       @thread.join if @state == :running
       @value
