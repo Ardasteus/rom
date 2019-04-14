@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mail-body',
@@ -7,7 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MailBodyComponent implements OnInit {
 
-  constructor() { }
+  Back() {
+    this.router.navigate(['/inbox']);
+  }
+
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }

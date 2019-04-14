@@ -1,5 +1,6 @@
 .searchBox{
   background-color: #b22222;
+  padding-bottom: 10px;
 }
 .searchBox input[type=text]{
   font-size: 30px;

@@ -1,0 +1,58 @@
+.control-elements{
+  background-color: #6d6d6d;
+  padding: 10px;
+  color: #D5D5D5;
+  height: 59px;
+}
+.control-elements h1{
+  text-shadow: 1px 1px 2px black;
+}
+.control-elements img, h1{
+  display: inline-block;
+}
+.control-elements img{
+  background-blend-mode: multiply;
+  margin-right: 20px;
+  cursor: pointer;
+  height: 50px;
+  vertical-align: middle;
+}
+.mail{
+  background-color: #FFF;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+.email{
+  width: 100%;
+  height: 100%;
+  background-color: #707070;
+  padding: 20px;
+}
+.sender-img{
+  background-color: #D5D5D5;
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+}
+.mailHeader h2{
+  color: #707070;
+}
+.mailHeader h3{
+  color: #b4b4b4;
+}
+.mailHeader td, .mailHeader td h2, .mailHeader td h3{
+  padding: 0px;
+  margin: 0px;
+}
+.dwlAll {
+  padding-left: 5px;
+}
+.mailBody{
+  background-color: #b4b4b4;
+  width: calc(100vw - 360px);
+  height: calc(100vh - 222px);
+  margin-top: 10px;
+}
+app-header{
+  width: 100%;
+}

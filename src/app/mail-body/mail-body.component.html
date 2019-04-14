@@ -1,4 +1,28 @@
 <app-header></app-header>
-<p>
-  mail-body works!
-</p>
+<div class="control-elements">
+  <img src="../../assets/back.png" (click)="Back()">
+  <img src="../../assets/info.png">
+  <img src="../../assets/trashbin.png">
+  <h1>%Subject%</h1>
+</div>
+<div class="mail">
+  <div class="mailHeader">
+    <table>
+      <tbody>
+        <tr>
+          <td rowspan="2"><div class="sender-img"></div></td>
+          <td><h2>%Sender%</h2></td>
+          <td colspan="2"><h3>%Senders email%</h3></td>
+        </tr>
+      <tr>
+        <td><h2>%x% attachment(s)</h2></td>
+        <td class="sipka"><img src="../../assets/sipka.png"></td>
+        <td class="dwlAll"><h2>Download all</h2></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mailBody">
+
+ </div>
+</div>

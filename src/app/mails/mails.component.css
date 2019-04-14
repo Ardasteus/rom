@@ -1,5 +1,6 @@
 .mailsBody{
-    background-color: #b22222;
+  background-color: #b22222;
+  height: calc(100vh - 59px);
 }
 .mail{
     color: #707070;
@@ -7,6 +8,7 @@
     border: 1px solid #707070;
     padding-left: 20px;
     cursor: pointer;
+  height: 61px;
 }
 .mail img{
     margin-right: 20px;
