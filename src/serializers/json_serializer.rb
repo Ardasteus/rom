@@ -18,7 +18,7 @@ module ROM
       end
 
       # Deserializes a json data stream into a n object
-      # @param [Stream] stream Data stream to deserialize
+      # @param [IO] stream Data stream to deserialize
       def to_object(stream)
         obj = JSON.parse(stream)
         return obj

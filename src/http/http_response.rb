@@ -63,7 +63,13 @@ module ROM
 				response = "HTTP/1.1 #{@code}#{EOL}"
 				
 				@headers.each_pair do |key, value|
-					response += header_key(key) + ": " + value.to_s + EOL
+					if value == Array
+						value.each do |val|
+							response += header_key(key) + ": " + val.to_s + EOL
+						end
+					else
+						response += header_key(key) + ": " + value.to_s + EOL
+					end
 				end
 				response += EOL
 				response += @content.stream.read unless @content&.stream == nil

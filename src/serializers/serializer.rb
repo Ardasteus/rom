@@ -13,7 +13,7 @@ module ROM
       end
 
     # Deserializes a stream of data to an object
-    # @param [Stream] stream Data stream to serialize
+    # @param [IO] stream Data stream to serialize
       def to_object(stream)
 
       end

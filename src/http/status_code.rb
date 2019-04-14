@@ -36,7 +36,10 @@ module ROM
       MOVED_PERMANENTLY   = self.new(301, "Moved Permanently")
       BAD_REQUEST         = self.new(400, "Bad Request")
       NOT_FOUND           = self.new(404, "Not Found")
-      NO_CONTENT           = self.new(204, "No Content")
+      METHOD_NOT_ALLOWED = self.new(405, "Method not allowed")
+      UNSUPPORTED_MEDIA_TYPE = self.new(415, "Unsupported media type")
+      NOT_ACCEPTABLE = self.new(406, "Not acceptable")
+      NO_CONTENT = self.new(204, "No Content")
     end
   end
 end

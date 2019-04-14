@@ -34,10 +34,9 @@ module ROM
         else
           http_response = HTTPResponse.new(ROM::HTTP::StatusCode::MOVED_PERMANENTLY, nil, :location => "#{@redirect}#{@http_request.path}")
         end
-        resp = http_response.stringify
         return http_response
       ensure
-        client.write(resp)
+        client.write(http_response.stringify)
         client.close
       end
     end

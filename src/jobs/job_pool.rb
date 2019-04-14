@@ -6,13 +6,13 @@ module ROM
   class JobPool
 
     # Count of currently running jobs
-    # @return [integer]
+    # @return [Integer]
     def count
       @running.length
     end
 
     # Instantiates the {ROM::JobPool} class
-    # @param [int] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
+    # @param [Integer] capacity Maximum capacity of concurrent running Jobs in the pool, if 0 then not limited
     def initialize(capacity)
       @semaphore = Mutex.new
       @capacity = capacity

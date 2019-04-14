@@ -61,7 +61,14 @@ module ROM
           break if ln.strip.chomp == ''
           header, value = ln.split
           header = header.gsub("_", "-").downcase.to_sym
-          @headers[header] = value
+          case @headers[header]
+          when NilClass
+            @headers[header] = value
+          when String
+            @headers[header] = [@headers[header], value]
+          when Array
+            @headers[header] << value
+          end
         end
       end
 

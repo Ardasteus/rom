@@ -28,14 +28,15 @@ module ROM
 
         begin
           method = @http_methods.select{|mtd| mtd.is_name(request.method)}.first
-          raise("Method '#{request.method}' is not supported !") if method == nil
+          return HTTPResponse.new(StatusCode::METHOD_NOT_ALLOWED) if method == nil
           input_serializer = @serializers.select{|srl| srl.is_content_type(request[:content_type])}.first
+          return HTTPResponse.new(StatusCode::UNSUPPORTED_MEDIA_TYPE) if input_serializer == nil and request[:content_type] != nil
           output_serializer = @serializers.select{|srl| srl.is_content_type(request[:accepts])}.first
+          return HTTPResponse.new(StatusCode::NOT_ACCEPTABLE) if output_serializer == nil and request[:accepts] != nil
           output_serializer = (output_serializer or @itc.fetch(DataSerializers::JSONSerializer))
           response = method.resolve(request, input_serializer, output_serializer)
         rescue
-          http_content = HTTPContent.new(nil)
-          response = HTTPResponse.new(StatusCode::BAD_REQUEST, http_content)
+          response = HTTPResponse.new(StatusCode::BAD_REQUEST)
         end
         return response
       end
