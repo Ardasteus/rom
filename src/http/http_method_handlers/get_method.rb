@@ -22,7 +22,7 @@ module ROM
           begin
             begin
               plan = @gateway.plan(*path)
-            rescue Exception => ex
+            rescue
               plan = @gateway.plan(*path.push(:fetch))
             end
             value = run_plan(plan, request, input_serializer)

@@ -36,9 +36,8 @@ module ROM
         rescue
           http_content = HTTPContent.new(nil)
           response = HTTPResponse.new(StatusCode::BAD_REQUEST, http_content)
-        ensure
-          return response
         end
+        return response
       end
     end
   end
