@@ -12,6 +12,10 @@ export class MailBodyComponent implements OnInit {
     this.router.navigate(['/inbox']);
   }
 
+  DropAttachments() {
+    alert('DropAttach');
+  }
+
   constructor(private router: Router) { }
 
   ngOnInit() {
