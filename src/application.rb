@@ -13,8 +13,10 @@ module ROM
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exists?(data)
 			@data  = File.expand_path(data)
 			@debug = (opt[:debug] or false)
-			@log   = TextLogger.new(ShortFormatter.new, STDOUT)
-			@itc   = Interconnect.new(@log)
+			@itc   = Interconnect.new
+			@itc.register(LogServer)
+			@log = @itc.fetch(LogServer)
+			@log << TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
 
@@ -38,7 +40,7 @@ module ROM
 				cfg.load(cfg.model.from_object(conf[cfg.name]))
 			end
 			
-			@log.trace('Starting services...')
+			@log.info('Starting services...')
 			@itc.lookup(Service).each(&:start)
 			
 			@log.trace('Suspending master thread...')

@@ -12,6 +12,7 @@ module ROM
       # @param [String] cert Certification location
       # @param [String] redirect Location where to redirect all requests, if empty then no redirect
       def initialize(api_resolver, tcp_server, job_pool, https = false, cert = "", redirect = "")
+        super('HTTP listener job')
         if !https
           @server = tcp_server
         else
@@ -34,10 +35,23 @@ module ROM
       end
 
       # Overrides the base {ROM::Job} job_task method. Accepts the client and creates a {ROM::HTTPRespondJob} job to handle him.
-      def job_task
+      def job_task(log)
         loop do
-          respond_job = HTTPRespondJob.new(@api_resolver, @server.accept, @redirect)
-          @job_pool.add_job(respond_job)
+          con = nil
+          begin
+            con = @server.accept
+          rescue Exception => ex
+            log.error('Failed to open an HTTP connection!', ex)
+          end
+
+          next if con == nil
+
+          begin
+            respond_job = HTTPRespondJob.new(@api_resolver, @server.accept, @redirect)
+            @job_pool.add_job(respond_job)
+          rescue Exception => ex
+            log.error('Failed to create an HTTP response job!', ex)
+          end
         end
       end
 

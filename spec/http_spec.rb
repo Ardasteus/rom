@@ -16,7 +16,7 @@ module ROM
           #licenseID=string&content=string&/paramsXML=string"
           # TODO: Do actual testing pls
           #job = HTTPRespondJob.new(StringIO.new(request))
-          #response = job.job_task
+          #response = job.job_task(BufferLogger.new)
           #expect(response).to be_kind_of(HTTPResponse)
           #expect(job.http_request.method).to eq("POST")
           #expect(job.http_request.path).to eq("/cgi-bin/process.cgi")

@@ -3,8 +3,8 @@ module ROM
   describe Job do
     context "When creating and running a new job" do
       it 'should run successfully and execute the task its given.' do
-        job = Job.new()
-        job.run()
+        job = Job.new
+        job.run(BufferLogger.new)
         job.await
         state = job.state
         expect(state).to eq :finished
