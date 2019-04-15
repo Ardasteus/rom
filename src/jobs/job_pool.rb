@@ -10,6 +10,10 @@ module ROM
     def count
       @running.length
 		end
+
+    def capacity
+      @capacity
+    end
 		
 		def logger
 			@log
@@ -34,7 +38,7 @@ module ROM
       if @capacity != 0 and @running.length == @capacity
         @semaphore.synchronize do
           @queue.push(job)
-          end
+        end
       else
         job.attach_job_pool(self)
         @running.add(job)

@@ -2,14 +2,8 @@ module ROM
 
   # Class that encapsulates a task that needs to be executed
   class Job
-        # Current state of the job
-        # @return [Symbol]
-		def state
-			@state
-		end
-	
-	    # Return value of the job
-        # @return [Object]
+    # Return value of the job
+    # @return [Object]
 		def value
 			@value
 		end
@@ -32,12 +26,6 @@ module ROM
     # @return [Symbol]
     def state
       @state
-    end
-
-    # Return value of the job
-    # @return [Object]
-    def value
-      @value
     end
 
     # Encapsulates and starts the job, automatically notifies the {ROM::JobPool} at the end
