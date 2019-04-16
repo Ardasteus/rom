@@ -127,7 +127,7 @@ module ROM
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2', 'ldap'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|
