@@ -71,7 +71,7 @@ module ROM
 		# Gets the default resource action
 		# @return [ROM::ResourceAction, nil] Default resource action; nil if none
 		def self.default
-			@def = nil
+			@def
 		end
 		
 		# Gets an action in this resource
@@ -248,12 +248,12 @@ module ROM
 				end
 				order += 1
 			end
-			
-			# Gets the string representation of the signature
-			# @return [String] String representation fo the signature
-			def to_s
-				"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
-			end
+		end
+
+		# Gets the string representation of the signature
+		# @return [String] String representation fo the signature
+		def to_s
+			"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
 		end
 
 		# @overload [](arg)
@@ -269,7 +269,7 @@ module ROM
 				when Symbol
 					return @sig[arg]
 				when Integer
-					@sig.each { |i| return i if i[:order] == arg }
+					@sig.each_pair { |key, val| return val if val[:order] == arg }
 					return nil
 				else
 					return nil
