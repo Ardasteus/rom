@@ -40,7 +40,5 @@ module ROM
 				expect(sig[1]).to eq sig[:def]
 			end
 		end
-		
-		
 	end
 end
