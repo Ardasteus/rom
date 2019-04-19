@@ -255,6 +255,11 @@ module ROM
 		def to_s
 			"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
 		end
+		
+		def accepts(*args)
+			req = @sig.count { |arg| arg[1][:required] }
+			return args.length >= req
+		end
 
 		# @overload [](arg)
 		# 	Gets specification of an argument based on its name

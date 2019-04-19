@@ -36,7 +36,7 @@ module ROM
 				# puts "Linking #{k} to '#{path(file)}'..."
 				f = path(file)
 				mod.autoload(kl.to_sym, f)
-				@files << f
+				@files << f unless @files.include?(f)
 			end
 		end
 		
