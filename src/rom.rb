@@ -10,12 +10,14 @@ module ROM
 		# Instantiates the {ROM::Importer} class
 		# @param [String] root Location of the source files
 		# @yield [] Block of the importer
-		def initialize(root, &block)
+		def initialize(root, dyn = true, &block)
 			@root  = root
 			@ctx   = root
+			@files = []
 			t = Time.new
 			instance_eval(&block) if block != nil
-			puts "Ready in #{(Time.now - t).round(2)}!" if BENCHMARK
+			load_all unless dyn
+			puts "Ready in #{(Time.now - t).round(2)}s!" if BENCHMARK
 		end
 		
 		# Imports file
@@ -32,7 +34,9 @@ module ROM
 					next con
 				end
 				# puts "Linking #{k} to '#{path(file)}'..."
-				mod.autoload(kl.to_sym, path(file)) 
+				f = path(file)
+				mod.autoload(kl.to_sym, f)
+				@files << f unless @files.include?(f)
 			end
 		end
 		
@@ -51,6 +55,16 @@ module ROM
 
 		def path(*parts)
 			File.join(@ctx, *parts)
+		end
+
+		def load_all
+			puts 'Loading ROM statically...'
+			@files.each do |f|
+				STDOUT.write "Loading '#{f}'..." if BENCHMARK
+				t = Time.new
+				require(f)
+				puts " #{(Time.now - t).round(2)}s" if BENCHMARK
+			end
 		end
 
 		private :path
@@ -126,8 +140,8 @@ module ROM
 		'application' => 'ROM::Application'
 	}
 
-	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2', 'net-ldap'
+	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

@@ -30,7 +30,7 @@ module ROM
 			end
 		end
 		
-		# Resolves a path
+		# Resolves first action of given path
 		# @param [Array<String>] path Path to resolve
 		# @param [ROM::Resource, nil] rsc Resource to resolve the path relative to. If nil given, path is resolved with respect to root module
 		# @return [ROM::ResourceAction] Resolved action; nil if not found
@@ -60,7 +60,8 @@ module ROM
 					when ResourceAction
 						res = last.signature.return_type
 						raise("Action '#{last}' returns final value! It cannot be called!") unless Types::Just[Resource].accepts(res)
-						n = res.type[part]
+						res = res.type
+						n = res[part]
 						n = WrappedResourceAction.new(res.default, part) if n == nil and res.default != nil
 						raise("Action '#{part}' not found in resource '#{res.name}'!") if n == nil
 				end
@@ -101,6 +102,7 @@ module ROM
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
 			def run(*args)
+				raise('Plan signature not met!') unless signature.accepts(*args)
 				@plan.reduce(nil) do |last, act|
 					if last == nil
 						next act.invoke(*args)
