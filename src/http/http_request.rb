@@ -59,10 +59,11 @@ module ROM
         loop do
           ln = io.readline
           break if ln.strip.chomp == ''
-          header, value = ln.split
-          header = header.gsub("_", "-").downcase.to_sym
+          header, value = ln.split(':').collect(&:strip)
+          header = header.gsub("-", "_").downcase.to_sym
           case @headers[header]
           when NilClass
+            puts "hdr: #{header.inspect}"
             @headers[header] = value
           when String
             @headers[header] = [@headers[header], value]
