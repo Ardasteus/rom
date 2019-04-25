@@ -137,7 +137,8 @@ module ROM
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
 			'serializer' => 'ROM::DataSerializers::Serializer'
 		},
-		'application' => 'ROM::Application'
+		'application' => 'ROM::Application',
+		'file_system' => 'ROM::FileSystem'
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do

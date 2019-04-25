@@ -19,11 +19,12 @@ module ROM
 		end
 
 		def up
+			@temp.rmtree
 			@temp.mkpath
 		end
 
 		def down
-			
+			@temp.rmtree
 		end
 	end
 end
