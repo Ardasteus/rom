@@ -10,21 +10,30 @@ module ROM
 		end
 
 		def temp
-			@data.join('tmp')
+			path('temp')
+		end
+
+		def cert
+			path('cert')
 		end
 
 		def initialize(itc)
-			super(itc, 'Provides an abstract layer above the file system')
+			super(itc, 'File system')
 			@data = Pathname.new(File.expand_path('~')).join('.rom')
 		end
 
 		def up
-			@temp.rmtree
-			@temp.mkpath
+			temp.rmtree if temp.exist?
+			temp.mkpath
+			cert.mkpath
 		end
 
 		def down
-			@temp.rmtree
+			temp.rmtree
+		end
+
+		def path(*p)
+			return @data.join(*p)
 		end
 	end
 end

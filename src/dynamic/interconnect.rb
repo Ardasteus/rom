@@ -4,14 +4,15 @@ module ROM
 	# Connects components together
 	class Interconnect
 		# Instantiates the {ROM::Interconnect} class
-		def initialize
+		def initialize(**opt)
 			@log   = BufferLogger.new
 			@reg   = Set.new
 			@hooks = []
+			@opt = opt
 			
 			hook(LogServer) do |log|
 				if @log.is_a?(BufferLogger)
-					@log.trace('Bound log for interconnect! Flushing buffer logger...')
+					@log.trace('Bound log for interconnect! Flushing buffer logger...') if opt? :verbose
 					@log.flush(log)
 					@log = log
 				end
@@ -23,7 +24,7 @@ module ROM
 		# @yield [item] Block of the hook
 		# @yieldparam [Object] item The registered item
 		def hook(type, &block)
-			@log.trace("Setting interconnect hook for '#{type.name}'...")
+			@log.trace("Setting interconnect hook for '#{type.name}'...") if opt? :hooks
 			@hooks << { :type => type, :hook => block }
 		end
 		
@@ -41,7 +42,7 @@ module ROM
 		# @param [Class] com Component class
 		# @return [void]
 		def register(com)
-			@log.trace("Importing '#{com.name}'...")
+			@log.trace("Importing '#{com.name}'...") if opt? :log
 			hooks = @hooks.select { |i| com <= i[:type] }
 			com.register(self).each do |i|
 				@reg << i
@@ -81,5 +82,11 @@ module ROM
 			end
 			return nil
 		end
+
+		def opt?(sym)
+			return (@opt[sym] != nil and @opt[sym])
+		end
+
+		private :opt?
 	end
 end

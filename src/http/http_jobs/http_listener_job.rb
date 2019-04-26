@@ -8,23 +8,17 @@ module ROM
       # @param [ROM::HTTP::HTTPAPIResolver] api_resolver HTTP-API resolver
       # @param [TCPServer] tcp_server TCP server provided by the {ROM::HTTPService} class
       # @param [ROM::JobPool] job_pool Job pool provided by the {ROM::HTTPService} class
-      # @param [Boolean] https Indicates if HTTPS is turned on
-      # @param [String] cert Certification location
+      # @param [ROM::HTTP::Security] sec
       # @param [String] redirect Location where to redirect all requests, if empty then no redirect
-      def initialize(api_resolver, tcp_server, job_pool, https = false, cert = "", redirect = "")
+      def initialize(api_resolver, tcp_server, job_pool, sec = nil, redirect = "")
         super('HTTP listener job')
-        if !https
+        if sec == nil
           @server = tcp_server
         else
-          if cert == nil
-            cft = generate_cert
-          else
-            raw = File.read cert
-            cft = OpenSSL::X509::Certificate.new raw
-          end
+          raise('Certificate not given!') if sec.cert == nil
           ctx = OpenSSL::SSL::SSLContext.new
-          ctx.cert = cft
-          ctx.key = @key
+          ctx.cert = sec.cert
+          ctx.key = sec.key
           ctx.npn_protocols = ['http/1.1']
           @server = OpenSSL::SSL::SSLServer.new tcp_server, ctx
           @server.start_immediately = true
@@ -53,35 +47,6 @@ module ROM
             log.error('Failed to create an HTTP response job!', ex)
           end
         end
-      end
-
-      # Generates a self-signed certificate. Only used when one is not provided.
-      def generate_cert
-        @key = OpenSSL::PKey::RSA.new 2048
-        public_key = @key.public_key
-        subject = "/C=CZ/O=company.com/OU=company.com/CN=localhost/L=Prague/ST=Prague"
-
-        cert = OpenSSL::X509::Certificate.new
-        cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
-        cert.not_before = Time.now
-        cert.not_after = Time.now + 365 * 24 * 60 * 60
-        cert.public_key = public_key
-        cert.serial = 1
-        cert.version = 2
-
-        ef = OpenSSL::X509::ExtensionFactory.new(nil, cert)
-        ef.issuer_certificate = cert
-        cert.extensions = [
-          ef.create_extension("basicConstraints","CA:TRUE"),
-          ef.create_extension("keyUsage", "keyEncipherment"),
-          ef.create_extension("subjectKeyIdentifier", "hash"),
-          ef.create_extension("extendedKeyUsage", "serverAuth")
-        ]
-        cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
-
-        cert.sign @key, OpenSSL::Digest::SHA1.new
-
-        return cert
       end
     end
   end

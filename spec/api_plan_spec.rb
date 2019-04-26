@@ -37,7 +37,7 @@ module ROM
 			it 'runs the plan' do
 				expect(@api.plan('new').run('value')).to be_a TestAPI::Dynamic
 				expect(@api.plan('new', 'get').run('value')).to eq 'value'
-				expect { @api.plan('new').run }.to raise_error
+				expect { @api.plan('new').run }.to raise_error Exception
 			end
 			
 			it 'is not affected by default routes' do

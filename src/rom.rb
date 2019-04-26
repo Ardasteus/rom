@@ -126,7 +126,8 @@ module ROM
 			'http_service' => 'ROM::HTTP::HTTPService',
 			'httpapi_resolver' => 'ROM::HTTP::HTTPAPIResolver',
 			'object_content' => 'ROM::HTTP::ObjectContent',
-			'status_code' => 'ROM::HTTP::StatusCode'
+			'status_code' => 'ROM::HTTP::StatusCode',
+			'security' => 'ROM::HTTP::Security'
 		},
 		'jobs' => {
 			'job' => 'ROM::Job',
