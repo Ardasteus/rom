@@ -1,8 +1,11 @@
 module ROM
+	# A service which provides the application with logging capabilities
 	class LogServer < Service
 		include Component
 		include Logger
 		
+		# Instantiates the {ROM::LogServer} class
+		# @param [ROM::Interconnect] itc Interconnect which registers this instance
 		def initialize(itc)
 			super(itc, 'Log server', 'Central logging service')
 			@itc = itc
@@ -12,6 +15,7 @@ module ROM
 			@mtx = Mutex.new
 		end
 
+		# Flushes the log server buffer
 		def flush
 			@mtx.synchronize do
 				@buffer.each { |i| entry(*i) }
@@ -19,23 +23,29 @@ module ROM
 			end
 		end
 
+		# Stops buffering and enters live mode
 		def stop_buffer
 			@live = true
 		end
 
+		# Leaves live mode and starts buffering
 		def start_buffer
 			@live = false
 		end
 
+		# Starts the service
 		def up
 			flush
 			stop_buffer
 		end
 
+		# Stops the service
 		def down
 			start_buffer
 		end
 
+		# Adds a logger
+		# @param [ROM::Logger] lg Logger to add
 		def <<(lg)
 			@loggers << lg
 		end

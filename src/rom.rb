@@ -20,7 +20,9 @@ module ROM
 			puts "Ready in #{(Time.now - t).round(2)}s!" if BENCHMARK
 		end
 		
-		# Imports file
+		# Creates a class to file mapping
+		# @param [String] file Path to file
+		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
 			klass.each do |k| 
 				mods = k.split('::')
@@ -47,7 +49,7 @@ module ROM
 		end
 		
 		# Imports gems
-		# @param [Array<String>] gem Gems to import
+		# @param [String] gem Gems to import
 		# @return [void]
 		def gems(*gem)
 			gem.each(&method(:require))
@@ -57,6 +59,7 @@ module ROM
 			File.join(@ctx, *parts)
 		end
 
+		# Loads all files statically
 		def load_all
 			puts 'Loading ROM statically...'
 			@files.each do |f|
@@ -71,6 +74,8 @@ module ROM
 	end
 	
 	# noinspection RubyStringKeysInHashInspection, RubyLiteralArrayInspection
+	
+	# File to class map of the application
 	MAP = {
 		'data' => {
 			'attribute' => 'ROM::Attribute' ,
@@ -139,7 +144,7 @@ module ROM
 			'serializer' => 'ROM::DataSerializers::Serializer'
 		},
 		'application' => 'ROM::Application',
-		'file_system' => 'ROM::FileSystem'
+		'filesystem' => 'ROM::Filesystem'
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do

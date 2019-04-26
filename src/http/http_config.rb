@@ -30,6 +30,8 @@ module ROM
 				property :key_path, String
         property :redirect, String
 				
+				# Generates a unique hash of the binding
+				# @return [String] Unique SHA1 hash
 				def hash
 					Digest::SHA1.hexdigest("#{address}:#{port}:#{redirect}")[0..15]
 				end

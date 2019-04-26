@@ -13,10 +13,10 @@ module ROM
 			# Starts up the service, which then proceeds to create {HTTPListenerJob} jobs as defined in config
 			def up
 				log        = @itc.fetch(LogServer)
-				fs         = @itc.fetch(FileSystem)
-				conf       = @itc.lookup(HTTPConfig).first
-				job_server = @itc.lookup(JobServer).first
-				resolver   = @itc.lookup(HTTPAPIResolver).first
+				fs         = @itc.fetch(Filesystem)
+				conf       = @itc.fetch(HTTPConfig)
+				job_server = @itc.fetch(JobServer)
+				resolver   = @itc.fetch(HTTPAPIResolver)
 				job_server.add_job_pool(:services, 0) unless job_server[:services] != nil
 				job_server.add_job_pool(:clients, 0) unless job_server[:clients] != nil
 				conf.bind.each do |b|
@@ -35,12 +35,12 @@ module ROM
 							raise("Key file '#{kf}' for self-signed certificate '#{cf}' not found!") if cf.file? and not kf.file?
 							raise("Self-signed certificate '#{cf}' for key file '#{kf}' not found!") if not cf.file? and kf.file?
 							if cf.file?
-								log.trace("Using self-signed certificate '#{cf}'...")
+								log.trace("Using self-signed certificate '#{b.hash}'...")
 								cert = OpenSSL::X509::Certificate.new(Base64.decode64(cf.read))
 								key  = OpenSSL::PKey::RSA.new(Base64.decode64(kf.read))
 								sec = Security.new(:cert => cert, :key => key)
 							else
-								log.trace("Generating self-signed certificate '#{cf}'...")
+								log.trace("Generating self-signed certificate '#{b.hash}'...")
 								sec = generate_sec(b.address)
 								cf.write(Base64.strict_encode64(sec.cert.to_s), File::WRONLY | File::CREAT)
 								kf.write(Base64.strict_encode64(sec.key.to_s), File::WRONLY | File::CREAT)
@@ -68,7 +68,9 @@ module ROM
 				return transformed
 			end
 			
-			# Generates a self-signed certificate. Only used when one is not provided.
+			# Generates a self-signed certificate
+			# @param [String] host Hostname to certify
+			# @return [ROM::HTTP::Security] New SSL context
 			def generate_sec(host)
 				key        = OpenSSL::PKey::RSA.new 2048
 				public_key = key.public_key

@@ -20,7 +20,7 @@ module ROM
 			@log << TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
-			@itc.register(FileSystem)
+			@itc.register(Filesystem)
 
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
@@ -34,7 +34,7 @@ module ROM
 		def start
 			@log.info('Starting...')
 			@log.trace("Rooting file system in '#{@data}'...")
-			@itc.fetch(FileSystem).data = Pathname.new(@data)
+			@itc.fetch(Filesystem).root = Pathname.new(@data)
 			@log.trace('Loading configuration...')
 			SafeYAML::OPTIONS[:default_mode] = :safe
 			conf_f = File.join(@data, FILE_CONFIG)
