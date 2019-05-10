@@ -42,16 +42,21 @@ module ROM
 			@status
 		end
 		
+		def dependencies
+			@dep
+		end
+		
 		# Instantiates the {ROM::Service} class
 		# @param [ROM::Interconnect] itc Instance of registering interconnect
 		# @param [String] name Name of service
 		# @param [String] desc Description of service
-		def initialize(itc, name, desc = '')
+		def initialize(itc, name, desc = '', *dep)
 			@itc = itc
 			@name = name
 			@desc = desc
 			@jobs = []
 			@status = :not_started
+			@dep = dep
 		end
 		
 		# Starts the service

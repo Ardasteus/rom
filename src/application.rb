@@ -12,16 +12,16 @@ module ROM
 		# @option opt [Bool] :debug Indicates that the application is in debug mode
 		def initialize(data, **opt)
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exists?(data)
-			@data  = File.expand_path(data)
+			@data = File.expand_path(data)
 			@debug = (opt[:debug] or false)
-			@itc   = Interconnect.new
+			@itc = Interconnect.new
 			@itc.register(LogServer)
 			@log = @itc.fetch(LogServer)
 			@log << TextLogger.new(ShortFormatter.new, STDOUT)
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
-
+			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
 			@itc.load(ROM::HTTP)
@@ -48,7 +48,7 @@ module ROM
 					return
 				end
 			end
-
+			
 			begin
 				conf = SafeYAML.load_file(conf_f)
 				@itc.lookup(Config).each do |cfg|
@@ -65,7 +65,7 @@ module ROM
 			end
 			
 			@log.info('Starting services...')
-			@itc.lookup(Service).each do |svc|
+			@itc.lookup(Service).sort_by(&method(:dep_level)).each do |svc|
 				begin
 					svc.start
 				rescue Exception => ex
@@ -87,7 +87,7 @@ module ROM
 				@log.warning('Interrupted, shutting down...')
 				@log.info('Stopping services...')
 				clean = true
-				@itc.lookup(Service).select { |i| not i.is_a?(LogServer) }.each do |svc|
+				@itc.lookup(Service).select { |i| not i.is_a?(LogServer) }.sort_by { |svc| -dep_level(svc) }.each do |svc|
 					begin
 						svc.stop
 					rescue Exception => ex
@@ -99,9 +99,9 @@ module ROM
 						end
 					end
 				end
-
+				
 				@log.trace('Stopping log servers...')
-				@itc.lookup(Service).select { |i| i.is_a?(LogServer) }.each do |svc|
+				@itc.lookup(Service).select { |i| i.is_a?(LogServer) }.sort_by { |svc| -dep_level(svc) }.each do |svc|
 					begin
 						svc.stop
 					rescue Exception => ex
@@ -122,5 +122,11 @@ module ROM
 				end
 			end
 		end
+		
+		def dep_level(svc)
+			(svc.dependencies.collect { |klass| dep_level(@itc.fetch(klass)) }.max or 0) + 1
+		end
+		
+		private :dep_level
 	end
 end

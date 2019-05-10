@@ -7,7 +7,7 @@ module ROM
 			# Instantiates the {ROM::HTTP::HTTPService} class
 			# @param [Interconnect] itc Interconnect
 			def initialize(itc)
-				super(itc, "HTTP Service", "Provides access to API via HTTP and HTTPS")
+				super(itc, "HTTP Service", "Provides access to API via HTTP and HTTPS", LogServer, Filesystem)
 			end
 			
 			# Starts up the service, which then proceeds to create {HTTPListenerJob} jobs as defined in config

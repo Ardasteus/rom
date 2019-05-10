@@ -1,7 +1,6 @@
 module ROM
 	# A service which provides the application with logging capabilities
 	class LogServer < Service
-		include Component
 		include Logger
 		
 		# Instantiates the {ROM::LogServer} class
