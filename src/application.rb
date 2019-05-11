@@ -11,7 +11,7 @@ module ROM
 		# @param [Hash] opt Startup options
 		# @option opt [Bool] :debug Indicates that the application is in debug mode
 		def initialize(data, **opt)
-			raise("Data directory '#{data}' doesn't exist!") unless Dir.exists?(data)
+			raise("Data directory '#{data}' doesn't exist!") unless Dir.exist?(data)
 			@data = File.expand_path(data)
 			@debug = (opt[:debug] or false)
 			@itc = Interconnect.new
