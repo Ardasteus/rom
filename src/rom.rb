@@ -20,7 +20,9 @@ module ROM
 			puts "Ready in #{(Time.now - t).round(2)}s!" if BENCHMARK
 		end
 		
-		# Imports file
+		# Creates a class to file mapping
+		# @param [String] file Path to file
+		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
 			klass.each do |k| 
 				mods = k.split('::')
@@ -47,7 +49,7 @@ module ROM
 		end
 		
 		# Imports gems
-		# @param [Array<String>] gem Gems to import
+		# @param [String] gem Gems to import
 		# @return [void]
 		def gems(*gem)
 			gem.each(&method(:require))
@@ -57,6 +59,7 @@ module ROM
 			File.join(@ctx, *parts)
 		end
 
+		# Loads all files statically
 		def load_all
 			puts 'Loading ROM statically...'
 			@files.each do |f|
@@ -71,6 +74,8 @@ module ROM
 	end
 	
 	# noinspection RubyStringKeysInHashInspection, RubyLiteralArrayInspection
+	
+	# File to class map of the application
 	MAP = {
 		'data' => {
 			'attribute' => 'ROM::Attribute' ,
@@ -93,6 +98,7 @@ module ROM
 			'text_logger' => 'ROM::TextLogger'
 		},
 		'dynamic' => {
+			'api_context' => 'ROM::ApiContext',
 			'api_gateway' => 'ROM::ApiGateway',
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',
@@ -126,7 +132,8 @@ module ROM
 			'http_service' => 'ROM::HTTP::HTTPService',
 			'httpapi_resolver' => 'ROM::HTTP::HTTPAPIResolver',
 			'object_content' => 'ROM::HTTP::ObjectContent',
-			'status_code' => 'ROM::HTTP::StatusCode'
+			'status_code' => 'ROM::HTTP::StatusCode',
+			'security' => 'ROM::HTTP::Security'
 		},
 		'jobs' => {
 			'job' => 'ROM::Job',
@@ -137,11 +144,12 @@ module ROM
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
 			'serializer' => 'ROM::DataSerializers::Serializer'
 		},
-		'application' => 'ROM::Application'
+		'application' => 'ROM::Application',
+		'filesystem' => 'ROM::Filesystem'
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2', 'pathname'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: /tmp
   docker:
-    - image: circleci/ruby:2.4.1-node-browsers
+    - image: circleci/ruby:latest
       environment:
         GEM_HOME: /tmp/.gem
         GEM_PATH: /tmp/.gem

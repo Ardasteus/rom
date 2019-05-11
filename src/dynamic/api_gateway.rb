@@ -101,13 +101,13 @@ module ROM
 			# Executes the API call plan
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
-			def run(*args)
+			def run(ctx, *args)
 				raise('Plan signature not met!') unless signature.accepts(*args)
 				@plan.reduce(nil) do |last, act|
 					if last == nil
-						next act.invoke(*args)
+						next act.invoke(ctx, nil, *args)
 					end
-					next last.method(act.name).call
+					next last.class.actions.first {|i| i.name == act.name}.invoke(ctx, last)
 				end
 			end
 			
@@ -128,13 +128,13 @@ module ROM
 		# Prepends arguments to an action call 
 		class WrappedResourceAction < ResourceAction
 			# Instantiates the {ROM::ApiGateway::WrappedResourceAction} class
-			# @param [ROM::ResourceActoin] act Action to wrap
+			# @param [ROM::ResourceAction] act Action to wrap
 			# @param [Object] prepend Arguments to prepend to the call
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
 				super(@act.name, @act.resource, @act.signature, @act.attributes) do |*args|
-					@act.invoke(*prepend, *args)
+					act.invoke(context, nil, *prepend, *args)
 				end
 			end
 		end
@@ -173,6 +173,7 @@ module ROM
 			# Adds a resource action to the module
 			# @param [ROM::ResourceAction] action Action to add
 			# @param [String] mod Path of the action to add, relative to this module
+			# @return [void]
 			def add(action, *mod)
 				if mod.length == 0
 					raise("Action name '#{action.name}' from '#{self}' collides with sub-module of same name!") if @modules.has_key?(action.name)
@@ -193,6 +194,7 @@ module ROM
 			# Resolves a path relative to this module
 			# @param [String] p Name within this module
 			# @param [String] path Path relative to this module
+			# @return [ROM::ResourceAction, nil] Resolved action
 			def resolve(p, *path)
 				if @actions.has_key?(p)
 					@actions[p]

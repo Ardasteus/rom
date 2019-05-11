@@ -6,7 +6,7 @@ module ROM
 			end
 			
 			action :value, String do
-			  @val
+			  hello(@val)
 			end
 		end
 		
