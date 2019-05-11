@@ -32,16 +32,17 @@ module ROM
 				@itc.load(TestAPI)
 				@itc.register(ApiGateway)
 				@api = @itc.fetch(ApiGateway)
+				@ctx = ApiContext.new
 			end
 			
 			it 'runs the plan' do
-				expect(@api.plan('new').run('value')).to be_a TestAPI::Dynamic
-				expect(@api.plan('new', 'get').run('value')).to eq 'value'
-				expect { @api.plan('new').run }.to raise_error Exception
+				expect(@api.plan('new').run(@ctx, 'value')).to be_a TestAPI::Dynamic
+				expect(@api.plan('new', 'get').run(@ctx, 'value')).to eq 'value'
+				expect { @api.plan('new').run(@ctx) }.to raise_error Exception
 			end
 			
 			it 'is not affected by default routes' do
-				expect(@api.plan('value', 'get').run).to eq 'value'
+				expect(@api.plan('value', 'get').run(@ctx)).to eq 'value'
 			end
 		end
 	end

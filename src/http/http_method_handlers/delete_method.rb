@@ -21,7 +21,7 @@ module ROM
           path = format_path(request.path)
           begin
             plan = @gateway.plan(*path.push(:delete))
-            plan.run()
+            run_plan(plan, request, nil)
             response = HTTPResponse.new(StatusCode::NO_CONTENT)
           rescue
             response = HTTPResponse.new(StatusCode::NOT_FOUND)

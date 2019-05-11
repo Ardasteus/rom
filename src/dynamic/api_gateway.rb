@@ -101,9 +101,8 @@ module ROM
 			# Executes the API call plan
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
-			def run(*args)
+			def run(ctx, *args)
 				raise('Plan signature not met!') unless signature.accepts(*args)
-				ctx = ApiContext.new
 				@plan.reduce(nil) do |last, act|
 					if last == nil
 						next act.invoke(ctx, nil, *args)
