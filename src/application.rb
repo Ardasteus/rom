@@ -38,7 +38,7 @@ module ROM
 			@log.trace('Loading configuration...')
 			SafeYAML::OPTIONS[:default_mode] = :safe
 			conf_f = File.join(@data, FILE_CONFIG)
-			unless File.exists?(conf_f)
+			unless File.exist?(conf_f)
 				ex = Exception.new("Configuration file '#{FILE_CONFIG}' not found!")
 				@log.error(ex.message)
 				if @debug
