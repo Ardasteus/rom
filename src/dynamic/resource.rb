@@ -164,8 +164,8 @@ module ROM
 		# Invokes the action with given arguments
 		# @param [Object, nil] args Arguments to invoke the action with
 		# @return [Object, nil] Result of the action
-		def invoke(*args)
-			@action.call(*args)
+		def invoke(ctx, inst = nil, *args)
+			ctx.context_exec((inst or @action.binding.eval('self')), *args, &@action)
 		end
 
 		# Instantiates the {ROM::ResourceAction} class

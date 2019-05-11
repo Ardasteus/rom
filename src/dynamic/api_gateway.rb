@@ -103,11 +103,12 @@ module ROM
 			# @return [Object, nil] Result of API call
 			def run(*args)
 				raise('Plan signature not met!') unless signature.accepts(*args)
+				ctx = ApiContext.new
 				@plan.reduce(nil) do |last, act|
 					if last == nil
-						next act.invoke(*args)
+						next act.invoke(ctx, nil, *args)
 					end
-					next last.method(act.name).call
+					next last.class.actions.first {|i| i.name == act.name}.invoke(ctx, last)
 				end
 			end
 			
@@ -128,13 +129,13 @@ module ROM
 		# Prepends arguments to an action call 
 		class WrappedResourceAction < ResourceAction
 			# Instantiates the {ROM::ApiGateway::WrappedResourceAction} class
-			# @param [ROM::ResourceActoin] act Action to wrap
+			# @param [ROM::ResourceAction] act Action to wrap
 			# @param [Object] prepend Arguments to prepend to the call
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
 				super(@act.name, @act.resource, @act.signature, @act.attributes) do |*args|
-					@act.invoke(*prepend, *args)
+					act.invoke(context, nil, *prepend, *args)
 				end
 			end
 		end

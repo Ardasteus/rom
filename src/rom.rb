@@ -98,6 +98,7 @@ module ROM
 			'text_logger' => 'ROM::TextLogger'
 		},
 		'dynamic' => {
+			'api_context' => 'ROM::ApiContext',
 			'api_gateway' => 'ROM::ApiGateway',
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',

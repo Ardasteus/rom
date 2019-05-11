@@ -41,7 +41,7 @@ module ROM
           next if con == nil
 
           begin
-            respond_job = HTTPRespondJob.new(@api_resolver, @server.accept, @redirect)
+            respond_job = HTTPRespondJob.new(@api_resolver, con, @redirect)
             @job_pool.add_job(respond_job)
           rescue Exception => ex
             log.error('Failed to create an HTTP response job!', ex)
