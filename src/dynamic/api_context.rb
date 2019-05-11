@@ -1,13 +1,21 @@
 module ROM
+	# Provider of request specific information for API
 	class ApiContext
 		def hello(x)
 			"Hello, #{x}!"
 		end
 		
+		# Gets current API context
+		# @return [ROM::ApiContext] Current API context
 		def context
 			self
 		end
 		
+		# Invokes a block using this context
+		# @param [Binding] bind Block binding to use
+		# @param [Object] args Arguments to invoke the block with
+		# @param [Proc] block Block to invoke
+		# @return [Object] Result of call
 		def context_exec(bind, *args, &block)
 			# So this... This must NEVER be shown to Šibrava
 			
@@ -36,6 +44,11 @@ module ROM
 			res
 		end
 		
+		# When method is not found in the context class, this method calls the method on current binding
+		# @param [Symbol] mtd Name of method
+		# @param [Object] args Arguments of method call
+		# @param [Proc] block Block of method call
+		# @return [Object] Result of call
 		def method_missing(mtd, *args, &block)
 			@__bind.send(mtd, *args, &block)
 		end

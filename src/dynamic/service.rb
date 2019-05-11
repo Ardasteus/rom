@@ -42,6 +42,8 @@ module ROM
 			@status
 		end
 		
+		# Gets list of service classes on which this service depends
+		# @return [Array<Class>] Service dependencies
 		def dependencies
 			@dep
 		end
@@ -50,6 +52,7 @@ module ROM
 		# @param [ROM::Interconnect] itc Instance of registering interconnect
 		# @param [String] name Name of service
 		# @param [String] desc Description of service
+		# @param [Class] dep List of service dependencies
 		def initialize(itc, name, desc = '', *dep)
 			@itc = itc
 			@name = name

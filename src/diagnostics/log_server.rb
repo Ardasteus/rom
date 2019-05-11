@@ -45,6 +45,7 @@ module ROM
 
 		# Adds a logger
 		# @param [ROM::Logger] lg Logger to add
+		# @return [ROM::Logger] Added Logger
 		def <<(lg)
 			@loggers << lg
 		end

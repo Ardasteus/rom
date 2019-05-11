@@ -173,6 +173,7 @@ module ROM
 			# Adds a resource action to the module
 			# @param [ROM::ResourceAction] action Action to add
 			# @param [String] mod Path of the action to add, relative to this module
+			# @return [void]
 			def add(action, *mod)
 				if mod.length == 0
 					raise("Action name '#{action.name}' from '#{self}' collides with sub-module of same name!") if @modules.has_key?(action.name)
@@ -193,6 +194,7 @@ module ROM
 			# Resolves a path relative to this module
 			# @param [String] p Name within this module
 			# @param [String] path Path relative to this module
+			# @return [ROM::ResourceAction, nil] Resolved action
 			def resolve(p, *path)
 				if @actions.has_key?(p)
 					@actions[p]
