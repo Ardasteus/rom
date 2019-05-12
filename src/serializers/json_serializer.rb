@@ -1,10 +1,9 @@
 module ROM
   module DataSerializers
-
     # JSON Serializer/Deserializer class
     class JSONSerializer < Serializer
 			
-      # Preffered content type 
+      # Preferred content type
       # @return [String]
       def type
 				@content_types.first
@@ -20,15 +19,15 @@ module ROM
       # Deserializes a json data stream into a n object
       # @param [IO] stream Data stream to deserialize
       def to_object(stream)
-        obj = JSON.parse(stream)
-        return obj
+        JSON.parse(stream)
       end
 
       # Serializes an object into a json data stream
       # @param [Object] obj Object to serialize
       def from_object(obj)
-        json_string = JSON.generate(obj)
-        return StringIO.new(json_string)
+        obj = obj.to_object if obj.is_a?(Model)
+        
+				StringIO.new(JSON.generate(obj))
       end
     end
   end
