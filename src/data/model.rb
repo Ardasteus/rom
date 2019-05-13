@@ -329,9 +329,12 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Object] First attribute of given type; nil otherwise
-		def attribute(&block)
-			idx = @att.index(&block)
-			return idx == nil ? nil : @att[idx]
+		def attribute(t, &block)
+			if t == nil
+				@att.find(&block)
+			else
+				@att.find { |i| i.is_a?(t) and (not block_given? or block.call(i)) }
+			end
 		end
 		
 		# Searches for an attribute
@@ -339,8 +342,12 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Boolean] True if matching attribute was found; false otherwise
-		def attribute?(&block)
-			return @att.any?(&block)
+		def attribute?(t, &block)
+			if t == nil
+				@att.any?(&block)
+			else
+				@att.any? { |i| i.is_a?(t) and (not block_given? or block.call(i)) }
+			end
 		end
 	end
 end

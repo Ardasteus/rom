@@ -6,13 +6,13 @@ module ROM
 	class Importer
 		# Indicates whether benchmarking should be enabled
 		BENCHMARK = true
-
+		
 		# Instantiates the {ROM::Importer} class
 		# @param [String] root Location of the source files
 		# @yield [] Block of the importer
 		def initialize(root, dyn = true, &block)
-			@root  = root
-			@ctx   = root
+			@root = root
+			@ctx = root
 			@files = []
 			t = Time.new
 			instance_eval(&block) if block != nil
@@ -24,7 +24,7 @@ module ROM
 		# @param [String] file Path to file
 		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
-			klass.each do |k| 
+			klass.each do |k|
 				puts k.inspect
 				mods = k.split('::')
 				kl = mods.delete_at(mods.length - 1)
@@ -55,11 +55,11 @@ module ROM
 		def gems(*gem)
 			gem.each(&method(:require))
 		end
-
+		
 		def path(*parts)
 			File.join(@ctx, *parts)
 		end
-
+		
 		# Loads all files statically
 		def load_all
 			puts 'Loading ROM statically...'
@@ -70,7 +70,7 @@ module ROM
 				puts " #{(Time.now - t).round(2)}s" if BENCHMARK
 			end
 		end
-
+		
 		private :path
 	end
 	
@@ -83,6 +83,9 @@ module ROM
 				'mysql' => {
 					'mysql_driver' => 'ROM::MySql::MySqlDriver'
 				},
+				'sqlite' => {
+					'sqlite_driver' => 'ROM::Sqlite::SqliteDriver'
+				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',
 				'db_index' => 'ROM::DbIndex',
@@ -90,10 +93,15 @@ module ROM
 				'db_schema' => 'ROM::DbSchema',
 				'db_table' => 'ROM::DbTable',
 				'db_type' => 'ROM::DbType',
-				'db_server' => 'ROM::DbServer'
+				'db_server' => 'ROM::DbServer',
+				'db_context' => 'ROM::DbContext',
+				'schema_builder' => 'ROM::SchemaBuilder',
+				'key_attribute' => 'ROM::KeyAttribute',
+				'reference_attribute' => 'ROM::ReferenceAttribute',
+				'suffix_attribute' => 'ROM::SuffixAttribute'
 			},
-			'attribute' => 'ROM::Attribute' ,
-			'model' => [ 'ROM::Model', 'ROM::ModelProperty' ],
+			'attribute' => 'ROM::Attribute',
+			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
 				'ROM::Types::Type',
 				'ROM::Types::Just',
@@ -117,7 +125,7 @@ module ROM
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',
 			'interconnect' => 'ROM::Interconnect',
-			'resource' => [ 
+			'resource' => [
 				'ROM::Resource',
 				'ROM::StaticResource',
 				'ROM::ResourceAction',
@@ -161,7 +169,7 @@ module ROM
 		'application' => 'ROM::Application',
 		'filesystem' => 'ROM::Filesystem'
 	}
-
+	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
 		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'pathname'
 		
@@ -177,9 +185,9 @@ module ROM
 				end
 			end
 		end
-
+		
 		map
-
+		
 		all 'api/**/*.rb'
 	end
 end

@@ -1,18 +1,20 @@
+# Created by Matyáš Pokorný on 2019-05-13.
+
 module ROM
-	module MySql
-		class MySqlDriver < DbDriver
+	module Sqlite
+		class SqliteDriver < DbDriver
 			TYPES = {
 				:id => DbType.new('INT'),
 				:int => DbType.new('INT'),
-				:string => DbType.new('NVARCHAR(MAX)'),
+				:string => DbType.new('NVARCHAR(MAX)')
 			}
-
+			
 			def type(tp)
 				TYPES[tp]
 			end
-
+			
 			def initialize(itc)
-				super(itc, 'MySQL')
+				super(itc, 'Sqlite')
 			end
 		end
 	end

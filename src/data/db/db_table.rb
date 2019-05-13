@@ -11,23 +11,38 @@ module ROM
 		def indices
 			@idx
 		end
+		
+		def primary_key
+			@prim
+		end
 
 		def initialize(nm)
 			@name = nm
 			@cols = []
 			@idx = []
+			@prim = []
 		end
 
-		def column(nm, tp)
-			col = DbColumn.new(nm, tp)
+		def column(nm, tp, *att)
+			raise("Column '#{nm}' already exists in '#{@name}'!") if @cols.any? { |i| i.name == nm }
+			col = DbColumn.new(nm, tp, *att)
 			@cols << col
 
 			col
 		end
+		
+		def primary(*cols)
+			raise("Primary keys already defined in '#{@name}'!") if @prim.length > 0
+			raise('No primary keys given!') if cols == nil or cols.length == 0
+			bad = cols.find { |col| !@cols.include?(col) }
+			raise("Column '#{bad.name}' is not part of table '#{@name}'!") unless bad == nil
+			
+			@prim = cols
+		end
 
 		def index(uq = false, *cols)
-			bad = cols.collect.find { |col| !@cols.include?(col) }
-			raise("Column '#{bad.name}' is not part of this table!") unless bad == nil
+			bad = cols.find { |col| !@cols.include?(col) }
+			raise("Column '#{bad.name}' is not part of table '#{@name}'!") unless bad == nil
 			@idx << DbIndex.new(uq, *cols)
 		end
 	end
