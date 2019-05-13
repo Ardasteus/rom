@@ -3,6 +3,10 @@
 module ROM
 	class DbDriver
 		include Component
+
+		def type(tp)
+			raise('Method not implemented!')
+		end
 		
 		def initialize(itc)
 			@itc = itc

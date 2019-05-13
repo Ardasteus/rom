@@ -25,6 +25,7 @@ module ROM
 		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
 			klass.each do |k| 
+				puts k.inspect
 				mods = k.split('::')
 				kl = mods.delete_at(mods.length - 1)
 				mod = mods.collect { |m| m.to_sym }.reduce(Object) do |last, m|
@@ -78,6 +79,19 @@ module ROM
 	# File to class map of the application
 	MAP = {
 		'data' => {
+			'db' => {
+				'mysql' => {
+					'mysql_driver' => 'ROM::MySql::MySqlDriver'
+				},
+				'db_column' => 'ROM::DbColumn',
+				'db_driver' => 'ROM::DbDriver',
+				'db_index' => 'ROM::DbIndex',
+				'db_reference' => 'ROM::DbReference',
+				'db_schema' => 'ROM::DbSchema',
+				'db_table' => 'ROM::DbTable',
+				'db_type' => 'ROM::DbType',
+				'db_server' => 'ROM::DbServer'
+			},
 			'attribute' => 'ROM::Attribute' ,
 			'model' => [ 'ROM::Model', 'ROM::ModelProperty' ],
 			'types' => [
@@ -149,7 +163,7 @@ module ROM
 	}
 
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'mysql2', 'pathname'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'pathname'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|
