@@ -82,6 +82,7 @@ module ROM
 		end
 		
 		# Prepares the resource class
+		# @return [void]
 		def self.prepare_resource
 			@act = {}
 			@path = ''
@@ -106,7 +107,9 @@ module ROM
 		# @param [Class, ROM::Types::Type] ret Return type of the action
 		# @param [ROM::Attribute] att Metadata attributes of the action
 		# @param [Hash{Symbol => [Class, ROM::Types::Type, Hash]}] sig Signature of the action
+		# @param [Proc] block Block of action
 		# @yield [] Block of action
+		# @return [void]
 		def self.action(name, ret, *att, **sig, &block)
 			raise('Action with same name already defined!') if @act.has_key?(name.to_s)
 			raise('Action name cannot contain path separator!') if name.to_s.include?(PATH_SEPARATOR)
@@ -164,8 +167,8 @@ module ROM
 		# Invokes the action with given arguments
 		# @param [Object, nil] args Arguments to invoke the action with
 		# @return [Object, nil] Result of the action
-		def invoke(*args)
-			@action.call(*args)
+		def invoke(ctx, inst = nil, *args)
+			ctx.context_exec((inst or @action.binding.eval('self')), *args, &@action)
 		end
 
 		# Instantiates the {ROM::ResourceAction} class
@@ -256,6 +259,9 @@ module ROM
 			"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
 		end
 		
+		# Checks whether supplied arguments may be used to invoke this action
+		# @param [Object, nil] args Arguments to test
+		# @return [Boolean] True if action may be called; false otherwise
 		def accepts(*args)
 			req = @sig.count { |arg| arg[1][:required] }
 			return args.length >= req

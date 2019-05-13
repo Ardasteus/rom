@@ -42,16 +42,24 @@ module ROM
 			@status
 		end
 		
+		# Gets list of service classes on which this service depends
+		# @return [Array<Class>] Service dependencies
+		def dependencies
+			@dep
+		end
+		
 		# Instantiates the {ROM::Service} class
 		# @param [ROM::Interconnect] itc Instance of registering interconnect
 		# @param [String] name Name of service
 		# @param [String] desc Description of service
-		def initialize(itc, name, desc = '')
+		# @param [Class] dep List of service dependencies
+		def initialize(itc, name, desc = '', *dep)
 			@itc = itc
 			@name = name
 			@desc = desc
 			@jobs = []
 			@status = :not_started
+			@dep = dep
 		end
 		
 		# Starts the service
@@ -72,7 +80,7 @@ module ROM
 		# Stops the service
 		def stop
 			return unless @status == :running
-			@itc.fetch(LogServer).debug("Stopping server '#{@name}'...")
+			@itc.fetch(LogServer).debug("Stopping service '#{@name}'...")
 			@status = :stopping
 			down
 			@status = :not_started
