@@ -32,6 +32,8 @@ module ROM
 					end
 					tab.column(conv.call(*name), get_type(ctx, prop))
 				end
+
+				tabs << tab
 			end
 			
 			sch
@@ -82,19 +84,19 @@ module ROM
 			base = nil
 			if type.is_a?(Types::Type)
 				case type
-					when Types::Just
-						base = type.type
-					when Types::Union
-						if type.types.size == 2 and type.types.any? { |i| i == NilClass }
-							base = type.types.find { |i| i != NilClass }
-							null = true
-						else
-							raise("Union is only supported with NilClass as a database type!")
-						end
-					when Types::Boolean
-						base = type
+				when Types::Just
+					base = type.type
+				when Types::Union
+					if type.types.size == 2 and type.types.any? { |i| i == NilClass }
+						base = type.types.find { |i| i != NilClass }
+						null = true
 					else
-						raise("Type '#{type.name}' may not be resolved as a database type!")
+						raise("Union is only supported with NilClass as a database type!")
+					end
+				when Types::Boolean
+					base = type
+				else
+					raise("Type '#{type.name}' may not be resolved as a database type!")
 				end
 			elsif type.is_a?(Class)
 				base = type

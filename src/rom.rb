@@ -25,7 +25,6 @@ module ROM
 		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
 			klass.each do |k|
-				puts k.inspect
 				mods = k.split('::')
 				kl = mods.delete_at(mods.length - 1)
 				mod = mods.collect { |m| m.to_sym }.reduce(Object) do |last, m|
@@ -98,7 +97,8 @@ module ROM
 				'schema_builder' => 'ROM::SchemaBuilder',
 				'key_attribute' => 'ROM::KeyAttribute',
 				'reference_attribute' => 'ROM::ReferenceAttribute',
-				'suffix_attribute' => 'ROM::SuffixAttribute'
+				'suffix_attribute' => 'ROM::SuffixAttribute',
+				'sql_query' => 'ROM::SqlQuery'
 			},
 			'attribute' => 'ROM::Attribute',
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],

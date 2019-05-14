@@ -4,8 +4,8 @@ module ROM
 			@from
 		end
 
-		def to
-			@to
+		def target
+			@tgt
 		end
 
 		def update_strategy
@@ -18,7 +18,7 @@ module ROM
 
 		def initialize(src, target, upd = :cascade, dlt = :cascade)
 			@from = src
-			@to = target
+			@tgt = target
 			@upd = upd
 			@dlt = dlt
 		end

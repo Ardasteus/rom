@@ -35,6 +35,7 @@ module ROM
 		end
 		
 		def self.table(name, mod, *att)
+			name = name.to_s
 			raise("Table '#{name}' already defined!") if @tabs.has_key?(name)
 			@tabs[name] = Table.new(name, mod, *att)
 		end

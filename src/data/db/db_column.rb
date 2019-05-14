@@ -1,5 +1,9 @@
 module ROM
 	class DbColumn
+		def table
+			@tab
+		end
+
 		def name
 			@name
 		end
@@ -12,7 +16,8 @@ module ROM
 			@att
 		end
 
-		def initialize(nm, tp, *att)
+		def initialize(tab, nm, tp, *att)
+			@table = tab
 			@name = nm
 			@type = tp
 			@att = att

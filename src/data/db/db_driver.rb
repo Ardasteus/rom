@@ -25,6 +25,10 @@ module ROM
 		def convention(nm, *args)
 			DEFAULT_CONVENTIONS[nm]&.call(*args)
 		end
+
+		def query(nm, *args)
+			raise('Method not implemented!')
+		end
 		
 		def initialize(itc, nm)
 			@name = nm

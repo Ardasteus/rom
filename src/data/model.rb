@@ -329,7 +329,7 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Object] First attribute of given type; nil otherwise
-		def attribute(t, &block)
+		def attribute(t = nil, &block)
 			if t == nil
 				@att.find(&block)
 			else
@@ -342,7 +342,7 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Boolean] True if matching attribute was found; false otherwise
-		def attribute?(t, &block)
+		def attribute?(t = nil, &block)
 			if t == nil
 				@att.any?(&block)
 			else

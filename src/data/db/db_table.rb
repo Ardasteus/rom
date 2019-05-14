@@ -20,12 +20,13 @@ module ROM
 			@name = nm
 			@cols = []
 			@idx = []
+			@ref = []
 			@prim = []
 		end
 
 		def column(nm, tp, *att)
 			raise("Column '#{nm}' already exists in '#{@name}'!") if @cols.any? { |i| i.name == nm }
-			col = DbColumn.new(nm, tp, *att)
+			col = DbColumn.new(self, nm, tp, *att)
 			@cols << col
 
 			col

@@ -21,6 +21,9 @@ module ROM
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
+			@itc.register(DbServer)
+			@itc.register(MySql::MySqlDriver)
+			@itc.register(Sqlite::SqliteDriver)
 			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
@@ -66,8 +69,8 @@ module ROM
 			
 			@log.info('Starting services...')
 			@itc.lookup(Service).sort_by(&method(:dep_level)).each do |svc|
-				begin
 					svc.start
+				begin
 				rescue Exception => ex
 					@log.error("Failed to start service!: #{ex.message}", ex)
 					if @debug

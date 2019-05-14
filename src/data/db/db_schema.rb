@@ -8,6 +8,7 @@ module ROM
 
 		def initialize
 			@tab = []
+			@ref = []
 		end
 
 		def table(nm)
@@ -16,6 +17,13 @@ module ROM
 			@tab << tab
 
 			tab
+		end
+
+		def reference(src, dest, upd = :cascade, dlt = :cascade)
+			raise("Reference for column '#{src.name}' already set!") if @ref.any? { |i| i.source == src }
+			raise("Source table '#{src.table.name}' is not part of the schema!") unless @tab.include?(src.table)
+			raise("Target table '#{dest.table.name}' is not part of the schema!") unless @tab.include?(dest.table)
+			@ref << DbReference.new(src, dest, upd, dlt)
 		end
 	end
 end
