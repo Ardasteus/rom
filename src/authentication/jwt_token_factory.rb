@@ -9,7 +9,7 @@ module
       rsa = OpenSSL::PKey::RSA.new(4096)
     end
 
-    def create_token(user)
+    def to_token(user)
       body = {}
       body[:username] = user.username
       body[:security_stamp] = user.security_stamp
@@ -22,6 +22,9 @@ module
       token += base_64_header + "."
       token += base_64_body + "."
       token += urlsafe_encode64(rsa_string)
+    end
+
+    def from_token(token)
     end
   end
 end

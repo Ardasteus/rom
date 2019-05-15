@@ -7,7 +7,7 @@ module ROM
         @itc = itc
       end
 
-      def authenticate(username, password )
+      def authenticate(username, password)
 
       end
     end

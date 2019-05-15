@@ -9,6 +9,7 @@ module ROM
         # @param [ROM::Interconnect] itc Interconnect
         def initialize(itc)
           super(itc)
+          @log = itc.fetch(LogServer)
           @name = "POST"
         end
 
@@ -29,7 +30,8 @@ module ROM
             value = run_plan(plan, request, input_serializer)
             http_content = ObjectContent.new(value, output_serializer)
             response = HTTPResponse.new(StatusCode::CREATED, http_content)
-          rescue
+          rescue Exception => ex
+            @log&.error("POST failed!!!", ex)
             response = HTTPResponse.new(StatusCode::NOT_FOUND)
           end
           return response

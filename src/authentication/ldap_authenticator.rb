@@ -5,6 +5,7 @@ module ROM
 
       def initiliaze(itc)
         @itc = itc
+
       end
 
       def authenticate(username, password)
@@ -13,9 +14,9 @@ module ROM
         ldap.port = 389
         ldap.auth username, password
         if ldap.bind
-          state = :authenticated
+          token = nil
         else
-          state = :failed
+          token = 
         end
         return state
       end

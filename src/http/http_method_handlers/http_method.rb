@@ -44,10 +44,10 @@ module ROM
           args = []
           arg = plan.signature[0]
           if arg != nil
-            if arg[:type].accepts(IO)
+            if Types::Just[IO].accepts(arg[:type])
               args << request.stream
-            elsif arg[:type].accepts(Model)
-              args << serializer.to_object(request.stream.read)
+            elsif Types::Just[Model].accepts(arg[:type])
+              args << arg[:type].type.from_object(serializer.to_object(request.stream.read(request[:content_length].to_i)))
             elsif arg[:required]
               raise("Unknown input argument type !")
             end

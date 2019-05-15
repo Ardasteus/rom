@@ -59,7 +59,7 @@ module ROM
 
 			class Static < StaticResource
 				action :create, TestModel, :val! => TestModel do |val|
-					next TestModel.new(:value => val)
+					next TestModel.new(:value => val.to_s)
 				end
 
 				action :fetch, TestModel do 

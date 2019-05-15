@@ -8,14 +8,24 @@ module ROM
         itc.hook(Authenticator) do |auth|
           @authenticators.push(auth)
         end
+
+        @token_factories = itc.lookup(TokenFactory)
+        itc.hook(TokenFactory) do |fact|
+          @token_factories.push(fact)
+        end
       end
 
       def resolve(username, password)
-        state = :failed
-        @authenticators.each do |auth|
-          state = auth.authenticate(username, password) if state == :failed
+        user = @authenticators.each do |auth|
+          usr = auth.authenticate(username, password)
+          break usr unless usr == nil
         end
-        return state
+
+        return nil  unless user.is_a?(User)
+
+        token = @token_factories[0].create_token(user)
+
+        return token
       end
     end
   end

@@ -63,7 +63,6 @@ module ROM
           header = header.gsub("-", "_").downcase.to_sym
           case @headers[header]
           when NilClass
-            puts "hdr: #{header.inspect}"
             @headers[header] = value
           when String
             @headers[header] = [@headers[header], value]
