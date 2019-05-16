@@ -4,10 +4,13 @@
   "main": "index.tsx",
   "license": "MIT",
   "dependencies": {
+    "@material-ui/core": "^3.9.3",
     "awesome-typescript-loader": "^5.2.1",
     "fs": "^0.0.1-security",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
     "typescript": "^3.4.5",
     "webpack": "^4.31.0",
     "webpack-dev-server": "^3.3.1"
