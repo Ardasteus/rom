@@ -1,27 +1,35 @@
 {
-    "compilerOptions": {
-      "sourceMap": true,
-      "noImplicitAny": false,
-      "module": "commonjs",
-      "target": "es6",
-      "lib": [
-        "es2015",
-        "es2017",
-        "dom"
+  "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "target": "es6",
+    "lib": [
+      "es2015",
+      "es2017",
+      "dom"
+    ],
+    "removeComments": true,
+    "allowSyntheticDefaultImports": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "allowJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "components/*": [
+        "src/components/*"
       ],
-      "removeComments": true,
-      "allowSyntheticDefaultImports": false,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "resolveJsonModule": true,
-      "jsx": "react",
-      "allowJs": true,
-      "baseUrl": "./",
-      "paths": {
-        "components/*": ["src/components/*"],
-        "pages/*": ["src/pages/*"],
-        "classes/*": ["src/classes/*"] 
-      }
-    },
-    "include": ["./src/**/*"]
-  }
+      "pages/*": [
+        "src/pages/*"
+      ],
+      "classes/*": [
+        "src/classes/*"
+      ]
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

@@ -1,10 +1,9 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-import App from "components/App";
+import App from 'components/App';
 
-require('dotenv').config();
-
-console.log(process.env.API_URL);
+import dotenv = require('dotenv');
+dotenv.config();
 
 ReactDOM.render(<App />, document.getElementById('root'));
