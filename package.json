@@ -1,0 +1,28 @@
+{
+  "name": "rom-app",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "dependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "fs": "^0.0.1-security",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "typescript": "^3.4.5",
+    "webpack": "^4.31.0",
+    "webpack-dev-server": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.17",
+    "@types/react-dom": "^16.8.4",
+    "dotenv": "^8.0.0",
+    "dotenv-webpack": "^1.7.0",
+    "html-webpack-plugin": "^3.2.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "webpack-cli": "^3.3.2"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js --mode production",
+    "start": "webpack-dev-server --config  webpack.config.js --mode development --open --hot"
+  }
+}
