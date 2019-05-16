@@ -40,6 +40,7 @@ module ROM
       UNSUPPORTED_MEDIA_TYPE = self.new(415, "Unsupported media type")
       NOT_ACCEPTABLE = self.new(406, "Not acceptable")
       NO_CONTENT = self.new(204, "No Content")
+      LENGTH_REQUIRED = self.new(411, "Length Required")
     end
   end
 end

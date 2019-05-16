@@ -18,6 +18,10 @@ module ROM
         itc.hook(Methods::HTTPMethod) do |method|
           @http_methods.push(method)
         end
+        @header_filters = itc.lookup(Filters::HTTPHeaderFilter)
+        itc.hook(Filters::HTTPHeaderFilter) do |filter|
+          @header_filters.push(filter)
+        end
       end
 
       # Resolves the given http request, fetching the correct {ROM::HTTP::Methods::HTTPMethod} and input/output {ROM::DataSerializers::Serializer} based on the http request headers
@@ -26,7 +30,7 @@ module ROM
       def resolve(http_request)
         request = http_request
         request.headers.each_pair do |k, v|
-          @filters.select { |i| i.accepts?(k) }.each { |i| res = i.filter(v); return ret unless res == nil }
+          @header_filters.select { |i| i.accepts?(k) }.each { |i| res = i.filter(v); return res unless res == nil }
         end
         begin
           method = @http_methods.select{|mtd| mtd.is_name(request.method)}.first
