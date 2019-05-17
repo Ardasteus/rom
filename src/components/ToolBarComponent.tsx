@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -20,18 +20,16 @@ const styles = createStyles({
 
 export interface Props extends WithStyles<typeof styles> {}
 
-class ToolBarComponent extends React.Component<Props>
-{
-    render()
-    {
+class ToolBarComponent extends React.Component<Props> {
+    render() {
         return (
             <div className={this.props.classes.root}>
-              <AppBar position="static">
+              <AppBar position='static'>
                 <Toolbar>
-                  <Typography variant="h6" color="inherit" className={this.props.classes.grow}>
+                  <Typography variant='h6' color='inherit' className={this.props.classes.grow}>
                     Welcome to Ruby on Mails
                   </Typography>
-                  <Button color="inherit" onClick={() => {window.open("/login", "_self");}}>Login</Button>
+                  <Button color='inherit' onClick={() => {window.open('/login', '_self'); }}>Login</Button>
                 </Toolbar>
               </AppBar>
             </div>
