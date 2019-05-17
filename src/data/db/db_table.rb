@@ -12,7 +12,7 @@ module ROM
 			@idx
 		end
 		
-		def primary_key
+		def primary_keys
 			@prim
 		end
 

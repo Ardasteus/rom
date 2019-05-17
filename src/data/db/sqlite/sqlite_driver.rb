@@ -13,7 +13,9 @@ module ROM
 				:table => Proc.new { |db, tab| 
 					qry = "CREATE TABLE \"#{tab.name}\" ("
 					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type.type}#{col.type.length == nil ? '' : "(#{col.type.length})"}" }.join(', ')
-
+					if tab.primary_keys.size > 0
+						qry += ", PRIMARY KEY (#{tab.primary_keys.collect { |i| "\"#{i.name}\"" }.join(', ')})"
+					end
 					qry += ');'
 					SqlQuery.new(qry)
 				},
@@ -21,15 +23,14 @@ module ROM
 					qry = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?;"
 
 					SqlQuery.new(qry, db.name)
-				},
-				:fk => Proc.new { |db, ctx, ref|
-					qry = "ALTER TABLE \"#{ref.source.table.name}\" ADD CONSTRAINT \""
-					qry += ctx.convention(:fk_key, ref.source.table.name, ref.target.table.name, ref.terget.name, '')
-					qry += "\" FOREIGN KEY (\"#{ref.source.name}\") REFERENCES \"#{ref.target.table.name}\"(\"#{ref.target.name}\")"
-
-					SqlQuery.new(qry)
 				}
 			}
+
+			def create(ctx, db, schema)
+				schema.tables.each do |tab|
+					puts query(:table, db, tab).query
+				end
+			end
 
 			def query(nm, *args)
 				QUERIES[nm]&.call(*args)

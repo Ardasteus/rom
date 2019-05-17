@@ -15,25 +15,43 @@ module ROM
 		def build(ctx)
 			sch = DbSchema.new
 			tabs = []
-			
+			trans = {}
+
 			conv = ->(nm, *args) { ctx.convention(nm, *args) or @dvr.convention(nm, *args) }
 			
 			ctx.tables.each do |table|
 				tab = sch.table(conv.call(:table, table.name.to_s))
+				keys = []
 				table.model.properties.each do |prop|
-					name = if prop.type.accepts(Model)
+					name = if Types::Just[Model].accepts(prop.type) or prop.attribute?(ReferenceAttribute)
 						tb, col = resolve_ref(ctx, prop)
 						sfx = prop.attribute(SuffixAttribute)
-						[:fk_column, table.name, tb.name, col.name, (sfx == nil ? '' : sfx.suffix)]
+						
+						from_n = conv.call(:table, table.name.to_s)
+						to_n = conv.call(:table, tb.name.to_s)
+
+						[:fk_column, from_n, to_n, col.name, (sfx == nil ? '' : sfx.suffix)]
 					elsif table.keys.include?(prop)
 						[:pk_column, table.name, prop.name]
 					else
 						[:column, table.name, prop.name]
 					end
-					tab.column(conv.call(*name), get_type(ctx, prop))
+
+					col = tab.column(conv.call(*name), get_type(ctx, prop))
+					trans[prop] = col
+					keys << col if table.keys.include?(prop)
 				end
+				tab.primary(*keys)
 
 				tabs << tab
+			end
+
+			ctx.tables.each do |table|
+				table.model.properties.select { |i| Types::Just[Model].accepts(i.type) or i.attribute?(ReferenceAttribute) }.each do |prop|
+					tb, col = resolve_ref(ctx, prop)
+					puts "#{trans[prop].class.name} : #{trans[col].class.name}"
+					sch.reference(trans[prop], trans[col])
+				end
 			end
 			
 			sch
@@ -66,6 +84,7 @@ module ROM
 					raise('There are no candidate key columns in target table!') if cols.size == 0
 					raise('There are multiple candidate key columns in target table!') if cols.size > 1
 					other = cols.first
+					table = table.first
 				else
 					raise('There are multiple candidate models for given reference!')
 				end

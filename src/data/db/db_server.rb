@@ -6,15 +6,7 @@ module ROM
 
 		def up
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
-			sch = SchemaBuilder.new(dvr).build(MyContext)
-			sch.tables.each do |tab|
-				qry = dvr.query(:table, Db.new, tab)
-				puts qry.query
-			end
-
-			sch.tables.each do |tab|
-				
-			end
+			dvr.create(MyContext, Db.new, SchemaBuilder.new(dvr).build(MyContext))
 		end
 
 		def down
@@ -37,6 +29,10 @@ module ROM
 		class MyContext < DbContext
 			table :users, User
 			table :accounts, Account
+
+			convention(:tab) { |tab| tab.downcase }
+			convention(:pk_column) { |tab, col| "pk#{col.downcase}" }
+			convention(:fk_column) { |src, tgt, dest, sfx| "fk#{tgt.downcase}#{(sfx == '' ? '' : "_#{sfx.downcase}")}" }
 		end
 	end
 end
