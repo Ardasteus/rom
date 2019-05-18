@@ -26,6 +26,9 @@
       ],
       "classes/*": [
         "src/classes/*"
+      ],
+      "styles/*": [
+        "src/styles/*"
       ]
     }
   },
