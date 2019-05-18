@@ -4,34 +4,42 @@ module ROM
 	module Sqlite
 		class SqliteDriver < DbDriver
 			TYPES = {
-				:id => DbType.new('INT'),
+				:id => DbType.new('INTEGER'),
 				:int => DbType.new('INT'),
-				:string => DbType.new('NVARCHAR(MAX)')
+				:string => DbType.new('NVARCHAR(512)')
 			}
-
+			
 			QUERIES = {
-				:table => Proc.new { |db, tab| 
+				:table => Proc.new { |tab|
 					qry = "CREATE TABLE \"#{tab.name}\" ("
 					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type.type}#{col.type.length == nil ? '' : "(#{col.type.length})"}" }.join(', ')
-					if tab.primary_keys.size > 0
-						qry += ", PRIMARY KEY (#{tab.primary_keys.collect { |i| "\"#{i.name}\"" }.join(', ')})"
+					unless tab.primary_key == nil
+						qry += ", PRIMARY KEY (#{tab.primary_key.columns.collect { |i| "\"#{i.name}\"" }.join(', ')})"
 					end
 					qry += ');'
 					SqlQuery.new(qry)
 				},
-				:table? => Proc.new { |db, tab|
-					qry = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?;"
-
-					SqlQuery.new(qry, db.name)
+				:table? => Proc.new { |tab|
+					SqlQuery.new("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?;", tab.name)
+				},
+				:index => Proc.new { |name, tab, uq, cols|
+					SqlQuery.new("CREATE#{uq ? ' UNIQUE' : ''} INDEX \"#{name}\" ON \"#{tab}\"(#{cols.collect { |i| "\"#{i.name}\"" }.join(', ')})")
 				}
 			}
-
-			def create(ctx, db, schema)
+			
+			def create(db, schema)
 				schema.tables.each do |tab|
-					puts query(:table, db, tab).query
+					db.execute(query(:table, tab))
+					tab.indices.each do |idx|
+						db.execute(query(:index, idx.name, idx.table.name, idx.unique?, idx.columns))
+					end
+				end
+				schema.references.each do |ref|
+					# References are substituted by indices
+					db.execute(query(:index, ref.name, ref.from.table.name, false, [ref.from]))
 				end
 			end
-
+			
 			def query(nm, *args)
 				QUERIES[nm]&.call(*args)
 			end
@@ -41,7 +49,59 @@ module ROM
 			end
 			
 			def initialize(itc)
-				super(itc, 'Sqlite')
+				super(itc, 'Sqlite', SqliteConfig)
+			end
+			
+			def connect(conf)
+				SqliteConnection.new(SQLite3::Database.new(conf.file, { :type_translation => true }))
+			end
+			
+			class SqliteConnection < DbConnection
+				def name
+					'sqlite'
+				end
+				
+				def query(q)
+					Results.new(@db.query(q.query, q.arguments))
+				end
+				
+				def initialize(db)
+					@db = db
+				end
+				
+				def close
+					@db.close
+				end
+				
+				class Results < DbResults
+					def columns
+						@cols
+					end
+					
+					def initialize(res)
+						@cols = res.columns
+						@res = res
+						@row = nil
+					end
+					
+					def next
+						@row = @res.next
+					end
+					
+					def [](key)
+						key = key.to_s
+						
+						@row[@cols.index { |i| i == key }]
+					end
+					
+					def close
+						@res.close
+					end
+				end
+			end
+			
+			class SqliteConfig < Model
+				property! :file, String
 			end
 		end
 	end

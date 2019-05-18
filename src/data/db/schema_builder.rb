@@ -16,7 +16,7 @@ module ROM
 			sch = DbSchema.new
 			tabs = []
 			trans = {}
-
+			
 			conv = ->(nm, *args) { ctx.convention(nm, *args) or @dvr.convention(nm, *args) }
 			
 			ctx.tables.each do |table|
@@ -29,28 +29,31 @@ module ROM
 						
 						from_n = conv.call(:table, table.name.to_s)
 						to_n = conv.call(:table, tb.name.to_s)
-
+						
 						[:fk_column, from_n, to_n, col.name, (sfx == nil ? '' : sfx.suffix)]
 					elsif table.keys.include?(prop)
 						[:pk_column, table.name, prop.name]
 					else
 						[:column, table.name, prop.name]
 					end
-
+					
 					col = tab.column(conv.call(*name), get_type(ctx, prop))
 					trans[prop] = col
 					keys << col if table.keys.include?(prop)
+					idx = prop.attribute(IndexAttribute)
+					tab.index(conv.call(:index, tab.name, idx.unique?, [col.name]), idx.unique?, col) unless idx == nil
 				end
-				tab.primary(*keys)
-
+				tab.primary(conv.call(:pk_key, tab.name, keys.collect(&:name)), *keys)
+				
 				tabs << tab
 			end
-
+			
 			ctx.tables.each do |table|
 				table.model.properties.select { |i| Types::Just[Model].accepts(i.type) or i.attribute?(ReferenceAttribute) }.each do |prop|
 					tb, col = resolve_ref(ctx, prop)
-					puts "#{trans[prop].class.name} : #{trans[col].class.name}"
-					sch.reference(trans[prop], trans[col])
+					from = trans[prop]
+					to = trans[col]
+					sch.reference(conv.call(:fk_key, from.table.name, to.table.name, from.name, to.name), from, to)
 				end
 			end
 			
@@ -103,19 +106,19 @@ module ROM
 			base = nil
 			if type.is_a?(Types::Type)
 				case type
-				when Types::Just
-					base = type.type
-				when Types::Union
-					if type.types.size == 2 and type.types.any? { |i| i == NilClass }
-						base = type.types.find { |i| i != NilClass }
-						null = true
+					when Types::Just
+						base = type.type
+					when Types::Union
+						if type.types.size == 2 and type.types.any? { |i| i == NilClass }
+							base = type.types.find { |i| i != NilClass }
+							null = true
+						else
+							raise("Union is only supported with NilClass as a database type!")
+						end
+					when Types::Boolean
+						base = type
 					else
-						raise("Union is only supported with NilClass as a database type!")
-					end
-				when Types::Boolean
-					base = type
-				else
-					raise("Type '#{type.name}' may not be resolved as a database type!")
+						raise("Type '#{type.name}' may not be resolved as a database type!")
 				end
 			elsif type.is_a?(Class)
 				base = type

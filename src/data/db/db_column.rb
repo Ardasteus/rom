@@ -17,7 +17,7 @@ module ROM
 		end
 
 		def initialize(tab, nm, tp, *att)
-			@table = tab
+			@tab = tab
 			@name = nm
 			@type = tp
 			@att = att

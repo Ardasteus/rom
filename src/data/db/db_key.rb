@@ -1,5 +1,7 @@
+# Created by Matyáš Pokorný on 2019-05-18.
+
 module ROM
-	class DbIndex
+	class DbKey
 		def name
 			@name
 		end
@@ -8,18 +10,13 @@ module ROM
 			@tab
 		end
 		
-		def unique?
-			@unique
-		end
-
 		def columns
 			@cols
 		end
-
-		def initialize(tab, nm, unique = false, *cols)
+		
+		def initialize(tab, nm, *cols)
 			@tab = tab
 			@name = nm
-			@unique = unique
 			@cols = cols
 		end
 	end

@@ -94,11 +94,16 @@ module ROM
 				'db_type' => 'ROM::DbType',
 				'db_server' => 'ROM::DbServer',
 				'db_context' => 'ROM::DbContext',
+				'db_results' => 'ROM::DbResults',
+				'db_key' => 'ROM::DbKey',
 				'schema_builder' => 'ROM::SchemaBuilder',
 				'key_attribute' => 'ROM::KeyAttribute',
 				'reference_attribute' => 'ROM::ReferenceAttribute',
 				'suffix_attribute' => 'ROM::SuffixAttribute',
-				'sql_query' => 'ROM::SqlQuery'
+				'index_attribute' => 'ROM::IndexAttribute',
+				'sql_query' => 'ROM::SqlQuery',
+				'sql_driver' => 'ROM::SqlDriver',
+				'db_connection' => 'ROM::DbConnection'
 			},
 			'attribute' => 'ROM::Attribute',
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
@@ -171,7 +176,7 @@ module ROM
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'pathname'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'pathname', 'sqlite3'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

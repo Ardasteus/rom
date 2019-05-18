@@ -1,5 +1,9 @@
 module ROM
 	class DbReference
+		def name
+			@name
+		end
+		
 		def from
 			@from
 		end
@@ -16,7 +20,8 @@ module ROM
 			@dlt
 		end
 
-		def initialize(src, target, upd = :cascade, dlt = :cascade)
+		def initialize(nm, src, target, upd = :cascade, dlt = :cascade)
+			@name = nm
 			@from = src
 			@tgt = target
 			@upd = upd

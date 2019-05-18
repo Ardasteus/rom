@@ -18,6 +18,10 @@ module ROM
 			@name
 		end
 		
+		def config_model
+			@conf
+		end
+		
 		def type(tp)
 			raise('Method not implemented!')
 		end
@@ -30,12 +34,17 @@ module ROM
 			raise('Method not implemented!')
 		end
 		
-		def initialize(itc, nm)
+		def initialize(itc, nm, conf)
 			@name = nm
 			@itc = itc
+			@conf = conf
 		end
 		
 		def connect(conf)
+			raise('Method not implemented!')
+		end
+		
+		def create(db, schema)
 			raise('Method not implemented!')
 		end
 	end
