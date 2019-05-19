@@ -1,28 +1,20 @@
 # Created by Matyáš Pokorný on 2019-05-18.
 
 module ROM
-	class DbConnection
-		def driver
-			@dvr
-		end
-		
-		def initialize(dvr)
-			@dvr = dvr
-		end
-		
-		def name
+	class DbCollection
+		def select
 			raise('Method not implemented!')
 		end
 		
-		def query(q)
+		def collect
 			raise('Method not implemented!')
 		end
 		
-		def execute(q)
-			query(q).close
+		def find
+			raise('Method not implemented!')
 		end
 		
-		def close
+		def each
 			raise('Method not implemented!')
 		end
 	end

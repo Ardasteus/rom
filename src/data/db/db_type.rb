@@ -1,5 +1,9 @@
 module ROM
-	class DbType	
+	class DbType
+		def primitive
+			@prim
+		end
+		
 		def name
 			@name
 		end
@@ -16,7 +20,8 @@ module ROM
 			@length
 		end
 
-		def initialize(nm, tp = nil, null = false, length = nil)
+		def initialize(prim, nm, tp = nil, null = false, length = nil)
+			@prim = prim
 			@name = nm
 			@type = (tp or nm)
 			@null = null

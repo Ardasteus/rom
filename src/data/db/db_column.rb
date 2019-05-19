@@ -12,14 +12,19 @@ module ROM
 			@type
 		end
 		
+		def mapping
+			@map
+		end
+		
 		def attributes
 			@att
 		end
 
-		def initialize(tab, nm, tp, *att)
+		def initialize(tab, nm, tp, map, *att)
 			@tab = tab
 			@name = nm
-			@type = tp
+			@type = Types::Type.to_t(tp)
+			@map = map
 			@att = att
 		end
 	end

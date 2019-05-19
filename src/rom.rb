@@ -85,6 +85,11 @@ module ROM
 				'sqlite' => {
 					'sqlite_driver' => 'ROM::Sqlite::SqliteDriver'
 				},
+				'queries' => {
+					'query' => 'ROM::Queries::Query',
+					'query_expression' => 'ROM::Queries::QueryExpression',
+					'column_value' => 'ROM::Queries::ColumnValue'
+				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',
 				'db_index' => 'ROM::DbIndex',
@@ -96,6 +101,9 @@ module ROM
 				'db_context' => 'ROM::DbContext',
 				'db_results' => 'ROM::DbResults',
 				'db_key' => 'ROM::DbKey',
+				'db_collection' => 'ROM::DbCollection',
+				'entity' => 'ROM::Entity',
+				'entity_mapper' => 'ROM::EntityMapper',
 				'schema_builder' => 'ROM::SchemaBuilder',
 				'key_attribute' => 'ROM::KeyAttribute',
 				'reference_attribute' => 'ROM::ReferenceAttribute',
@@ -105,6 +113,7 @@ module ROM
 				'sql_driver' => 'ROM::SqlDriver',
 				'db_connection' => 'ROM::DbConnection'
 			},
+			'rom_db_context' => 'ROM::RomDbContext',
 			'attribute' => 'ROM::Attribute',
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
@@ -194,5 +203,6 @@ module ROM
 		map
 		
 		all 'api/**/*.rb'
+		all 'data/models/**/*.rb'
 	end
 end

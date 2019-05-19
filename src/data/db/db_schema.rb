@@ -15,9 +15,9 @@ module ROM
 			@ref = []
 		end
 
-		def table(nm)
+		def table(nm, tab)
 			raise("Table with name '#{nm}' was already added!") if @tab.any? { |i| i.name == nm }
-			tab = DbTable.new(nm)
+			tab = DbTable.new(nm, tab)
 			@tab << tab
 
 			tab

@@ -1,11 +1,8 @@
 module ROM
 	class DbContext
-		def tables
-			self.class.tables
-		end
-		
-		def convention(nm, *args)
-			self.class.convention(nm, *args)
+		def initialize(db, sch)
+			@db = db
+			@sch = sch
 		end
 		
 		def self.convention(nm, *args, &block)
@@ -67,6 +64,29 @@ module ROM
 					id = mod.properties.find { |i| i.name.downcase == 'id' }
 					@keys << id  unless id == nil
 				end
+			end
+		end
+		
+		class TableCollection < DbCollection
+			def initialize(db, lazy)
+				@db = db
+				@lazy = lazy
+			end
+			
+			def select
+				raise('Method not implemented!')
+			end
+			
+			def collect
+				raise('Method not implemented!')
+			end
+			
+			def find
+				raise('Method not implemented!')
+			end
+			
+			def each
+				raise('Method not implemented!')
 			end
 		end
 	end

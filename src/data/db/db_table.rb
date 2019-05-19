@@ -4,6 +4,10 @@ module ROM
 			@name
 		end
 
+		def table
+			@tab
+		end
+		
 		def columns
 			@cols
 		end
@@ -16,17 +20,18 @@ module ROM
 			@prim
 		end
 
-		def initialize(nm)
+		def initialize(nm, tab)
 			@name = nm
+			@tab = tab
 			@cols = []
 			@idx = []
 			@ref = []
 			@prim = nil
 		end
 
-		def column(nm, tp, *att)
+		def column(nm, tp, map, *att)
 			raise("Column '#{nm}' already exists in '#{@name}'!") if @cols.any? { |i| i.name == nm }
-			col = DbColumn.new(self, nm, tp, *att)
+			col = DbColumn.new(self, nm, tp, map, *att)
 			@cols << col
 
 			col

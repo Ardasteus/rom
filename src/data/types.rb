@@ -31,7 +31,7 @@ module ROM
 			end
 
 			def <=(other)
-				accepts(other)
+				Type.to_t(other).accepts(self)
 			end
 		end
 		

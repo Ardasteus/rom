@@ -3,9 +3,9 @@
 module ROM
 	class SqlDriver < DbDriver
 		TYPES = {
-			:id => DbType.new('INT'),
-			:int => DbType.new('INT'),
-			:string => DbType.new('NVARCHAR(MAX)')
+			Integer => DbType.new(Integer, 'INT'),
+			String => DbType.new(String, 'NVARCHAR(MAX)'),
+			Types::Boolean => DbType.new(Types::Boolean, 'BIT')
 		}
 		
 		def type(tp)

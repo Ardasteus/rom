@@ -2,11 +2,11 @@
 
 module ROM
 	class SchemaBuilder
-		TYPES = {
-			String => :string,
-			Integer => :int,
-			Types::Boolean => :bool
-		}
+		PRIMITIVES = [
+			Integer,
+			String,
+			Types::Boolean
+		].collect { |i| Types::Type.to_t(i) }
 		
 		def initialize(dvr)
 			@dvr = dvr
@@ -20,7 +20,7 @@ module ROM
 			conv = ->(nm, *args) { ctx.convention(nm, *args) or @dvr.convention(nm, *args) }
 			
 			ctx.tables.each do |table|
-				tab = sch.table(conv.call(:table, table.name.to_s))
+				tab = sch.table(conv.call(:table, table.name.to_s), table)
 				keys = []
 				table.model.properties.each do |prop|
 					name = if Types::Just[Model].accepts(prop.type) or prop.attribute?(ReferenceAttribute)
@@ -37,7 +37,7 @@ module ROM
 						[:column, table.name, prop.name]
 					end
 					
-					col = tab.column(conv.call(*name), get_type(ctx, prop))
+					col = tab.column(conv.call(*name), get_type(ctx, prop), prop)
 					trans[prop] = col
 					keys << col if table.keys.include?(prop)
 					idx = prop.attribute(IndexAttribute)
@@ -66,11 +66,11 @@ module ROM
 				_, other = resolve_ref(ctx, prop)
 				bt, _ = base_type(other.type)
 				return get_type(ctx, prop) if bt < Model
-				raise("Type '#{bt.name}' may not be resolved as a database type!") unless TYPES.has_key?(bt)
+				raise("Type '#{bt.name}' may not be resolved as a database type!") unless primitive?(bt)
 			end
 			raise('Nullable types are currently not supported!') if null
 			
-			@dvr.type(TYPES[bt])
+			@dvr.type(bt)
 		end
 		
 		def resolve_ref(ctx, prop)
@@ -124,11 +124,15 @@ module ROM
 				base = type
 			end
 			
-			raise("Type '#{type.name}' may not be resolved as a database type!") unless (base < Model or TYPES.has_key?(base))
+			raise("Type '#{type.inspect}' may not be resolved as a database type!") unless (base < Model or primitive?(base))
 			
 			[base, null]
 		end
 		
-		private :base_type
+		def primitive?(t)
+			PRIMITIVES.any? { |i| i <= t }
+		end
+		
+		private :base_type, :primitive?
 	end
 end

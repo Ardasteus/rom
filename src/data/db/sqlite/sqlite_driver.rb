@@ -4,9 +4,9 @@ module ROM
 	module Sqlite
 		class SqliteDriver < DbDriver
 			TYPES = {
-				:id => DbType.new('INTEGER'),
-				:int => DbType.new('INT'),
-				:string => DbType.new('NVARCHAR(512)')
+				Integer => DbType.new(Integer, 'INT'),
+				String => DbType.new(String, 'NVARCHAR(512)'),
+				Types::Boolean => DbType.new(Types::Boolean, 'BIT')
 			}
 			
 			QUERIES = {
