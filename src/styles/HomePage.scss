@@ -1,7 +1,3 @@
-.home-page {
-  color: white;
-}
-
 .home-page .bg {
   min-width: 100%;
   width: 100%;
@@ -10,4 +6,55 @@
   top: 0;
   left: 0;
   z-index: -1;
+}
+
+.login-card {
+  width: 200px;
+  height: 250px;
+  margin: 0 auto;
+  margin-top: 20%;
+}
+
+.create-card {
+  width: 200px;
+  height: 300px;
+  margin: 0 auto;
+  margin-top: 20%;
+}
+
+.create-page .bg {
+  min-width: 100%;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.notificationIcons {
+  display: flex;
+  margin-left: 70%
+}
+
+.login-page .bg {
+  min-width: 100%;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+.login-Link {
+  width: 250px;
+  height: 100px;
+  margin: 0 auto;
+  margin-top: 2%;
+}
+.register-Link {
+  width: 250px;
+  height: 100px;
+  margin: 0 auto;
+  margin-top: 2%;
 }

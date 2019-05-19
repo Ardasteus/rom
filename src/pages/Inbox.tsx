@@ -25,7 +25,7 @@ class HomePage extends React.Component {
     return (
       <div className='home-page'>
         <NavBar />
-        <img src={'public/images/homepage-background.png'} className='bg' />
+        <img src={'public/images/homepage-background.jpg'} className='bg' />
         {this.loginRedirect()}
         <Card>
         <Button onClick={this.setRedirect}>Logout</Button>

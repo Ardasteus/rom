@@ -6,11 +6,34 @@ import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
+import 'styles/HomePage.scss';
+import { Redirect, Link } from 'react-router-dom'
+
+
+
 
 class LoginPage extends React.Component {
+
+  state = {
+    redirect: false
+  }
+  setRedirect = () => {
+    this.setState({
+      redirect: true
+    })
+  }
+  homeRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to='/home' />
+    }
+  }
+  
   render() {
     return (
-      <Card className="login">
+      
+      <div className="login-page">   
+        <img src={'public/images/homepage-background.png'} className='bg' />
+      <Card className="login-card">
       <CardContent>
       <TextField
           id="standard-name"
@@ -24,9 +47,18 @@ class LoginPage extends React.Component {
         />
       </CardContent>
       <CardActions>
-        <Button size="small">Learn More</Button>
+        {this.homeRedirect()}       
+        <Button onClick={this.setRedirect}>Login</Button>
       </CardActions>
-    </Card>
+      </Card>
+      <div>
+        <Card className="register-Link">
+          <CardContent>
+          <p>If you dont have an account </p><p><Link to="/register">Register</Link></p>
+          </CardContent>
+        </Card>
+      </div>  
+    </div>
     );
   }
 }
