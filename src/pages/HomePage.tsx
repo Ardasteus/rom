@@ -7,20 +7,6 @@ import NavBar from './NavBar'
 
 class HomePage extends React.Component {
 
-  state = {
-    redirect: false
-  }
-  setRedirect = () => {
-    this.setState({
-      redirect: true
-    })
-  }
-  loginRedirect = () => {
-    if (this.state.redirect) {
-      return <Redirect to='/' />
-    }
-  }
-
   render() {
     return (
       <div className='home-page'>
