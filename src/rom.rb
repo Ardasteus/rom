@@ -90,7 +90,10 @@ module ROM
 					'query_expression' => 'ROM::Queries::QueryExpression',
 					'column_value' => 'ROM::Queries::ColumnValue',
 					'binary_operator' => 'ROM::Queries::BinaryOperator',
-					'function_expression' => 'ROM::Queries::FunctionExpression'
+					'function_expression' => 'ROM::Queries::FunctionExpression',
+					'unary_operator' => 'ROM::Queries::UnaryOperator',
+					'constant_value' => 'ROM::Queries::ConstantValue',
+					'order' => 'ROM::Queries::Order'
 				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',

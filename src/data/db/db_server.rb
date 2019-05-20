@@ -8,8 +8,12 @@ module ROM
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
 			conf = { :file => @itc.fetch(Filesystem).temp('romdb.sqlite.db').to_s }
 			sch = SchemaBuilder.new(dvr).build(MyContext)
-			dvr.create(dvr.connect(dvr.config_model.from_object(conf)), sch)
-			puts dvr.select(sch[:user]).query
+			db = dvr.connect(dvr.config_model.from_object(conf))
+			dvr.create(db, sch)
+			tab = sch[:user]
+			qry = dvr.select(tab, tab.double.login == 'this', [Queries::Order.new(tab.double.login, :desc)], { :p1 => tab.double.login + '...' }, 2, 5)
+			db.execute(qry)
+			puts "<#{qry.query}> #{qry.arguments.inspect}"
 		end
 		
 		def down

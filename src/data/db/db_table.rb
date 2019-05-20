@@ -19,6 +19,10 @@ module ROM
 		def primary_key
 			@prim
 		end
+		
+		def double
+			@dub
+		end
 
 		def initialize(nm, tab)
 			@name = nm
@@ -27,12 +31,18 @@ module ROM
 			@idx = []
 			@ref = []
 			@prim = nil
+			@dub = Module.new
 		end
 
 		def column(nm, tp, map, *att)
 			raise("Column '#{nm}' already exists in '#{@name}'!") if @cols.any? { |i| i.name == nm }
 			col = DbColumn.new(self, nm, tp, map, *att)
 			@cols << col
+			
+			val = Queries::ColumnValue.new(col)
+			@dub.define_singleton_method map.name.to_sym do
+			  val
+			end
 
 			col
 		end

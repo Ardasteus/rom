@@ -19,6 +19,8 @@ module ROM
 			def initialize(val)
 				@val = val
 			end
+			
+			
 		end
 	end
 end

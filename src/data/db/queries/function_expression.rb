@@ -4,6 +4,10 @@ module ROM
 			def function
 				@f
 			end
+			
+			def type
+				@type
+			end
 
 			def arguments
 				@args
@@ -12,6 +16,7 @@ module ROM
 			def initialize(f, *args)
 				@f = f
 				@args = args
+				@type = f.type(*args)
 			end
 
 			class Function

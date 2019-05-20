@@ -40,17 +40,19 @@ module ROM
 			end
 
 			def self.cmp_op(left, right)
-				raise("Types given to comparison operator don't match!") if (left.type != right.type)
+				unless left.type <= right.type or left.type <= NilClass or right.type <= NilClass
+					raise("Types given to comparison operator don't match!")
+				end
 				Types::Boolean[]
 			end
 
 			def self.math_op(left, right)
-				raise("Types given to binary math operator don't match!") if (left.type != right.type)
+				raise("Types given to binary math operator don't match!") unless left.type <= right.type
 				left.type
 			end
 
 			def self.logic_op(left, right)
-				raise("Types of logic operator must be boolean!") unless left.type < Types::Boolean[] and right.type < Types::Boolean[]
+				raise("Types of logic operator must be boolean!") unless left.type <= Types::Boolean[] and right.type <= Types::Boolean[]
 				left.type
 			end
 

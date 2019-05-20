@@ -43,23 +43,23 @@ module ROM
 			def query(nm, *args)
 				QUERIES[nm]&.call(*args)
 			end
-
+			
 			def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
 				args = []
-				qry = "SELECT "
-				if vals == nil
-					qry += "* "
-				else
-					vals.each_pair { |k, v| qry += "#{expression(v, args)} as \"#{k.to_s}\"" }
-				end
-
-				qry += "FROM \"#{from.name}\""
-
-				unless where == nil
-					raise('WHERE requires the expression to result in boolean!') unless where.type < Types::Boolean[]
+				qry = "SELECT " +
+					if vals == nil
+						'*'
+					else
+						vals.collect { |kvp| "#{expression(kvp[1], args)} as \"#{kvp[0].to_s}\"" }.join(', ')
+					end
+				
+				qry += " FROM \"#{from.name}\""
+				
+				unless where.is_a?(NilClass)
+					raise('WHERE requires the expression to result in boolean!') unless where.type <= Types::Boolean[]
 					qry += " WHERE #{expression(where, args)}"
 				end
-
+				
 				if ord.size > 0
 					qry += " ORDER BY "
 					qry += ord.collect { |o|
@@ -70,22 +70,22 @@ module ROM
 							when :desc
 								"DESC"
 						end
-
+						
 						res
 					}.join(',')
 				end
-
+				
 				qry += " LIMIT #{limit}" unless limit == nil
 				qry += " OFFSET #{offset}" unless offset == nil
-
+				
 				SqlQuery.new(qry, *args)
 			end
-
+			
 			def expression(expr, args)
 				case expr
-					when ColumnValue
-						expr.column.name.to_s
-					when ConstantValue
+					when Queries::ColumnValue
+						"\"#{expr.column.table.name}\".\"#{expr.column.name}\""
+					when Queries::ConstantValue
 						args << case expr.value
 							when true
 								1
@@ -94,12 +94,25 @@ module ROM
 							else
 								expr.value
 						end
-
-						'?'
-					when BinaryOperator
-						"(#{expression(expr.left, args)} #{expr.operator.name} #{expression(expr.right, args)})"
-					when FunctionExpression
 						
+						'?'
+					when Queries::BinaryOperator
+						if expr.operator == Queries::BinaryOperator::EQ or expr.operator == Queries::BinaryOperator::NEQ
+							cmp = (expr.operator == Queries::BinaryOperator::EQ ? 'is' : 'is not')
+							if expr.left.is_a?(Queries::ConstantValue) and expr.left.value == nil
+								return "(#{expression(expr.right, args)} #{cmp} null)"
+							elsif expr.right.is_a?(Queries::ConstantValue) and expr.right.value == nil
+								return "(#{expression(expr.left, args)} #{cmp} null)"
+							end
+						end
+						
+						"(#{expression(expr.left, args)} #{expr.operator.name} #{expression(expr.right, args)})"
+					when Queries::FunctionExpression
+						"#{expr.function.name}(#{expr.arguments.collect { |i| expression(i, args) }.join(', ')})"
+					when Queries::UnaryOperator
+						"#{expr.operator.name}#{(expr.operator.name.length > 1 ? ' ' : '')}(#{expression(expr.operand, args)})"
+					else
+						raise('Expresion type not supported!')
 				end
 			end
 			
