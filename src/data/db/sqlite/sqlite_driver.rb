@@ -53,6 +53,22 @@ module ROM
 				SqlQuery.new(qry, args)
 			end
 			
+			def update(what, where, with)
+				args = []
+				qry = "UPDATE \"#{what.name}\" SET "
+				qry += with.collect { |kvp| "\"#{kvp[0]}\" = #{expression(kvp[1], args)}" }.join(', ')
+				qry += " WHERE #{expression(where, args)}"
+				
+				SqlQuery.new(qry, args)
+			end
+			
+			def delete(from, where)
+				args = []
+				qry = "DELETE FROM \"#{from.name}\" WHERE #{expression(where, args)}"
+				
+				SqlQuery.new(qry, args)
+			end
+			
 			def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
 				args = []
 				qry = "SELECT " +

@@ -128,6 +128,33 @@ module ROM
 				Entity.new(@tab, vals)
 			end
 			
+			def update(e)
+				raise('Only entities may be updated!') unless e.is_a?(Entity)
+				
+				with = {}
+				e.flush_changes.each_pair do |k, v|
+					with[@tab.columns.find { |i| i.mapping.name.to_s == k.to_s }.name] = Queries::ConstantValue.new(v)
+				end
+				
+				@db.execute(@db.driver.update(@tab, get_matcher(e), with))
+			end
+			
+			def delete(e)
+				raise('Only entities may be deleted!') unless e.is_a?(Entity)
+				
+				@db.execute(@db.driver.delete(@tab, get_matcher(e)))
+			end
+			
+			def get_matcher(e)
+				raise('Entity has no primary keys!') unless @tab.table.keys.size > 0
+				
+				@tab.table.keys.reduce(nil) do |n, key|
+					col = e.entity_table.columns.find { |i| i.mapping == key }
+					eq = Queries::ColumnValue.new(col) == e[key.name.to_sym]
+					(n == nil ? eq : n.and(eq))
+				end
+			end
+			
 			def <<(e)
 				add(e)
 			end

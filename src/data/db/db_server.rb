@@ -15,8 +15,11 @@ module ROM
 			ctx = MyContext.new(db, sch)
 			ctx.users << User.new(:login => 'yo!')
 			ctx.users << User.new(:login => 'ho!')
-			ctx.users << User.new(:login => 'po!')
+			n = ctx.users << User.new(:login => 'po!')
 			ctx.users << User.new(:login => 'go!')
+			
+			n.login = 'popo!'
+			ctx.users.update(n)
 			
 			puts ctx.users.find { |i| i.login == 'go!' }.inspect
 			ctx.users.collect { |i| i.login }.sort.each do |login|

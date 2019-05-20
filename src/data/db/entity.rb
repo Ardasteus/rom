@@ -18,6 +18,13 @@ module ROM
 			@mod
 		end
 		
+		def flush_changes
+			ret = @changes
+			@changes = {}
+			
+			ret
+		end
+		
 		def initialize(tab, vals = {})
 			@mod = tab.table.model.new(vals)
 			@tab = tab
@@ -55,7 +62,7 @@ module ROM
 		end
 		
 		def is_a?(klass)
-			self.is_a?(klass) or @mod.class.is_a?(klass)
+			self.class <= klass or @mod.class.is_a?(klass)
 		end
 	end
 end

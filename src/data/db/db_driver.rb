@@ -42,6 +42,14 @@ module ROM
 			raise('Method not implemented!')
 		end
 		
+		def update(what, where, with)
+			raise('Method not implemented!')
+		end
+		
+		def delete(from, where)
+			raise('Method not implemented!')
+		end
+		
 		def initialize(itc, nm, conf)
 			@name = nm
 			@itc = itc
