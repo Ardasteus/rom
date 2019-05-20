@@ -5,11 +5,11 @@ module ROM
 			@sch = sch
 			@lazy = {}
 
-			@sch.tables.each do |tab|
-				map = EntityMapper.new(tab,)
-				col = TableCollection.new(db, tab, )
-				define_method tab.name.to_sym do
-
+			self.class.tables.each do |tab|
+				t = sch.tables.find { |i| i.table == tab }
+				col = TableCollection.new(@db, t, EntityMapper.new(t, {}))
+				self.class.send(:define_method, tab.name.to_sym) do
+					col
 				end
 			end
 		end
@@ -93,7 +93,7 @@ module ROM
 			end
 
 			def add(e)
-
+				raise('Method not implemented!')
 			end
 
 			def <<(e)
@@ -113,7 +113,10 @@ module ROM
 			end
 			
 			def each
-				raise('Method not implemented!')
+				qry = @db.driver.select(@tab)
+				@db.query(qry).each do |row|
+					yield(@map.map(row))
+				end
 			end
 		end
 	end

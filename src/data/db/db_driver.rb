@@ -3,7 +3,7 @@
 module ROM
 	class DbDriver
 		include Component
-
+		
 		DEFAULT_CONVENTIONS = {
 			:table => Proc.new { |tab| tab },
 			:column => Proc.new { |tab, col| col },
@@ -29,9 +29,13 @@ module ROM
 		def convention(nm, *args)
 			DEFAULT_CONVENTIONS[nm]&.call(*args)
 		end
-
+		
 		def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
-
+			raise('Method not implemented!')
+		end
+		
+		def find(from, where = nil)
+			select(from, where, [], nil, 1)
 		end
 		
 		def initialize(itc, nm, conf)

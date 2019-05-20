@@ -2,13 +2,19 @@
 
 module ROM
 	class LazyLoader
-		def initialize(db, tab)
+		def initialize(db, tab, map)
 			@db = db
 			@tab = tab
+			@map = map
 		end
 		
 		def fetch(keys)
-		
+			qry = @db.driver.find(@tab, keys.reduce(nil) { |n, kvp| eq = Queries::ColumnValue(kvp[0]) == Queries::ConstantValue(kvp[1]); (n == nil ? eq : n.and(eq)) })
+			@db.query(qry).each do |row|
+				return map.map(row)
+			end
+			
+			raise('Reference not satisfied!')
 		end
 	end
 end

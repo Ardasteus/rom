@@ -10,10 +10,12 @@ module ROM
 			sch = SchemaBuilder.new(dvr).build(MyContext)
 			db = dvr.connect(dvr.config_model.from_object(conf))
 			dvr.create(db, sch)
-			tab = sch[:user]
-			qry = dvr.select(tab, tab.double.login == 'this', [Queries::Order.new(tab.double.login, :desc)], { :p1 => tab.double.login + '...' }, 2, 5)
-			db.execute(qry)
-			puts "<#{qry.query}> #{qry.arguments.inspect}"
+			db.query(SqlQuery.new("insert into \"user\" (login) values (?)", ['yo!']))
+			db.query(SqlQuery.new("insert into \"user\" (login) values (?)", ['ho!']))
+			ctx = MyContext.new(db, sch)
+			ctx.users.each do |e|
+				puts e.inspect
+			end
 		end
 		
 		def down

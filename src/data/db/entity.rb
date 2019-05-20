@@ -19,19 +19,19 @@ module ROM
 		end
 		
 		def initialize(tab, vals = {})
-			@mod = tab.table.model
+			@mod = tab.table.model.new(vals)
 			@tab = tab
 			@changes = {}
 			
-			@mod.properties.each do |prop|
+			tab.table.model.properties.each do |prop|
 				sym = prop.name.to_sym
 				
-				define_method(sym) { @mod[sym] }
+				self.class.send(:define_method, sym) { @mod[sym] }
 				agn = "#{sym.to_s}=".to_sym
-				if prop.type < Model
+				if prop.type <= Model
 					raise('References are not supported yet!')
 				else
-					define_method(agn) do |val|
+					self.class.send(:define_method, agn) do |val|
 						if @mod[sym] != val
 							@changes[sym] = val
 							@mod[sym] = val
@@ -41,7 +41,7 @@ module ROM
 			end
 
 			vals.each_pair do |k, v|
-				raise('References are not supported yet!') if prop.type < Model
+				raise('References are not supported yet!') if tab.table.model[k].type <= Model
 				@mod[k] = v
 			end
 		end

@@ -10,18 +10,17 @@ module ROM
 		def map_all(res)
 			ret = []
 			res.each { |row| ret << map(row) }
-
+			
 			ret
 		end
-
+		
 		def map(row)
 			vals = {}
 			@tab.columns.each do |col|
-				sym = col.name.to_sym
 				val = row[col.name]
-				vals[sym] = (col.mapping.type < Model ? lazy[sym].fetch(val) : val)
+				vals[col.mapping.name.to_sym] = (col.mapping.type <= Model ? lazy[col.table].fetch({ col => val }) : val)
 			end
-
+			
 			Entity.new(@tab, vals)
 		end
 	end

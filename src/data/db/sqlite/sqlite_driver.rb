@@ -4,7 +4,7 @@ module ROM
 	module Sqlite
 		class SqliteDriver < DbDriver
 			TYPES = {
-				Integer => DbType.new(Integer, 'INT'),
+				Integer => DbType.new(Integer, 'INTEGER'),
 				String => DbType.new(String, 'NVARCHAR(512)'),
 				Types::Boolean => DbType.new(Types::Boolean, 'BIT')
 			}
@@ -12,8 +12,9 @@ module ROM
 			QUERIES = {
 				:table => Proc.new { |tab|
 					qry = "CREATE TABLE \"#{tab.name}\" ("
-					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type.type}#{col.type.length == nil ? '' : "(#{col.type.length})"}" }.join(', ')
-					unless tab.primary_key == nil
+					pk_exp = (tab.primary_key != nil and tab.primary_key.columns.size == 1 ? tab.primary_key.columns.first : nil)
+					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type.type}#{col.type.length == nil ? '' : "(#{col.type.length})"}#{(pk_exp == col ? ' PRIMARY KEY' : '')}" }.join(', ')
+					unless tab.primary_key == nil or pk_exp != nil
 						qry += ", PRIMARY KEY (#{tab.primary_key.columns.collect { |i| "\"#{i.name}\"" }.join(', ')})"
 					end
 					qry += ');'
@@ -125,7 +126,7 @@ module ROM
 			end
 			
 			def connect(conf)
-				SqliteConnection.new(SQLite3::Database.new(conf.file, { :type_translation => true }))
+				SqliteConnection.new(self, SQLite3::Database.new(conf.file, { :type_translation => true }))
 			end
 			
 			class SqliteConnection < DbConnection
@@ -134,10 +135,12 @@ module ROM
 				end
 				
 				def query(q)
+					puts "SQLITE: #{q.query}"
 					Results.new(@db.query(q.query, q.arguments))
 				end
 				
-				def initialize(db)
+				def initialize(dvr, db)
+					super(dvr)
 					@db = db
 				end
 				
