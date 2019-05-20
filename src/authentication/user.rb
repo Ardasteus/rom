@@ -1,3 +1,5 @@
 module ROM
-  User = Struct.new(:username, :security_stamp, :first_name, :last_name);
+  module Authentication
+    User = Struct.new(:username, :security_stamp, :first_name, :last_name)
+    end
 end
