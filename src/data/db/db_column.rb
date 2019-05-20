@@ -23,7 +23,7 @@ module ROM
 		def initialize(tab, nm, tp, map, *att)
 			@tab = tab
 			@name = nm
-			@type = Types::Type.to_t(tp)
+			@type = tp
 			@map = map
 			@att = att
 		end

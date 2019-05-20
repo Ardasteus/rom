@@ -88,7 +88,9 @@ module ROM
 				'queries' => {
 					'query' => 'ROM::Queries::Query',
 					'query_expression' => 'ROM::Queries::QueryExpression',
-					'column_value' => 'ROM::Queries::ColumnValue'
+					'column_value' => 'ROM::Queries::ColumnValue',
+					'binary_operator' => 'ROM::Queries::BinaryOperator',
+					'function_expression' => 'ROM::Queries::FunctionExpression'
 				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',

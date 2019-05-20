@@ -7,7 +7,9 @@ module ROM
 		def up
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
 			conf = { :file => @itc.fetch(Filesystem).temp('romdb.sqlite.db').to_s }
-			dvr.create(dvr.connect(dvr.config_model.from_object(conf)), SchemaBuilder.new(dvr).build(MyContext))
+			sch = SchemaBuilder.new(dvr).build(MyContext)
+			dvr.create(dvr.connect(dvr.config_model.from_object(conf)), sch)
+			puts dvr.select(sch[:user]).query
 		end
 		
 		def down

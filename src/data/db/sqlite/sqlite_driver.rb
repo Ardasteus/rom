@@ -43,6 +43,65 @@ module ROM
 			def query(nm, *args)
 				QUERIES[nm]&.call(*args)
 			end
+
+			def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
+				args = []
+				qry = "SELECT "
+				if vals == nil
+					qry += "* "
+				else
+					vals.each_pair { |k, v| qry += "#{expression(v, args)} as \"#{k.to_s}\"" }
+				end
+
+				qry += "FROM \"#{from.name}\""
+
+				unless where == nil
+					raise('WHERE requires the expression to result in boolean!') unless where.type < Types::Boolean[]
+					qry += " WHERE #{expression(where, args)}"
+				end
+
+				if ord.size > 0
+					qry += " ORDER BY "
+					qry += ord.collect { |o|
+						res = expression(o.expression, args)
+						res += " " + case o.order
+							when :asc
+								"ASC"
+							when :desc
+								"DESC"
+						end
+
+						res
+					}.join(',')
+				end
+
+				qry += " LIMIT #{limit}" unless limit == nil
+				qry += " OFFSET #{offset}" unless offset == nil
+
+				SqlQuery.new(qry, *args)
+			end
+
+			def expression(expr, args)
+				case expr
+					when ColumnValue
+						expr.column.name.to_s
+					when ConstantValue
+						args << case expr.value
+							when true
+								1
+							when false
+								0
+							else
+								expr.value
+						end
+
+						'?'
+					when BinaryOperator
+						"(#{expression(expr.left, args)} #{expr.operator.name} #{expression(expr.right, args)})"
+					when FunctionExpression
+						
+				end
+			end
 			
 			def type(tp)
 				TYPES[tp]

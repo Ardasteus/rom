@@ -18,7 +18,7 @@ module ROM
 			@mod
 		end
 		
-		def initialize(tab)
+		def initialize(tab, vals = {})
 			@mod = tab.table.model
 			@tab = tab
 			@changes = {}
@@ -38,6 +38,11 @@ module ROM
 						end
 					end
 				end
+			end
+
+			vals.each_pair do |k, v|
+				raise('References are not supported yet!') if prop.type < Model
+				@mod[k] = v
 			end
 		end
 		

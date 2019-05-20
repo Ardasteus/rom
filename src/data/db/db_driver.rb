@@ -30,8 +30,8 @@ module ROM
 			DEFAULT_CONVENTIONS[nm]&.call(*args)
 		end
 
-		def query(nm, *args)
-			raise('Method not implemented!')
+		def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
+
 		end
 		
 		def initialize(itc, nm, conf)

@@ -19,8 +19,12 @@ module ROM
 			raise("Table with name '#{nm}' was already added!") if @tab.any? { |i| i.name == nm }
 			tab = DbTable.new(nm, tab)
 			@tab << tab
-
+			
 			tab
+		end
+
+		def [](key)
+			@tab.find { |tab| tab.name.to_s == key.to_s }
 		end
 
 		def reference(name, src, dest, upd = :cascade, dlt = :cascade)

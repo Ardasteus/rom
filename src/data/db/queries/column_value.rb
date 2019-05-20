@@ -8,7 +8,7 @@ module ROM
 			end
 			
 			def type
-				@col.type.primitive
+				Types::Type.to_t(@col.type.primitive)
 			end
 			
 			def initialize(col)

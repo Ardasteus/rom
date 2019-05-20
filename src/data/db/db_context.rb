@@ -3,6 +3,23 @@ module ROM
 		def initialize(db, sch)
 			@db = db
 			@sch = sch
+			@lazy = {}
+
+			@sch.tables.each do |tab|
+				map = EntityMapper.new(tab,)
+				col = TableCollection.new(db, tab, )
+				define_method tab.name.to_sym do
+
+				end
+			end
+		end
+
+		def lazy(tab)
+			if not @lazy.has_key?(tab)
+				
+			else
+				@lazy[tab]
+			end
 		end
 		
 		def self.convention(nm, *args, &block)
@@ -36,6 +53,8 @@ module ROM
 			raise("Table '#{name}' already defined!") if @tabs.has_key?(name)
 			@tabs[name] = Table.new(name, mod, *att)
 		end
+
+		private :lazy
 		
 		class Table
 			def name
@@ -58,8 +77,7 @@ module ROM
 				@name = nm
 				@model = mod
 				@attributes = att
-				@keys = mod.properties.select { |i|
-					i.attribute?(KeyAttribute) }
+				@keys = mod.properties.select { |i|	i.attribute?(KeyAttribute) }
 				if @keys.size == 0
 					id = mod.properties.find { |i| i.name.downcase == 'id' }
 					@keys << id  unless id == nil
@@ -68,9 +86,18 @@ module ROM
 		end
 		
 		class TableCollection < DbCollection
-			def initialize(db, lazy)
+			def initialize(db, tab, map)
 				@db = db
-				@lazy = lazy
+				@tab = tab
+				@map = map
+			end
+
+			def add(e)
+
+			end
+
+			def <<(e)
+				add(e)
 			end
 			
 			def select
