@@ -13,7 +13,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -42,30 +42,30 @@ class NavBar extends React.Component<Props, State> {
   state: State = {
     auth: true,
     anchorEl: null,
-    redirect: false
+    redirect: false,
   };
   setRedirect = () => {
     this.setState({
-      redirect: true
-    })
+      redirect: true,
+    });
   }
   loginRedirect = () => {
     if (this.state.redirect) {
-      return <Redirect to='/' />
+      return <Redirect to='/' />;
     }
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ auth: event.target.checked });
-  };
+  }
 
   handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     this.setState({ anchorEl: event.currentTarget });
-  };
+  }
 
   handleClose = () => {
     this.setState({ anchorEl: null });
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -74,25 +74,25 @@ class NavBar extends React.Component<Props, State> {
 
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position='static'>
           <Toolbar>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
+            <Typography variant='h6' color='inherit' className={classes.grow}>
               Ruby On Mails
-              <Button color="inherit">Inbox</Button>
-              <Button color="inherit">Chat</Button>
+              <Button color='inherit'>Inbox</Button>
+              <Button color='inherit'>Chat</Button>
             </Typography>
             {auth && (
               <div>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : undefined}
-                  aria-haspopup="true"
+                  aria-haspopup='true'
                   onClick={this.handleMenu}
-                  color="inherit"
+                  color='inherit'
                 >
                   <AccountCircle />
                 </IconButton>
                 <Menu
-                  id="menu-appbar"
+                  id='menu-appbar'
                   anchorEl={anchorEl}
                   anchorOrigin={{
                     vertical: 'top',

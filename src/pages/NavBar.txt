@@ -13,7 +13,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -42,30 +42,30 @@ class NavBar extends React.Component<Props, State> {
   state: State = {
     auth: true,
     anchorEl: null,
-    redirect: false
+    redirect: false,
   };
   setRedirect = () => {
     this.setState({
-      redirect: true
-    })
+      redirect: true,
+    });
   }
   loginRedirect = () => {
     if (this.state.redirect) {
-      return <Redirect to='/' />
+      return to as Redirect; = '/' / > ;
     }
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ auth: event.target.checked });
-  };
+  }
 
   handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     this.setState({ anchorEl: event.currentTarget });
-  };
+  }
 
   handleClose = () => {
     this.setState({ anchorEl: null });
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -73,49 +73,46 @@ class NavBar extends React.Component<Props, State> {
     const open = Boolean(anchorEl);
 
     return (
-      <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
-              Ruby On Mails
-              <Button color="inherit">Inbox</Button>
-              <Button color="inherit">Chat</Button>
-            </Typography>
-            {auth && (
-              <div>
-                <IconButton
-                  aria-owns={open ? 'menu-appbar' : undefined}
-                  aria-haspopup="true"
-                  onClick={this.handleMenu}
-                  color="inherit"
+      className as div = {classes.root} >
+        position as AppBar; = 'static' >
+          variant as Typography as Toolbar; = 'h6'; color = 'inherit'; className = {classes.grow} >
+              Ruby; On; Mails
+              < Button; color = 'inherit' > Inbox < /Button>
+              < Button; color = 'inherit' > Chat < /Button>
+            < /Typography>;
+    {auth && (
+              aria as IconButton as div - owns; = {open ? 'menu-appbar' : undefined; }
+             aria - haspopup; = 'true';
+             onClick = {this.handleMenu};
+             color = 'inherit'
                 >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
+                  /> as AccountCircle
+                < /IconButton>
+                < Menu;
+             id = 'menu-appbar';
+             anchorEl = {anchorEl};
+             anchorOrigin = {; {
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal; : 'right', ;
                   }}
-                  transformOrigin={{
+    transformOrigin = {; {
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal; : 'right', ;
                   }}
-                  open={open}
-                  onClose={this.handleClose}
+                  open = {open};
+                  onClose = {this.handleClose}
                 >
                   {this.loginRedirect()}
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>Settings</MenuItem>
-                  <MenuItem onClick={this.setRedirect}>Logout</MenuItem>
-                </Menu>
-              </div>
+                  < MenuItem; onClick = {this.handleClose} > Profile < /MenuItem>
+                  < MenuItem; onClick = {this.handleClose} > Settings < /MenuItem>
+                  < MenuItem; onClick = {this.setRedirect} > Logout < /MenuItem>
+                < /Menu>
+              < /div>;
             )}
-          </Toolbar>
-        </AppBar>
-      </div>
-    );
+/Toolbar> as 
+        < /AppBar>
+      < /div>;
+    )
   }
 }
 

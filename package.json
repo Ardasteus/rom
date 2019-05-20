@@ -42,8 +42,8 @@
   "scripts": {
     "build": "webpack --config webpack.config.js --mode production",
     "start": "webpack-dev-server --config  webpack.config.js --mode development --open --hot",
-    "lint": "tslint src/**/*",
-    "lint-fix": "tslint src/**/* --fix",
+    "lint": "tslint src/**/*.ts{,x}",
+    "lint-fix": "tslint src/**/*.ts{,x} --fix",
     "test": "jest",
     "test-coverage": "jest --collectCoverage true --collectCoverageFrom src/**/*.{ts,tsx}"
   }
