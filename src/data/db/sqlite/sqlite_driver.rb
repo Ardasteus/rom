@@ -45,6 +45,14 @@ module ROM
 				QUERIES[nm]&.call(*args)
 			end
 			
+			def insert(to, values)
+				args = []
+				qry = "INSERT INTO \"#{to.name}\" (#{values.keys.collect { |i| "\"#{i}\"" }.join(', ')}) values "
+				qry += "(#{values.values.collect { |i| expression(i, args) }.join(', ')})"
+				
+				SqlQuery.new(qry, args)
+			end
+			
 			def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
 				args = []
 				qry = "SELECT " +
@@ -142,6 +150,10 @@ module ROM
 				def initialize(dvr, db)
 					super(dvr)
 					@db = db
+				end
+				
+				def last_id
+					scalar(SqlQuery.new("SELECT last_insert_rowid()"))
 				end
 				
 				def close

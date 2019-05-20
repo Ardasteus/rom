@@ -6,15 +6,21 @@ module ROM
 		
 		def up
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
+			
 			conf = { :file => @itc.fetch(Filesystem).temp('romdb.sqlite.db').to_s }
 			sch = SchemaBuilder.new(dvr).build(MyContext)
 			db = dvr.connect(dvr.config_model.from_object(conf))
 			dvr.create(db, sch)
-			db.query(SqlQuery.new("insert into \"user\" (login) values (?)", ['yo!']))
-			db.query(SqlQuery.new("insert into \"user\" (login) values (?)", ['ho!']))
+			
 			ctx = MyContext.new(db, sch)
-			ctx.users.each do |e|
-				puts e.inspect
+			ctx.users << User.new(:login => 'yo!')
+			ctx.users << User.new(:login => 'ho!')
+			ctx.users << User.new(:login => 'po!')
+			ctx.users << User.new(:login => 'go!')
+			
+			puts ctx.users.find { |i| i.login == 'go!' }.inspect
+			ctx.users.collect { |i| i.login }.sort.each do |login|
+				puts login
 			end
 		end
 		
@@ -22,12 +28,12 @@ module ROM
 		end
 		
 		class User < Model
-			property! :id, Integer
+			property :id, Integer
 			property! :login, String, IndexAttribute[true]
 		end
 		
 		class Account < Model
-			property! :id, Integer
+			property :id, Integer
 			property! :user, User, SuffixAttribute['my']
 		end
 		

@@ -22,6 +22,18 @@ module ROM
 			query(q).close
 		end
 		
+		def scalar(q)
+			query(q).each do |row|
+				return row[row.columns.first]
+			end
+			
+			raise("Query didn't yield any results!")
+		end
+		
+		def last_id
+			raise('Method not implemented!')
+		end
+		
 		def close
 			raise('Method not implemented!')
 		end

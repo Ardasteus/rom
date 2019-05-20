@@ -114,6 +114,7 @@ module ROM
 				'reference_attribute' => 'ROM::ReferenceAttribute',
 				'suffix_attribute' => 'ROM::SuffixAttribute',
 				'index_attribute' => 'ROM::IndexAttribute',
+				'auto_attribute' => 'ROM::AutoAttribute',
 				'sql_query' => 'ROM::SqlQuery',
 				'sql_driver' => 'ROM::SqlDriver',
 				'db_connection' => 'ROM::DbConnection'

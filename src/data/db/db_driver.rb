@@ -38,6 +38,10 @@ module ROM
 			select(from, where, [], nil, 1)
 		end
 		
+		def insert(to, values)
+			raise('Method not implemented!')
+		end
+		
 		def initialize(itc, nm, conf)
 			@name = nm
 			@itc = itc
