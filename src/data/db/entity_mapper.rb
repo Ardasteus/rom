@@ -18,7 +18,8 @@ module ROM
 			vals = {}
 			@tab.columns.each do |col|
 				val = row[col.name]
-				vals[col.mapping.name.to_sym] = (col.mapping.type <= Model ? lazy[col.table].fetch({ col => val }) : val)
+				keys = { col => val }
+				vals[col.mapping.name.to_sym] = (col.mapping.type <= Model ? EntityPromise.new(keys, @tab) { lazy[col].fetch(keys) } : val)
 			end
 			
 			Entity.new(@tab, vals)

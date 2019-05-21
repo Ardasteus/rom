@@ -29,20 +29,23 @@ module ROM
 			@mod = tab.table.model.new(vals)
 			@tab = tab
 			@changes = {}
-			
+			@promises = {}
+
 			tab.table.model.properties.each do |prop|
 				sym = prop.name.to_sym
 				
-				self.class.send(:define_method, sym) { @mod[sym] }
-				agn = "#{sym.to_s}=".to_sym
 				if prop.type <= Model
-					raise('References are not supported yet!')
-				else
-					self.class.send(:define_method, agn) do |val|
-						if @mod[sym] != val
-							@changes[sym] = val
-							@mod[sym] = val
-						end
+					self.class.send(:define_method, sym) do
+						
+					end
+				else	
+					self.class.send(:define_method, sym) { @mod[sym] }
+				end
+
+				self.class.send(:define_method, "#{sym.to_s}=".to_sym) do |val|
+					if @mod[sym] != val
+						@changes[sym] = val
+						@mod[sym] = val
 					end
 				end
 			end
