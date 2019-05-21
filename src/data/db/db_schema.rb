@@ -31,7 +31,9 @@ module ROM
 			raise("Reference for column '#{src.name}' already set!") if @ref.any? { |i| i.source == src }
 			raise("Source table '#{src.table.name}' is not part of the schema!") unless @tab.include?(src.table)
 			raise("Target table '#{dest.table.name}' is not part of the schema!") unless @tab.include?(dest.table)
-			@ref << DbReference.new(name, src, dest, upd, dlt)
+			ref = DbReference.new(name, src, dest, upd, dlt)
+			src.reference = ref
+			@ref << ref
 		end
 	end
 end

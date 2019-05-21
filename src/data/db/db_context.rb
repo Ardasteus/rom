@@ -1,24 +1,33 @@
 module ROM
 	class DbContext
+		def schema
+			@sch
+		end
+		
+		def tables
+			@tabs
+		end
+		
 		def initialize(db, sch)
 			@db = db
 			@sch = sch
-			@lazy = {}
+			@tabs = []
 			
+			maps = {}
 			self.class.tables.each do |tab|
 				t = sch.tables.find { |i| i.table == tab }
-				col = TableCollection.new(@db, t, EntityMapper.new(t, {}))
+				lazy = {}
+				map = { :map => EntityMapper.new(t, lazy), :lazy => lazy }
+				col = TableCollection.new(@db, self, t, map[:map])
 				self.class.send(:define_method, tab.name.to_sym) do
 					col
 				end
+				@tabs << col
+				maps[tab] = map
 			end
-		end
-		
-		def lazy(tab)
-			if not @lazy.has_key?(tab)
 			
-			else
-				@lazy[tab]
+			@sch.references.each do |ref|
+				maps[ref.from.table.table][:lazy][ref.from.name.to_sym] = LazyLoader.new(@db, ref.target.table, maps[ref.target.table.table][:map])
 			end
 		end
 		
@@ -53,8 +62,6 @@ module ROM
 			raise("Table '#{name}' already defined!") if @tabs.has_key?(name)
 			@tabs[name] = Table.new(name, mod, *att)
 		end
-		
-		private :lazy
 		
 		class Table
 			def name
@@ -94,11 +101,11 @@ module ROM
 		end
 		
 		class TableCollection < DbCollection
-			def initialize(db, tab, map)
+			def initialize(db, ctx, tab, map)
 				@db = db
+				@ctx = ctx
 				@tab = tab
 				@map = map
-				@entities = []
 			end
 			
 			def add(mod)
@@ -114,8 +121,12 @@ module ROM
 					next if @tab.table.auto_properties.include?(prop)
 					col = @tab.columns.find { |i| i.mapping == prop }
 					
-					raise('References are not yet supported!') if prop.type <= Model and v != nil
-					row[col.name] = Queries::ConstantValue.new(v)
+					row[col.name] = if col.reference != nil and v != nil
+						raise('Models are currently not supported!') unless v.is_a?(Entity)
+						Queries::ConstantValue.new(v[col.reference.target.mapping.name.to_sym])
+					else
+						Queries::ConstantValue.new(v)
+					end
 				end
 				
 				@db.execute(@db.driver.insert(@tab, row))
@@ -230,7 +241,7 @@ module ROM
 				end
 				
 				def sort
-				 self.class.new(@db, @tab, @expr, @where, [Queries::Order.new(@expr, :asc)], @limit, @offset)
+					self.class.new(@db, @tab, @expr, @where, [Queries::Order.new(@expr, :asc)], @limit, @offset)
 				end
 				
 				def sort_desc

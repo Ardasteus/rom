@@ -109,6 +109,8 @@ module ROM
 				'db_collection' => 'ROM::DbCollection',
 				'entity' => 'ROM::Entity',
 				'entity_mapper' => 'ROM::EntityMapper',
+				'lazy_promise' => 'ROM::LazyPromise',
+				'lazy_loader' => 'ROM::LazyLoader',
 				'schema_builder' => 'ROM::SchemaBuilder',
 				'key_attribute' => 'ROM::KeyAttribute',
 				'reference_attribute' => 'ROM::ReferenceAttribute',

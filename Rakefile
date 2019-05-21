@@ -12,3 +12,10 @@ end
 Inch::Rake::Suggest.new('inch') do |inch|
 	inch.args << 'src/**/*.rb'
 end
+
+desc 'Runs the application'
+task :run do
+  Dir.chdir('data') do
+    require File.expand_path('../bin/run.rb')
+  end
+end

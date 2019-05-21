@@ -9,9 +9,9 @@ module ROM
 		end
 		
 		def fetch(keys)
-			qry = @db.driver.find(@tab, keys.reduce(nil) { |n, kvp| eq = Queries::ColumnValue(kvp[0]) == Queries::ConstantValue(kvp[1]); (n == nil ? eq : n.and(eq)) })
+			qry = @db.driver.find(@tab, keys.reduce(nil) { |n, kvp| eq = Queries::ColumnValue.new(kvp[0].reference.target) == kvp[1]; (n == nil ? eq : n.and(eq)) })
 			@db.query(qry).each do |row|
-				return map.map(row)
+				return @map.map(row)
 			end
 			
 			raise('Reference not satisfied!')

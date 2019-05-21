@@ -26,22 +26,37 @@ module ROM
 		end
 		
 		def initialize(tab, vals = {})
-			@mod = tab.table.model.new(vals)
 			@tab = tab
 			@changes = {}
-			@promises = {}
-
+			
+			ctr = {}
 			tab.table.model.properties.each do |prop|
 				sym = prop.name.to_sym
+				v = vals[sym]
 				
-				if prop.type <= Model
+				if v.is_a?(LazyPromise)
+					got = false
 					self.class.send(:define_method, sym) do
-						
+						if got
+							@mod[sym]
+						else
+							i = v.fetch
+							@mod[sym] = i
+							got = true
+							
+							i
+						end
 					end
-				else	
+					
+					fake = Module.new
+					fake.define_singleton_method :is_a? do |klass|
+						prop.type <= klass
+					end
+					ctr[sym] = fake
+				else
 					self.class.send(:define_method, sym) { @mod[sym] }
 				end
-
+				
 				self.class.send(:define_method, "#{sym.to_s}=".to_sym) do |val|
 					if @mod[sym] != val
 						@changes[sym] = val
@@ -49,11 +64,11 @@ module ROM
 					end
 				end
 			end
-
+			
 			vals.each_pair do |k, v|
-				raise('References are not supported yet!') if tab.table.model[k].type <= Model
-				@mod[k] = v
+				ctr[k] = v unless v.is_a?(LazyPromise)
 			end
+			@mod = tab.table.model.new(ctr)
 		end
 		
 		def [](key)
@@ -65,7 +80,7 @@ module ROM
 		end
 		
 		def is_a?(klass)
-			self.class <= klass or @mod.class.is_a?(klass)
+			self.class <= klass or @mod.is_a?(klass)
 		end
 	end
 end

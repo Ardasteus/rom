@@ -19,6 +19,14 @@ module ROM
 		def attributes
 			@att
 		end
+		
+		def reference
+			@ref
+		end
+		
+		def reference=(ref)
+			@ref = ref
+		end
 
 		def initialize(tab, nm, tp, map, *att)
 			@tab = tab

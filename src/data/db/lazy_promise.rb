@@ -1,5 +1,5 @@
 module ROM
-	class EntityPromise
+	class LazyPromise
 		def keys
 			@keys
 		end
@@ -13,7 +13,7 @@ module ROM
 		end
 
 		def fetch
-			@block.call
+			@fetch.call
 		end
 
 		def initialize(k, tab, &block)

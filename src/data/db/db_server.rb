@@ -13,17 +13,11 @@ module ROM
 			dvr.create(db, sch)
 			
 			ctx = MyContext.new(db, sch)
-			ctx.users << User.new(:login => 'yo!')
-			ctx.users << User.new(:login => 'ho!')
-			n = ctx.users << User.new(:login => 'po!')
-			ctx.users << User.new(:login => 'go!')
+			u = ctx.users << User.new(:login => 'joe.generic')
+			ctx.accounts << Account.new(:user => u)
 			
-			n.login = 'popo!'
-			ctx.users.update(n)
-			
-			puts ctx.users.find { |i| i.login == 'go!' }.inspect
-			ctx.users.collect { |i| i.login }.sort.each do |login|
-				puts login
+			ctx.accounts.each do |acc|
+				puts "#{acc.id} : #{acc.user.login}"
 			end
 		end
 		
