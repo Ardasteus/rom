@@ -1,5 +1,7 @@
 module ROM
 	class DbContext
+		include DbSeed
+		
 		def schema
 			@sch
 		end
@@ -29,6 +31,14 @@ module ROM
 			@sch.references.each do |ref|
 				maps[ref.from.table.table][:lazy][ref.from.name.to_sym] = LazyLoader.new(@db, ref.target.table, maps[ref.target.table.table][:map])
 			end
+		end
+		
+		def seed_context
+			self.class.tables.select { |i| i.model <= DbSeed }.each do |tab|
+				tab.model.seed(@tabs[tab.name.to_sym])
+			end
+			
+			self.class.seed(self) if self.class <= DbSeed
 		end
 		
 		def [](key)

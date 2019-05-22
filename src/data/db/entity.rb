@@ -83,6 +83,10 @@ module ROM
 			@mod[key] = value
 		end
 		
+		def method_missing(name, *args, &block)
+			@mod.send(name, *args, &block)
+		end
+		
 		def is_a?(klass)
 			self.class <= klass or @mod.is_a?(klass)
 		end

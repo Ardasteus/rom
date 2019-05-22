@@ -107,6 +107,7 @@ module ROM
 				'db_results' => 'ROM::DbResults',
 				'db_key' => 'ROM::DbKey',
 				'db_collection' => 'ROM::DbCollection',
+				'db_seed' => 'ROM::DbSeed',
 				'entity' => 'ROM::Entity',
 				'entity_mapper' => 'ROM::EntityMapper',
 				'lazy_promise' => 'ROM::LazyPromise',

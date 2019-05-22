@@ -13,7 +13,7 @@ module ROM
 			dvr.create(db, sch)
 			
 			ctx = MyContext.new(db, sch)
-			a = ctx.accounts << Account.new(:user => User.new(:login => 'joe.generic'))
+			ctx.seed_context
 			
 			ctx.accounts.each do |acc|
 				puts "#{acc.id} : #{acc.user.login}"
@@ -24,8 +24,14 @@ module ROM
 		end
 		
 		class User < Model
+			include DbSeed
+			
 			property :id, Integer
 			property! :login, String, IndexAttribute[true]
+			
+			seed do
+				add User.new(:login => 'joe.generic')
+			end
 		end
 		
 		class Account < Model
@@ -36,6 +42,10 @@ module ROM
 		class MyContext < DbContext
 			table :users, User
 			table :accounts, Account
+			
+			seed do
+				accounts << Account.new(:user => users.find { |i| i.id == 1 })
+			end
 			
 			convention(:table) do |tab|
 				nm = tab.downcase
