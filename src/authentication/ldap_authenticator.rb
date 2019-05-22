@@ -26,7 +26,7 @@ module ROM
                       :return_result => true).first
           first = user_info.givenName
           last = user_info.lastName
-          user = new ROM::Authentication::User(username, nil, first, last)
+          user = new ROM::Authentication::User(username, first, last)
         end
         return user
       end
