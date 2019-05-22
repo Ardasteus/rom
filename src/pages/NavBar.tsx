@@ -24,6 +24,8 @@ import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { Transition } from 'react-transition-group';
+import Inbox from './Inbox';
+import Chat from './Chat';
 
 const styles = createStyles({
   root: {
@@ -200,8 +202,8 @@ class NavBar extends React.Component<Props, State> {
             )}
           </Toolbar>
         </AppBar>
-        {value == true && <this.TabContainer>Item One</this.TabContainer>}
-        {value != false && <this.TabContainer>Item Two</this.TabContainer>}
+        {value == true && <this.TabContainer><Inbox /></this.TabContainer>}
+        {value == false && <this.TabContainer><Chat /></this.TabContainer>}
       </div>
     );
   }
