@@ -5,13 +5,13 @@ module ROM
 		end
 		
 		def tables
-			@tabs
+			@tabs.values
 		end
 		
 		def initialize(db, sch)
 			@db = db
 			@sch = sch
-			@tabs = []
+			@tabs = {}
 			
 			maps = {}
 			self.class.tables.each do |tab|
@@ -22,13 +22,17 @@ module ROM
 				self.class.send(:define_method, tab.name.to_sym) do
 					col
 				end
-				@tabs << col
+				@tabs[tab.name.to_sym] = col
 				maps[tab] = map
 			end
 			
 			@sch.references.each do |ref|
 				maps[ref.from.table.table][:lazy][ref.from.name.to_sym] = LazyLoader.new(@db, ref.target.table, maps[ref.target.table.table][:map])
 			end
+		end
+		
+		def [](key)
+			@tabs[key.to_sym]
 		end
 		
 		def self.convention(nm, *args, &block)
@@ -108,7 +112,16 @@ module ROM
 				@map = map
 			end
 			
-			def add(mod)
+			def add(*entities, **opt)
+				ret = []
+				entities.each do |e|
+					ret << add_recursive(e, (opt[:deep] or true))
+				end
+				
+				(ret.size == 1 ? ret.first : ret)
+			end
+			
+			def add_recursive(mod, deep, *history)
 				mod = mod.entity_model if mod.is_a?(Entity)
 				
 				row = {}
@@ -121,12 +134,21 @@ module ROM
 					next if @tab.table.auto_properties.include?(prop)
 					col = @tab.columns.find { |i| i.mapping == prop }
 					
-					row[col.name] = if col.reference != nil and v != nil
-						raise('Models are currently not supported!') unless v.is_a?(Entity)
-						Queries::ConstantValue.new(v[col.reference.target.mapping.name.to_sym])
+					row[col.name] = Queries::ConstantValue.new(if col.reference != nil and v != nil
+						tgt = col.reference.target
+						unless v.is_a?(Entity)
+							if deep
+								raise('Recursive insert required!') if history.include?(v)
+								v = @ctx[tgt.table.table.name].add_recursive(v, deep, mod, *history)
+								vals[sym] = v
+							else
+								raise('Reference not satisfied for insert operation!')
+							end
+						end
+						v[tgt.mapping.name.to_sym]
 					else
-						Queries::ConstantValue.new(v)
-					end
+						v
+					end)
 				end
 				
 				@db.execute(@db.driver.insert(@tab, row))
@@ -139,15 +161,46 @@ module ROM
 				Entity.new(@tab, vals)
 			end
 			
-			def update(e)
+			def update(*entities, **opt)
+				entities.each do |e|
+					raise('Only entities may be updated!') unless e.is_a?(Entity)
+					update_recursive(e, (opt[:deep] or true), (opt[:full] or false))
+				end
+			end
+			
+			def update_recursive(e, deep, full, *history)
 				raise('Only entities may be updated!') unless e.is_a?(Entity)
 				
 				with = {}
-				e.flush_changes.each_pair do |k, v|
-					with[@tab.columns.find { |i| i.mapping.name.to_s == k.to_s }.name] = Queries::ConstantValue.new(v)
+				changes = e.flush_changes
+				e.entity_model.class.properties.each do |prop|
+					k = prop.name.to_sym
+					changed = changes.has_key?(k)
+					v = e[k]
+					col = @tab.columns.find { |i| i.mapping.name.to_s == k.to_s }
+					if v.is_a?(Entity)
+						if full or (deep and (changed or v.entity_changed?))
+							raise('Recursive update required!') if history.include?(v)
+							tgt = col.reference.target
+							sym = tgt.mapping.name.to_sym
+							old = v[sym]
+							@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if v.entity_changed?
+							new = v[sym]
+							with[col.name] = Queries::ConstantValue.new(new) unless new == old
+						end
+					elsif v.is_a?(Model)
+						if full or deep
+							raise('Recursive insert required!') if history.include?(v)
+							tgt = col.reference.target
+							v = @ctx[tgt.table.table.name].add_recursive(v, deep, full, e, *history)
+							with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+						end
+					elsif changed
+						with[col.name] = Queries::ConstantValue.new(v)
+					end
 				end
 				
-				@db.execute(@db.driver.update(@tab, get_matcher(e), with))
+				@db.execute(@db.driver.update(@tab, get_matcher(e), with)) if with.size > 0
 			end
 			
 			def delete(e)

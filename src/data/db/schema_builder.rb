@@ -109,8 +109,8 @@ module ROM
 					when Types::Just
 						base = type.type
 					when Types::Union
-						if type.types.size == 2 and type.types.any? { |i| i == NilClass }
-							base = type.types.find { |i| i != NilClass }
+						if type.types.size == 2 and type.types.any? { |i| i <= NilClass }
+							base = type.types.find { |i| i != NilClass }.type
 							null = true
 						else
 							raise("Union is only supported with NilClass as a database type!")

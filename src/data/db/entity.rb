@@ -18,6 +18,10 @@ module ROM
 			@mod
 		end
 		
+		def entity_changed?
+			@changes.size > 0
+		end
+		
 		def flush_changes
 			ret = @changes
 			@changes = {}

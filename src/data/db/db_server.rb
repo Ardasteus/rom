@@ -13,8 +13,7 @@ module ROM
 			dvr.create(db, sch)
 			
 			ctx = MyContext.new(db, sch)
-			u = ctx.users << User.new(:login => 'joe.generic')
-			ctx.accounts << Account.new(:user => u)
+			a = ctx.accounts << Account.new(:user => User.new(:login => 'joe.generic'))
 			
 			ctx.accounts.each do |acc|
 				puts "#{acc.id} : #{acc.user.login}"
