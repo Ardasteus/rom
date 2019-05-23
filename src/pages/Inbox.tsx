@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import WriteMail from './WriteMail';
+import Mail from './Mail';
 
 class Inbox extends React.Component {
   state: {
@@ -54,6 +55,7 @@ class Inbox extends React.Component {
             <ListItem button>
               <ListItemText primary=""/>
             </ListItem>
+            <Divider />
           </List>  
           <div className="writeMailButton">         
           <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >

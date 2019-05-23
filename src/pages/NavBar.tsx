@@ -130,7 +130,7 @@ class NavBar extends React.Component<Props, State> {
                 Settings
               </Typography>
               <Button color="inherit" onClick={this.handleClose1}>
-                save
+                Save
               </Button>
             </Toolbar>
           </AppBar>

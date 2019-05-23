@@ -14,6 +14,7 @@
   margin: 0 auto;
   margin-top: 20%;
 }
+
 .writemail-card {
   width: 250px;
   height: 250px;
@@ -67,8 +68,12 @@
 
 .inbox {
   color: white;
+  background-color: white;
 }
 
 .chat {
-  color: white;
+  color: black;
+}
+.writeMailButton{
+  margin-left: 96%
 }
