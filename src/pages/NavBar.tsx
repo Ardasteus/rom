@@ -24,6 +24,8 @@ import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { Transition } from 'react-transition-group';
+import PersonIcon from '@material-ui/icons/Person';
+import AddIcon from '@material-ui/icons/Add';
 import Inbox from './Inbox';
 import Chat from './Chat';
 
@@ -112,14 +114,14 @@ class NavBar extends React.Component<Props, State> {
 
     return (
       <div className={classes.root}>
-        <AppBar position='static'>
+        <AppBar position='static' color="secondary">
         <Dialog
           fullScreen
           open={this.state.open}
           onClose={this.handleClose1}
           TransitionComponent={Transition}
         >
-          <AppBar className={classes.appBar}>
+          <AppBar className={classes.appBar} color="secondary">
             <Toolbar>
               <IconButton color="inherit" onClick={this.handleClose1} aria-label="Close">
                 <CloseIcon />
@@ -142,7 +144,7 @@ class NavBar extends React.Component<Props, State> {
             </ListItem>
             
             <ListItem button>
-              <ListItemText primary="Data and personilaziton"/>
+              <ListItemText primary="Data and personalisation"/>
             </ListItem>
             
             <ListItem button>
@@ -161,7 +163,7 @@ class NavBar extends React.Component<Props, State> {
             </ListItem>
           </List>
         </Dialog>
-          <Toolbar>
+          <Toolbar color="secondary">
             <Typography variant='h6' color='inherit' className={classes.grow}>
               Ruby On Mails
               <Tabs value={value} onChange={this.handleChange1}>
@@ -202,8 +204,8 @@ class NavBar extends React.Component<Props, State> {
             )}
           </Toolbar>
         </AppBar>
-        {value == true && <this.TabContainer><Inbox /></this.TabContainer>}
-        {value == false && <this.TabContainer><Chat /></this.TabContainer>}
+        {value == false && <this.TabContainer><Inbox /></this.TabContainer>}
+        {value == true && <this.TabContainer><Chat /></this.TabContainer>}
       </div>
     );
   }

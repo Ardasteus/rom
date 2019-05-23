@@ -47,6 +47,7 @@ class RegisterPage extends React.Component {
   render() {
     const { name, password, conpassword } = this.state;
     const enabled =
+          this.state.password == this.state.conpassword &&
           name.length > 0 &&
           password.length > 0 &&
           conpassword.length > 0;
