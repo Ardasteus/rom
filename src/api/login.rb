@@ -4,12 +4,12 @@ module ROM
       namespace :api, :v1
 
       class LoginModel < Model
-        property! :user, String
-        property! :pwd, String
+        property! :username, String
+        property! :password, String
       end
 
       action :login, String, :body! => LoginModel do |login|
-        "#{login.user} : #{login.pwd}"
+        interconnect.fetch(AuthenticationService).resolve(login.username, login.password)
       end
     end
   end

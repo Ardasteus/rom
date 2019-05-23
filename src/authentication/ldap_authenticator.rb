@@ -2,21 +2,22 @@ module ROM
   module Authentication
     class LDAPAuthenticator < Authenticator
 
-      def initiliaze()
+      def initiliaze(host, port)
+        @host = host
+        @port = port
       end
 
       def authenticate(username, password)
         ldap = Net::LDAP.new
-        config_bind = @config.bind[0]
-        dc = config_bind.host.split(".")
+        dc = host.split(".")
         filter = Net::LDAP::Filter.eq( "samaccountname", username )
         attrs = ["givenname", "surname", "fullname"]
         search_base = "OU=users"
         dc.each do |part|
           search_base += ", DC=#{part}"
         end
-        ldap.host = config_bind.host
-        ldap.port = config_bind.port
+        ldap.host = @host
+        ldap.port = @port
         ldap.auth username, password
         if ldap.bind
           user_info = ldap.search(:base => search_base, :filter => filter, :attributes => attrs,

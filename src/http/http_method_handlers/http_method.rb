@@ -40,7 +40,7 @@ module ROM
         # @param [ROM::ApiPlan] plan Plan to run
         # @param [ROM:HTTP:HTTPRequest] request HTTP Request
         # @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
-        def run_plan(plan, request, serializer, ctx = ApiContext.new)
+        def run_plan(plan, request, serializer, ctx = ApiContext.new(@itc))
           args = []
           arg = plan.signature[0]
           if arg != nil
