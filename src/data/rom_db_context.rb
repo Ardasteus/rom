@@ -2,7 +2,11 @@
 
 module ROM
 	class RomDbContext < DbContext
-		
+		table :typedriver, TypeDriver
+		table :user, User
+		table :collection, Collection
+		table :contact, Contact
+		table :login, Login
 		
 		convention(:table) do |tab|
 			nm = tab.downcase
@@ -17,8 +21,11 @@ module ROM
 		end
 		convention(:pk_column) { |tab, col| "pk#{col.downcase}" }
 		convention(:fk_column) do |src, tgt, dest, sfx|
-			pfx = (tgt.length > 4 and tgt[0..4] == 'type') ? 'tk' : 'fk'
-			"#{pfx}#{tgt.downcase}#{(sfx == '' ? '' : "_#{sfx.downcase}")}"
+			if tgt.length > 4 and tgt[0..3] == 'type'
+				"tk#{tgt[4..tgt.length - 1].downcase}#{(sfx == '' ? '' : "_#{sfx.downcase}")}"
+			else
+				"fk#{tgt.downcase}#{(sfx == '' ? '' : "_#{sfx.downcase}")}"
+			end
 		end
 	end
 end

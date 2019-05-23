@@ -28,7 +28,7 @@ module ROM
 		end
 
 		def reference(name, src, dest, upd = :cascade, dlt = :cascade)
-			raise("Reference for column '#{src.name}' already set!") if @ref.any? { |i| i.source == src }
+			raise("Reference for column '#{src.name}' already set!") if @ref.any? { |i| i.from == src }
 			raise("Source table '#{src.table.name}' is not part of the schema!") unless @tab.include?(src.table)
 			raise("Target table '#{dest.table.name}' is not part of the schema!") unless @tab.include?(dest.table)
 			ref = DbReference.new(name, src, dest, upd, dlt)

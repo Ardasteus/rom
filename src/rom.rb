@@ -124,6 +124,13 @@ module ROM
 			},
 			'rom_db_context' => 'ROM::RomDbContext',
 			'attribute' => 'ROM::Attribute',
+			'models' => {
+				'user' => 'ROM::User',
+				'type_driver' => 'ROM::TypeDriver',
+				'contact' => 'ROM::Contact',
+				'collection' => 'ROM::Collection',
+				'login' => 'ROM::Login'
+			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
 				'ROM::Types::Type',
@@ -212,6 +219,5 @@ module ROM
 		map
 		
 		all 'api/**/*.rb'
-		all 'data/models/**/*.rb'
 	end
 end

@@ -49,7 +49,7 @@ module ROM
 		
 		def primary(nm, *cols)
 			raise("Primary key already defined in '#{@name}'!") unless @prim == nil
-			raise('No primary keys given!') if cols == nil or cols.length == 0
+			raise("No primary keys given for '#{@name}'!") if cols == nil or cols.length == 0
 			bad = cols.find { |col| !@cols.include?(col) }
 			raise("Column '#{bad.name}' is not part of table '#{@name}'!") unless bad == nil
 			
