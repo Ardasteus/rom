@@ -4,6 +4,7 @@ module ROM
 
       def initialize(itc)
         super(itc, "Authentication Service", "Authenticates people")
+        @resolver 
         @authenticators = itc.lookup(Authenticator)
         itc.hook(Authenticator) do |auth|
           @authenticators.push(auth)
@@ -23,9 +24,15 @@ module ROM
 
         return nil  unless user.is_a?(User)
 
-        token = @token_factories[0].create_token(user)
+        token = @token_factories[0].issue_token(user, username, nil)
 
         return token
+      end
+
+      def up
+      end
+
+      def down
       end
     end
   end

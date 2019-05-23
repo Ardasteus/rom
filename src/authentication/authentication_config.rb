@@ -5,7 +5,7 @@ module ROM
       # Instantiates the {AuthenticationConfig} class
       # @param [Interconnect] itc Interconnect
       def initialize(itc)
-        super("ldap", AuthServiceConfig)
+        super("ldap", AuthConfigModel)
       end
 
       # Bound data
@@ -20,13 +20,14 @@ module ROM
       end
 
       # Model defining the data binding
-      class AuthServiceConfig < Model
-        property! :type, String
-        property! :config, Hash
+      class AuthConfigModel < Model
+        property! :token_lifetime, String
+        property! :rsa_size, String
+        property! :services, Hash
       end
 
       class AuthConfig
-        property! :services, Types::Hash[String, AuthServiceConfig]
+        property! :services, Types::Hash[String, Hash]
       end
     end
   end

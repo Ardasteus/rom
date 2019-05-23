@@ -1,13 +1,19 @@
 module ROM
-class TokenFactory
-  include ROM::Component
+	class TokenFactory
+	  include ROM::Component
 
-  def initiliaze(itc)
-    @itc = itc
-  end
+		 def initiliaze(itc)
+		 	@itc = itc
+		 end
 
-  def create_token(user)
+		 def issue_token(user, login, stamp)
 
-  end
-end
+		 end
+
+		 def to_string(token)
+		 end
+
+		 def from_string(string)
+		 end	
+	end
 end

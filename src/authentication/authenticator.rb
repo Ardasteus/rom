@@ -1,10 +1,8 @@
 module ROM
   module Authentication
     class Authenticator
-      include Component
 
-      def initiliaze(itc)
-        @itc = itc
+      def initiliaze(host, port)
       end
 
       def authenticate(username, password)

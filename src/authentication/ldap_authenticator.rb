@@ -1,11 +1,8 @@
 module ROM
   module Authentication
     class LDAPAuthenticator < Authenticator
-      include Component
 
-      def initiliaze(itc)
-        @itc = itc
-        @config = itc.fetch(AuthenticationConfig)
+      def initiliaze()
       end
 
       def authenticate(username, password)
@@ -13,7 +10,7 @@ module ROM
         config_bind = @config.bind[0]
         dc = config_bind.host.split(".")
         filter = Net::LDAP::Filter.eq( "samaccountname", username )
-        attrs = ["givenname", "surname"]
+        attrs = ["givenname", "surname", "fullname"]
         search_base = "OU=users"
         dc.each do |part|
           search_base += ", DC=#{part}"
@@ -26,7 +23,8 @@ module ROM
                       :return_result => true).first
           first = user_info.givenName
           last = user_info.lastName
-          user = new ROM::Authentication::User(username, first, last)
+          full = user_info.fullName
+          user = ROM::Authentication::User.new(full, first, last)
         end
         return user
       end
