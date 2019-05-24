@@ -11,7 +11,7 @@ import Mail from './Mail';
 
 class Inbox extends React.Component {
   state: {
-    addingMail: false
+    addingMail: boolean,
   };
   newMailWrite = () => {
     this.setState({
@@ -19,7 +19,7 @@ class Inbox extends React.Component {
     });
   }
   MailWriting = () => {
-    if (this.state.addingMail) {
+    if (this.state.addingMail == true) {
       return <WriteMail />;
     }
   }
@@ -57,11 +57,11 @@ class Inbox extends React.Component {
             </ListItem>
             <Divider />
           </List>  
-          <div className="writeMailButton">         
+        <div className="writeMailButton">         
           <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
              <AddIcon />
           </Fab>
-          </div>            
+        </div>       
        </div>  
     );
   }
