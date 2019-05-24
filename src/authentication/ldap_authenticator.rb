@@ -9,7 +9,7 @@ module ROM
 
       def authenticate(username, password)
         ldap = Net::LDAP.new
-        dc = host.split(".")
+        dc = @host.split(".")
         filter = Net::LDAP::Filter.eq( "samaccountname", username )
         attrs = ["givenname", "surname", "fullname"]
         search_base = "OU=users"

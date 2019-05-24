@@ -4,16 +4,18 @@ module ROM
 
       def initialize(itc)
         super(itc, "Authentication Service", "Authenticates people")
-        @authenticators = itc.lookup(Authenticator)
-        itc.hook(Authenticator) do |auth|
-          @authenticators.push(auth)
-        end
+        @authenticators = []
 
         @token_factories = itc.lookup(TokenFactory)
         itc.hook(TokenFactory) do |fact|
           @token_factories.push(fact)
         end
         @tok = @token_factories[0].first
+
+        @providers = @itc.lookup(AuthenticationProvider)
+        itc.hook(AuthenticationProvider) do |prov|
+          @providers.push(prov)
+        end
       end
 
       def resolve(username, password)
@@ -37,8 +39,10 @@ module ROM
           @providers.push(prov)
         end
 
-        config.onion.each do |layer|
-
+        config.onion.each_pair do |name, model|
+          provder = @providers.select{|prov| prov.is_name?(name)}.first
+          authenticator = provider.open(provider.config_model.from_object(model.config))
+          @authenticators.push(authenticator)
         end
       end
 

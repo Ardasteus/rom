@@ -23,7 +23,7 @@ module ROM
       class AuthConfigModel < Model
         property! :token_lifetime, String
         property! :rsa_size, String
-        property! :layers, Types::Hash[String, AuthConfig]
+        property! :onion, Types::Hash[String, AuthConfig]
       end
 
       class AuthConfig < Model

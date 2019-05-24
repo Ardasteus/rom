@@ -1,12 +1,19 @@
 module ROM
-	module Authentication < AuthenticationProvider
-		class LDAPProvider
-			def initiliaze(itc)
-				@itc = itc
-				@name = "ldap"
-			end
+	module Authentication
+		module Providers
+			class LDAPProvider < AuthenticationProvider
+				def initiliaze(itc)
+					super(itc, "ldap", LDAPModel)
+				end
 
-			def open(conf)
+				def open(conf)
+					return LDAPAuthenticator.new(conf.host, conf.port)
+				end
+
+				class LDAPModel < Model
+					property! :host, String
+					property! :port, Integer, 389
+				end
 			end
 		end
 	end
