@@ -8,15 +8,12 @@ module ROM
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
 			
 			conf = { :file => @itc.fetch(Filesystem).temp('romdb.sqlite.db').to_s }
-			sch = SchemaBuilder.new(dvr).build(MyContext)
+			sch = SchemaBuilder.new(dvr).build(RomDbContext)
 			db = dvr.connect(dvr.config_model.from_object(conf))
 			dvr.create(db, sch)
 			
-			ctx = MyContext.new(db, sch)
+			ctx = RomDbContext.new(db, sch)
 			ctx.seed_context
-
-			usr = ctx.users.find { |i| i.id == 1 }
-			acc = ctx.accounts.find { |i| i.user == usr }
 		end
 		
 		def down

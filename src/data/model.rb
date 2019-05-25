@@ -126,6 +126,10 @@ module ROM
 		def self.property(nm, type, df = nil, *att)
 			raise("Property '#{nm}' already defined!") unless @props[nm] == nil
 			raise('Model already instantiated!') if @inst
+			unless not df.is_a?(Attribute) or Types::Type.to_t(type) <= Attribute
+				att << df
+				df = nil
+			end
 			prop = ModelProperty.new(nm.to_s, type, false, df, *att)
 			@props[nm] = prop
 			

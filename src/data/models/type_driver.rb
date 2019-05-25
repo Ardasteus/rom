@@ -4,7 +4,7 @@ module ROM
 	class TypeDriver < Model
 		include DbSeed
 
-		property :enum, Integer, 0, KeyAttribute[], AutoAttribute[]
+		property :enum, Integer, KeyAttribute[], AutoAttribute[]
 		property! :moniker, String, IndexAttribute[]
 		property :description, String
 

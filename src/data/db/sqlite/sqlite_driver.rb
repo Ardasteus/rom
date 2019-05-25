@@ -6,7 +6,8 @@ module ROM
 			TYPES = {
 				Integer => DbType.new(Integer, 'INTEGER'),
 				String => DbType.new(String, 'NVARCHAR(512)'),
-				Types::Boolean => DbType.new(Types::Boolean, 'TINYINT')
+				Types::Boolean => DbType.new(Types::Boolean, 'TINYINT'),
+				Time => DbType.new(Time, 'DATETIME')
 			}
 			
 			QUERIES = {

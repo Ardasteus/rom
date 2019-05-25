@@ -18,8 +18,7 @@ module ROM
 			def ==(other)
 				if other.is_a?(Model)
 					raise('Columns is not a reference source!') if @col.reference == nil
-					puts @col.mapping.type.inspect
-					raise("Column reference is compared to unexpected type!") if @col.mapping.type.is(other)
+					raise("Column reference is compared to unexpected type!") unless @col.mapping.type.is(other)
 					self == other[@col.reference.target.mapping.name.to_sym]
 				else
 					super(other)

@@ -5,7 +5,8 @@ module ROM
 		PRIMITIVES = [
 			Integer,
 			String,
-			Types::Boolean
+			Types::Boolean,
+			Time
 		].collect { |i| Types::Type.to_t(i) }
 		
 		def initialize(dvr)

@@ -120,6 +120,7 @@ module ROM
 				@ctx = ctx
 				@tab = tab
 				@map = map
+				@type = tab.table.model
 			end
 			
 			def add(*entities, **opt)
@@ -132,6 +133,7 @@ module ROM
 			end
 			
 			def add_recursive(mod, deep, *history)
+				raise('Invalid model type!') unless mod.is_a?(@type)
 				mod = mod.entity_model if mod.is_a?(Entity)
 				
 				row = {}
