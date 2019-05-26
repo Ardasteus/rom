@@ -5,7 +5,7 @@ module ROM
 		property :id, Integer
 		property! :subject, String, IndexAttribute[]
 		property! :identifier, String, IndexAttribute[]
-		property! :date, Time
+		property! :date, Integer
 		property! :excerpt, String
 		property! :sender, Participant, SuffixAttribute['sender']
 		property :reply_address, String

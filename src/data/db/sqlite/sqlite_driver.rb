@@ -4,17 +4,16 @@ module ROM
 	module Sqlite
 		class SqliteDriver < DbDriver
 			TYPES = {
-				Integer => DbType.new(Integer, 'INTEGER'),
-				String => DbType.new(String, 'NVARCHAR(512)'),
-				Types::Boolean => DbType.new(Types::Boolean, 'TINYINT'),
-				Time => DbType.new(Time, 'DATETIME')
+				Integer => 'INTEGER',
+				String => 'NVARCHAR',
+				Types::Boolean => 'TINYINT',
+				DateTime => 'DATETIME'
 			}
-			
 			QUERIES = {
 				:table => Proc.new { |tab|
 					qry = "CREATE TABLE \"#{tab.name}\" ("
 					pk_exp = (tab.primary_key != nil and tab.primary_key.columns.size == 1 ? tab.primary_key.columns.first : nil)
-					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type.type}#{col.type.length == nil ? '' : "(#{col.type.length})"}#{(pk_exp == col ? ' PRIMARY KEY' : '')}" }.join(', ')
+					qry += tab.columns.collect { |col| "\"#{col.name}\" #{col.type}#{(pk_exp == col ? ' PRIMARY KEY' : '')}" }.join(', ')
 					unless tab.primary_key == nil or pk_exp != nil
 						qry += ", PRIMARY KEY (#{tab.primary_key.columns.collect { |i| "\"#{i.name}\"" }.join(', ')})"
 					end
@@ -142,8 +141,9 @@ module ROM
 				end
 			end
 			
-			def type(tp)
-				TYPES[tp]
+			def type(tp, null = false, len = nil)
+				len = nil if tp == Integer and len != nil
+				(TYPES.has_key?(tp) ? DbType.new(tp, TYPES[tp], TYPES[tp], null, len) : nil)
 			end
 			
 			def initialize(itc)
@@ -160,7 +160,6 @@ module ROM
 				end
 				
 				def query(q)
-					puts "SQLITE: #{q.query}"
 					Results.new(@db.query(q.query, q.arguments))
 				end
 				

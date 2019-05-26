@@ -22,7 +22,7 @@ module ROM
 			@conf
 		end
 		
-		def type(tp)
+		def type(tp, null = false, len = nil)
 			raise('Method not implemented!')
 		end
 		

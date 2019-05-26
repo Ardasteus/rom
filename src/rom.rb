@@ -120,7 +120,8 @@ module ROM
 				'auto_attribute' => 'ROM::AutoAttribute',
 				'sql_query' => 'ROM::SqlQuery',
 				'sql_driver' => 'ROM::SqlDriver',
-				'db_connection' => 'ROM::DbConnection'
+				'db_connection' => 'ROM::DbConnection',
+				'length_attribute' => 'ROM::LengthAttribute'
 			},
 			'rom_db_context' => 'ROM::RomDbContext',
 			'attribute' => 'ROM::Attribute',

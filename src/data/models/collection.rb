@@ -3,6 +3,6 @@ module ROM
 		property :id, Integer
 		property! :name, String, IndexAttribute[]
 		property :collection, Collection, SuffixAttribute['parent']
-		property :flags, Integer
+		property :flags, Integer, 0
 	end
 end

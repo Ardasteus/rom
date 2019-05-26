@@ -27,5 +27,17 @@ module ROM
 			@null = null
 			@length = length
 		end
+		
+		def not_null
+			DbType.new(@prim, @name, @type, false, @length)
+		end
+		
+		def null
+			DbType.new(@prim, @name, @type, true, @length)
+		end
+		
+		def to_s
+			"#{@type}#{(@length != nil ? "(#{@length})" : '')}#{(@null ? '' : ' NOT NULL')}"
+		end
 	end
 end

@@ -1,7 +1,7 @@
 module ROM
 	class DbServer < Service
 		def initialize(itc)
-			super(itc, 'Database server', 'Provides connection to DB')
+			super(itc, 'Database server', 'Provides connection to DB', Filesystem)
 		end
 		
 		def up
@@ -14,48 +14,14 @@ module ROM
 			
 			ctx = RomDbContext.new(db, sch)
 			ctx.seed_context
+			
+			root = ctx.collections << Collection.new(:name => '/')
+			joe_contact = ctx.contacts << Contact.new(:first_name => 'Joe', :last_name => 'Generic')
+			joe_user = ctx.users << User.new(:login => 'jgeneric', :first_name => 'Joe', :last_name => 'Generic', :collection => root, :contact => joe_contact)
+			ctx.logins << Login.new(:driver => ctx.driver_types.find(1), :token => '', :user => joe_user, :last_logon => Time.now.to_i)
 		end
 		
 		def down
-		end
-		
-		class User < Model
-			include DbSeed
-			
-			property :id, Integer
-			property! :login, String, IndexAttribute[true]
-			
-			seed do
-				add User.new(:login => 'joe.generic')
-			end
-		end
-		
-		class Account < Model
-			property :id, Integer
-			property! :user, User, SuffixAttribute['my']
-		end
-		
-		class MyContext < DbContext
-			table :users, User
-			table :accounts, Account
-			
-			seed do
-				accounts << Account.new(:user => users.find { |i| i.id == 1 })
-			end
-			
-			convention(:table) do |tab|
-				nm = tab.downcase
-				
-				if nm[nm.length - 2..nm.length - 1] == 'es'
-					nm[0..nm.length - 3]
-				elsif nm[nm.length - 1] == 's'
-					nm[0..nm.length - 2]
-				else
-					nm
-				end
-			end
-			convention(:pk_column) { |tab, col| "pk#{col.downcase}" }
-			convention(:fk_column) { |src, tgt, dest, sfx| "fk#{tgt.downcase}#{(sfx == '' ? '' : "_#{sfx.downcase}")}" }
 		end
 	end
 end

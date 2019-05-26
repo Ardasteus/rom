@@ -5,7 +5,7 @@ module ROM
 		property :id, Integer
 		property! :sender, Contact, SuffixAttribute['sender']
 		property! :message, String
-		property! :timestamp, Time
+		property! :timestamp, Integer
 		property :parent, Message, SuffixAttribute['parent']
 		property! :type, TypeMessage
 		property! :channel, Channel

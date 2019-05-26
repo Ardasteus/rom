@@ -247,9 +247,30 @@ module ROM
 				CollectQuery.new(@db, @tab, expr)
 			end
 			
-			def find
-				expr = yield(@tab.double)
-				raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+			def find(*keys, **named_keys)
+				raise('Keys by-position cannot be mixed with keys by-name!') if keys.size > 0 and named_keys.size > 0
+				if keys.size > 0
+					raise("Expected #{@tab.table.keys.size} keys, got #{keys.size}!") if @tab.table.keys.size != keys.size
+					i = -1
+					expr = @tab.table.keys.reduce(nil) do |n, prop|
+						col = Queries::ColumnValue.new(@tab.columns.find { |col| col.mapping == prop })
+						i += 1
+						next (n == nil ? col == keys[i] : n.and(col == keys[i]))
+					end
+				elsif named_keys.size > 0
+					raise("Expected #{@tab.table.keys.size} keys, got #{named_keys.size}!") if @tab.table.keys.size != named_keys.size
+					i = -1
+					expr = @tab.table.keys.reduce(nil) do |n, prop|
+						col = Queries::ColumnValue.new(@tab.columns.find { |col| col.mapping == prop })
+						raise("Key '#{prop.name}' not found!") unless named_keys.has_key?(prop.name.to_sym)
+						val = named_keys[prop.name.to_sym]
+						i += 1
+						next (n == nil ? col == val : n.and(col == val))
+					end
+				else
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				end
 				qry = @db.driver.find(@tab, expr)
 				@db.query(qry).each do |row|
 					return(@map.map(row))

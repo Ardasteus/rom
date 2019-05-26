@@ -2,15 +2,21 @@
 
 module ROM
 	class SchemaBuilder
-		PRIMITIVES = [
-			Integer,
-			String,
-			Types::Boolean,
-			Time
-		].collect { |i| Types::Type.to_t(i) }
+		DEFAULT_OPT = {
+			:str_length => 256
+		}
 		
-		def initialize(dvr)
+		def initialize(dvr, **opt)
 			@dvr = dvr
+			@opt = opt
+		end
+		
+		def opt(k)
+			if @opt.has_key?(k)
+				@opt[k]
+			else
+				DEFAULT_OPT[k]
+			end
 		end
 		
 		def build(ctx)
@@ -37,8 +43,9 @@ module ROM
 					else
 						[:column, table.name, prop.name]
 					end
-					
-					col = tab.column(conv.call(*name), get_type(ctx, prop), prop)
+					type = get_type(ctx, prop)
+					type = type.not_null if table.keys.include?(prop)
+					col = tab.column(conv.call(*name), type, prop)
 					trans[prop] = col
 					keys << col if table.keys.include?(prop)
 					idx = prop.attribute(IndexAttribute)
@@ -63,15 +70,19 @@ module ROM
 		
 		def get_type(ctx, prop)
 			bt, null = base_type(prop.type)
+			len = nil
 			if bt < Model
 				_, other = resolve_ref(ctx, prop)
 				bt, _ = base_type(other.type)
-				return get_type(ctx, prop) if bt < Model
-				raise("Type '#{bt.name}' may not be resolved as a database type!") unless primitive?(bt)
+				len = other.attribute(LengthAttribute).length if other.attribute?(LengthAttribute)
+				return get_type(ctx, other) if bt < Model
 			end
-			raise('Nullable types are currently not supported!') if null
+			len = opt(:str_length) if bt <= String and len == nil
 			
-			@dvr.type(bt)
+			ret = @dvr.type(bt, null, len)
+			raise("Type '#{bt.name}' cannot be resolved by the DB driver!") if ret == nil
+			
+			ret
 		end
 		
 		def resolve_ref(ctx, prop)
@@ -125,15 +136,9 @@ module ROM
 				base = type
 			end
 			
-			raise("Type '#{type.inspect}' may not be resolved as a database type!") unless (base < Model or primitive?(base))
-			
 			[base, null]
 		end
 		
-		def primitive?(t)
-			PRIMITIVES.any? { |i| i <= t }
-		end
-		
-		private :base_type, :primitive?
+		private :base_type, :opt
 	end
 end

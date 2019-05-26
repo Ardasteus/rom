@@ -67,10 +67,25 @@ module ROM
 				end
 			end
 			
-			@log.info('Starting services...')
-			@itc.lookup(Service).sort_by(&method(:dep_level)).each do |svc|
-					svc.start
+			@log.info('Starting log servers...')
+			@itc.lookup(Service).select { |i| i.is_a?(LogServer) }.sort_by(&method(:dep_level)).each do |svc|
 				begin
+					svc.start
+				rescue Exception => ex
+					@log.error("Failed to start log server!: #{ex.message}", ex)
+					if @debug
+						sleep DBG_SLEEP # Wait for debug output to catch up
+						raise
+					else
+						return
+					end
+				end
+			end
+			
+			@log.info('Starting services...')
+			@itc.lookup(Service).select { |i| not i.is_a?(LogServer) }.sort_by(&method(:dep_level)).each do |svc|
+				begin
+					svc.start
 				rescue Exception => ex
 					@log.error("Failed to start service!: #{ex.message}", ex)
 					if @debug
