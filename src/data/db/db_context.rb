@@ -215,10 +215,18 @@ module ROM
 				@db.execute(@db.driver.update(@tab, get_matcher(e), with)) if with.size > 0
 			end
 			
-			def delete(e)
-				raise('Only entities may be deleted!') unless e.is_a?(Entity)
+			def delete(e = nil)
+				raise('Block cannot be used when entity was given!') if e != nil and block_given?
+				if e == nil
+					raise('Matching function expected!') unless block_given?
+					raise('Only entities may be deleted!') unless e.is_a?(Entity)
+					where = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				else
+					where = get_matcher(e)
+				end
 				
-				@db.execute(@db.driver.delete(@tab, get_matcher(e)))
+				@db.execute(@db.driver.delete(@tab, where))
 			end
 			
 			def get_matcher(e)
