@@ -1,19 +1,19 @@
 module ROM
 	class DbServer < Service
 		def initialize(itc)
-			super(itc, 'Database server', 'Provides connection to DB', Filesystem)
+			super(itc, 'Database server', 'Provides connection to DBs', Filesystem)
 		end
 		
 		def up
 			dvr = @itc.fetch(Sqlite::SqliteDriver)
 			
-			conf = { :file => @itc.fetch(Filesystem).temp('romdb.sqlite.db').to_s }
+			conf = { :file => @itc.fetch(Filesystem).path('romdb.sqlite.db').to_s }
 			sch = SchemaBuilder.new(dvr).build(RomDbContext)
 			db = dvr.connect(dvr.config_model.from_object(conf))
-			dvr.create(db, sch)
+			stat = dvr.create(db, sch)
 			
 			ctx = RomDbContext.new(db, sch)
-			ctx.seed_context
+			ctx.seed_context(stat)
 			
 			root = ctx.collections << Collection.new(:name => '/')
 			joe_contact = ctx.contacts << Contact.new(:first_name => 'Joe', :last_name => 'Generic')

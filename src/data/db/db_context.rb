@@ -33,12 +33,12 @@ module ROM
 			end
 		end
 		
-		def seed_context
-			self.class.tables.select { |i| i.model <= DbSeed }.each do |tab|
+		def seed_context(stat)
+			self.class.tables.select { |i| i.model <= DbSeed and stat.new?(i.name.to_sym) }.each do |tab|
 				tab.model.seed(@tabs[tab.name.to_sym])
 			end
 			
-			self.class.seed(self) if self.class <= DbSeed
+			self.class.seed(self) if stat.regenerated?
 		end
 		
 		def [](key)

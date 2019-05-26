@@ -29,16 +29,24 @@ module ROM
 			}
 			
 			def create(db, schema)
+				status = DbStatus.new
 				schema.tables.each do |tab|
+					unless db.scalar(query(:table?, tab)) == 0
+						status.table(tab.name.to_sym, :found)
+						next
+					end
 					db.execute(query(:table, tab))
+					status.table(tab.name.to_sym, :new)
 					tab.indices.each do |idx|
 						db.execute(query(:index, idx.name, idx.table.name, idx.unique?, idx.columns))
 					end
 				end
-				schema.references.each do |ref|
+				schema.references.select { |i| status.new?(i.from.table.name.to_sym) or status.new?(i.from.table.name.to_sym) }.each do |ref|
 					# References are substituted by indices
 					db.execute(query(:index, ref.name, ref.from.table.name, false, [ref.from]))
 				end
+				
+				status
 			end
 			
 			def query(nm, *args)
