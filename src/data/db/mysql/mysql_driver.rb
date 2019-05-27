@@ -12,7 +12,7 @@ module ROM
 			end
 
 			def initialize(itc)
-				super(itc, 'MySQL', MySqlConfig)
+				super(itc, 'mysql', MySqlConfig)
 			end
 			
 			def create(db, schema)

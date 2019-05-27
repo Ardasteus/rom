@@ -45,6 +45,10 @@ module ROM
 			@tabs[key.to_sym]
 		end
 		
+		def close
+			@db.close
+		end
+
 		def self.convention(nm, *args, &block)
 			if block_given?
 				@conv[nm] = block

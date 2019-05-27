@@ -22,8 +22,10 @@ module ROM
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
 			@itc.register(DbServer)
+			@itc.register(DbConfig)
 			@itc.register(MySql::MySqlDriver)
 			@itc.register(Sqlite::SqliteDriver)
+			@itc.register(RomDbHook)
 			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)

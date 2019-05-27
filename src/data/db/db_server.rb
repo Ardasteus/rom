@@ -2,26 +2,64 @@ module ROM
 	class DbServer < Service
 		def initialize(itc)
 			super(itc, 'Database server', 'Provides connection to DBs', Filesystem)
+			@dbs = {}
+			@cons = []
 		end
 		
 		def up
-			dvr = @itc.fetch(Sqlite::SqliteDriver)
+			cfg = @itc.fetch(DbConfig)
+			log = @itc.fetch(LogServer)
 			
-			conf = { :file => @itc.fetch(Filesystem).path('romdb.sqlite.db').to_s }
-			sch = SchemaBuilder.new(dvr).build(RomDbContext)
-			db = dvr.connect(dvr.config_model.from_object(conf))
-			stat = dvr.create(db, sch)
-			
-			ctx = RomDbContext.new(db, sch)
-			ctx.seed_context(stat)
-			
-			root = ctx.collections << Collection.new(:name => '/')
-			joe_contact = ctx.contacts << Contact.new(:first_name => 'Joe', :last_name => 'Generic')
-			joe_user = ctx.users << User.new(:login => 'jgeneric', :first_name => 'Joe', :last_name => 'Generic', :collection => root, :contact => joe_contact)
-			ctx.logins << Login.new(:driver => ctx.driver_types.find(1), :token => '', :user => joe_user, :last_logon => Time.now.to_i)
+			cfg.dbs.each_pair do |name, db|
+				log.trace("Preparing DB '#{name}'...")
+				hook = @itc.fetch(DbHook) { |i| i.name == name }
+				raise("DB hook for '#{name}' not found!") if hook == nil
+				
+				dvr = @itc.fetch(DbDriver) { |i| i.name == db.driver }
+				raise("DB driver '#{db.driver}' not found!") if dvr == nil
+				
+				log.trace("Connecting to '#{name}' via '#{dvr.name}'...")
+				conf = dvr.config_model.from_object(db.connection)
+				con = dvr.connect(conf)
+				
+				log.trace("Building DB schema of '#{hook.context.name}' for '#{name}'...")
+				sch = SchemaBuilder.new(dvr).build(hook.context)
+				@dbs[hook.context] = { :schema => sch, :driver => dvr, :config => conf }
+				
+				log.trace("Creating structure of DB '#{name}'...")
+				stat = dvr.create(con, sch)
+				
+				log.trace("Opening DB '#{name}' as '#{hook.context.name}'...")
+				ctx = hook.context.new(con, sch)
+				
+				log.trace("Seeding DB '#{name}'...")
+				ctx.seed_context(stat)
+				
+				con.close
+			end
 		end
 		
 		def down
+			log = @itc.fetch(LogServer)
+			log.trace('Closing open DB connections...')
+			@cons.each(&:close)
+		end
+		
+		def [](ctx)
+			return nil unless @dbs.has_key?(ctx)
+			db = @dbs[ctx]
+			con = db[:driver].connect(db[:config])
+			ret = ctx.new(con, db[:schema])
+			if block_given?
+				begin
+					yield(ret)
+				ensure
+					con.close
+				end
+			else
+				ret
+				@cons << con
+			end
 		end
 	end
 end

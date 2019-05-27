@@ -155,11 +155,12 @@ module ROM
 			end
 			
 			def initialize(itc)
-				super(itc, 'Sqlite', SqliteConfig)
+				super(itc, 'sqlite', SqliteConfig)
 			end
 			
 			def connect(conf)
-				SqliteConnection.new(self, SQLite3::Database.new(conf.file, { :type_translation => true }))
+				fs = @itc.fetch(Filesystem)
+				SqliteConnection.new(self, SQLite3::Database.new(fs.path(conf.file).expand_path.to_s, { :type_translation => true }))
 			end
 			
 			class SqliteConnection < DbConnection

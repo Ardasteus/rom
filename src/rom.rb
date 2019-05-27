@@ -122,9 +122,12 @@ module ROM
 				'sql_driver' => 'ROM::SqlDriver',
 				'db_connection' => 'ROM::DbConnection',
 				'length_attribute' => 'ROM::LengthAttribute',
-				'db_status' => 'ROM::DbStatus'
+				'db_status' => 'ROM::DbStatus',
+				'db_config' => 'ROM::DbConfig',
+				'db_hook' => 'ROM::DbHook'
 			},
 			'rom_db_context' => 'ROM::RomDbContext',
+			'rom_db_hook' => 'ROM::RomDbHook',
 			'attribute' => 'ROM::Attribute',
 			'models' => {
 				'user' => 'ROM::User',
