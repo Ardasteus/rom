@@ -58,7 +58,7 @@ module ROM
 				qry = "INSERT INTO \"#{to.name}\" (#{values.keys.collect { |i| "\"#{i}\"" }.join(', ')}) values "
 				qry += "(#{values.values.collect { |i| expression(i, args) }.join(', ')})"
 				
-				SqlQuery.new(qry, args)
+				SqlQuery.new(qry, *args)
 			end
 			
 			def update(what, where, with)
@@ -67,14 +67,14 @@ module ROM
 				qry += with.collect { |kvp| "\"#{kvp[0]}\" = #{expression(kvp[1], args)}" }.join(', ')
 				qry += " WHERE #{expression(where, args)}"
 				
-				SqlQuery.new(qry, args)
+				SqlQuery.new(qry, *args)
 			end
 			
 			def delete(from, where)
 				args = []
 				qry = "DELETE FROM \"#{from.name}\" WHERE #{expression(where, args)}"
 				
-				SqlQuery.new(qry, args)
+				SqlQuery.new(qry, *args)
 			end
 			
 			def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
@@ -179,6 +179,10 @@ module ROM
 				
 				def last_id
 					scalar(SqlQuery.new("SELECT last_insert_rowid()"))
+				end
+				
+				def select_db
+					# ignored
 				end
 				
 				def close

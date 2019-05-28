@@ -30,6 +30,10 @@ module ROM
 			raise("Query didn't yield any results!")
 		end
 		
+		def select_db
+			raise('Method not implemented!')
+		end
+		
 		def last_id
 			raise('Method not implemented!')
 		end

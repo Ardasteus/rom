@@ -18,18 +18,19 @@ module ROM
 				dvr = @itc.fetch(DbDriver) { |i| i.name == db.driver }
 				raise("DB driver '#{db.driver}' not found!") if dvr == nil
 				
-				log.trace("Connecting to '#{name}' via '#{dvr.name}'...")
-				conf = dvr.config_model.from_object(db.connection)
-				con = dvr.connect(conf)
-				
 				log.trace("Building DB schema of '#{hook.context.name}' for '#{name}'...")
 				sch = SchemaBuilder.new(dvr).build(hook.context)
+				
+				log.trace("Connecting to '#{name}' via '#{dvr.name}'...")
+				conf = dvr.config_model.from_object(db.connection)
 				@dbs[hook.context] = { :schema => sch, :driver => dvr, :config => conf }
+				con = dvr.connect(conf)
 				
 				log.trace("Creating structure of DB '#{name}'...")
 				stat = dvr.create(con, sch)
 				
 				log.trace("Opening DB '#{name}' as '#{hook.context.name}'...")
+				con.select_db
 				ctx = hook.context.new(con, sch)
 				
 				log.trace("Seeding DB '#{name}'...")
@@ -49,6 +50,7 @@ module ROM
 			return nil unless @dbs.has_key?(ctx)
 			db = @dbs[ctx]
 			con = db[:driver].connect(db[:config])
+			con.select_db
 			ret = ctx.new(con, db[:schema])
 			if block_given?
 				begin

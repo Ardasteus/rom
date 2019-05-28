@@ -34,8 +34,8 @@ module ROM
 		end
 		
 		def seed_context(stat)
-			self.class.tables.select { |i| i.model <= DbSeed and stat.new?(i.name.to_sym) }.each do |tab|
-				tab.model.seed(@tabs[tab.name.to_sym])
+			@tabs.values.select { |i| i.table.table.model <= DbSeed and stat.new?(i.table.name.to_sym) }.each do |tab|
+				tab.table.table.model.seed(tab)
 			end
 			
 			self.class.seed(self) if stat.regenerated?
@@ -119,6 +119,10 @@ module ROM
 		end
 		
 		class TableCollection < DbCollection
+			def table
+				@tab
+			end
+			
 			def initialize(db, ctx, tab, map)
 				@db = db
 				@ctx = ctx
