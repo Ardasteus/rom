@@ -6,14 +6,14 @@ module ROM
         super(itc, "Authentication Service", "Authenticates people")
         @authenticators = []
 
-        @token_factories = itc.lookup(TokenFactory)
-        itc.hook(TokenFactory) do |fact|
+        @token_factories = itc.lookup(ROM::Authentication::Factories::TokenFactory)
+        itc.hook(ROM::Authentication::TokenFactory) do |fact|
           @token_factories.push(fact)
         end
         @tok = @token_factories[0].first
 
-        @providers = @itc.lookup(AuthenticationProvider)
-        itc.hook(AuthenticationProvider) do |prov|
+        @providers = @itc.lookup(ROM::Authentication::Providers::AuthenticationProvider)
+        itc.hook(ROM::Authentication::Providers::AuthenticationProvider) do |prov|
           @providers.push(prov)
         end
       end

@@ -4,7 +4,7 @@ module ROM
       class HTTPHeaderFilter
         include Component
 
-        def initiliaze(itc)
+        def initialize(itc)
           @itc = itc
           @required = false
           @header_to_filter = :header

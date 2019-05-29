@@ -135,7 +135,11 @@ module ROM
 			'status_code' => 'ROM::HTTP::StatusCode',
 			'security' => 'ROM::HTTP::Security',
 			'header_filters' => {
-					'http_header_filter' => 'ROM::HTTP::Filters::HTTPHeaderFilter'
+					'http_header_filter' => 'ROM::HTTP::Filters::HTTPHeaderFilter',
+					'content_length_filter' => 'ROM::HTTP::Filters::ContentLengthFilter'
+			},
+			'header_handlers' => {
+					'http_header_handler' => 'ROM::HTTP::HeaderHandlers::HTTPHeaderHandler'
 			}
 		},
 		'jobs' => {
@@ -149,10 +153,10 @@ module ROM
 				'authentication_service' => 'ROM::Authentication::AuthenticationService',
 				'authenticator' => 'ROM::Authentication::Authenticator',
 				'jwl_token_factory' => 'ROM::Authentication::JWLTokenFactor',
-				'ldap_authenticator' => 'ROM::Authentication::LDAPAuthenticator',
-				'ldap_provider' => 'ROM::Authentication::LDAPProvider',
+				'ldap_authenticator' => 'ROM::Authentication::Authenticators::LDAPAuthenticator',
+				'ldap_provider' => 'ROM::Authentication:.Providers::::LDAPProvider',
 				'token' => 'ROM::Authentication::Token',
-				'token_factory' => 'ROM::Authentication::TokenFactory',
+				'token_factory' => 'ROM::Authentication::Factories::TokenFactory',
 				'user' => 'ROM::Authentication::User',
 				'testing' => {
 						'test_provider' => 'ROM::Authentication::TestProvider',

@@ -9,7 +9,7 @@ module ROM
       end
 
       action :login, String, :body! => LoginModel do |login|
-        interconnect.fetch(AuthenticationService).resolve(login.username, login.password)
+        interconnect.fetch(ROM::Authentication::AuthenticationService).resolve(login.username, login.password)
       end
     end
   end

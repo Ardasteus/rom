@@ -1,6 +1,5 @@
 module ROM
 	module Authentication
-		module Providers
 			class AuthenticationProvider
 				include Component
 
@@ -8,7 +7,7 @@ module ROM
 					@mod
 				end
 
-				def initiliaze(itc, name, mod)
+				def initialize(itc, name, mod)
 					@itc = itc
 					@name = name
 					@mod = mod
@@ -24,4 +23,3 @@ module ROM
 			end
 		end
 	end
-end

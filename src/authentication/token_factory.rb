@@ -1,19 +1,23 @@
 module ROM
-	class TokenFactory
-	  include ROM::Component
+  module Authentication
+		module Factories
+		class TokenFactory
+			include ROM::Component
 
-		 def initiliaze(itc)
-		 	@itc = itc
-		 end
+			 def initialize(itc)
+				@itc = itc
+			 end
 
-		 def issue_token(user, login, stamp)
+			 def issue_token(user, login, stamp)
 
-		 end
+			 end
 
-		 def to_string(token)
-		 end
+			 def to_string(token)
+			 end
 
-		 def from_string(string)
-		 end	
+			 def from_string(string)
+			 end
+		end
 	end
-end
+	end
+	end

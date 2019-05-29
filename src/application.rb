@@ -21,11 +21,13 @@ module ROM
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
+			@itc.register(Authentication::AuthenticationService)
 			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
 			@itc.load(ROM::HTTP)
 			@itc.load(ROM::HTTP::Methods)
+			@itc.load(ROM::Authentication::Factories)
 			
 			# TODO: Add all interconnect imports
 		end
@@ -66,8 +68,8 @@ module ROM
 			
 			@log.info('Starting services...')
 			@itc.lookup(Service).sort_by(&method(:dep_level)).each do |svc|
+				svc.start
 				begin
-					svc.start
 				rescue Exception => ex
 					@log.error("Failed to start service!: #{ex.message}", ex)
 					if @debug

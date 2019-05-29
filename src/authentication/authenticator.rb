@@ -2,7 +2,7 @@ module ROM
   module Authentication
     class Authenticator
 
-      def initiliaze(host, port)
+      def initialize(host, port)
       end
 
       def authenticate(username, password)
@@ -10,4 +10,4 @@ module ROM
       end
     end
   end
-end
+  end

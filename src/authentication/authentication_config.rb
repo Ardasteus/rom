@@ -21,8 +21,8 @@ module ROM
 
       # Model defining the data binding
       class AuthConfigModel < Model
-        property! :token_lifetime, String
-        property! :rsa_size, String
+        property! :token_lifetime, Integer
+        property! :rsa_size, Integer
         property! :onion, Types::Hash[String, AuthConfig]
       end
 

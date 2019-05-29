@@ -29,9 +29,6 @@ module ROM
         # @return [ROM:HTTP::HTTPResponse]
         def resolve(http_request)
           request = http_request
-          request.headers.each_pair do |k, v|
-            @header_filters.select { |i| i.accepts?(k) }.each { |i| res = i.filter(v); return res unless res == nil }
-          end
           begin
             method = @http_methods.select{|mtd| mtd.is_name(request.method)}.first
             return HTTPResponse.new(StatusCode::METHOD_NOT_ALLOWED) if method == nil

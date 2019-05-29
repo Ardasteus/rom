@@ -2,7 +2,7 @@ module ROM
 	module Authentication
 		module Providers
 			class LDAPProvider < AuthenticationProvider
-				def initiliaze(itc)
+				def initialize(itc)
 					super(itc, "ldap", LDAPModel)
 				end
 

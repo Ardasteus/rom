@@ -1,8 +1,8 @@
 module ROM
 	module Authentication
 		module Providers
-			class LDAPProvider < AuthenticationProvider
-				def initiliaze(itc)
+			class TestProvider < AuthenticationProvider
+				def initialize(itc)
 					super(itc, "test", TestModel)
 				end
 
@@ -11,8 +11,8 @@ module ROM
 				end
 
 				class TestModel < Model
-					property! :user, String, "user:"
-					property! :password, String, "password:"
+					property! :user, String
+					property! :password, String
 				end
 			end
 		end

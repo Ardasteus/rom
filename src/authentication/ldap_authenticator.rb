@@ -1,8 +1,9 @@
 module ROM
   module Authentication
+    module Authenticators
     class LDAPAuthenticator < Authenticator
 
-      def initiliaze(host, port)
+      def initialize(host, port)
         @host = host
         @port = port
       end
@@ -31,4 +32,5 @@ module ROM
       end
     end
   end
-end
+  end
+  end

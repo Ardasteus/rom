@@ -9,7 +9,7 @@ module ROM
         # Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
         # @param [ROM::Interconnect] itc Interconnect
         def initialize(itc)
-          @itx = itc
+          @itc = itc
 					@gateway = itc.fetch(ApiGateway)
         end
 

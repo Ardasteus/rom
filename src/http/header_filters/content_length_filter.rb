@@ -2,7 +2,7 @@ module ROM
   module HTTP
     module Filters
       class ContentLengthFilter < HTTPHeaderFilter
-        def initiliaze(itc)
+        def initialize(itc)
           @itc = itc
           @required = true
           @header_to_filter = :content_length

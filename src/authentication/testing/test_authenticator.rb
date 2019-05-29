@@ -1,8 +1,9 @@
 module ROM
   module Authentication
+    module Authenticators
     class TestAuthenticator
 
-      def initiliaze(urs, psw)
+      def initialize(urs, psw)
       end
 
       def authenticate(username, password)
@@ -10,4 +11,5 @@ module ROM
       end
     end
   end
-end
+  end
+  end
