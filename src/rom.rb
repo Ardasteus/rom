@@ -133,12 +133,31 @@ module ROM
 			'httpapi_resolver' => 'ROM::HTTP::HTTPAPIResolver',
 			'object_content' => 'ROM::HTTP::ObjectContent',
 			'status_code' => 'ROM::HTTP::StatusCode',
-			'security' => 'ROM::HTTP::Security'
+			'security' => 'ROM::HTTP::Security',
+			'header_filters' => {
+					'http_header_filter' => 'ROM::HTTP::Filters::HTTPHeaderFilter'
+			}
 		},
 		'jobs' => {
 			'job' => 'ROM::Job',
 			'job_pool' => 'ROM::JobPool',
 			'job_server' => 'ROM::JobServer'
+		},
+		'authentication' => {
+				'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
+				'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
+				'authentication_service' => 'ROM::Authentication::AuthenticationService',
+				'authenticator' => 'ROM::Authentication::Authenticator',
+				'jwl_token_factory' => 'ROM::Authentication::JWLTokenFactor',
+				'ldap_authenticator' => 'ROM::Authentication::LDAPAuthenticator',
+				'ldap_provider' => 'ROM::Authentication::LDAPProvider',
+				'token' => 'ROM::Authentication::Token',
+				'token_factory' => 'ROM::Authentication::TokenFactory',
+				'user' => 'ROM::Authentication::User',
+				'testing' => {
+						'test_provider' => 'ROM::Authentication::TestProvider',
+						'test_authenticator' => 'ROM::Authentication::TestAuthenticator'
+				}
 		},
 		'serializers' => {
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
