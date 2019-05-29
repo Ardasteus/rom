@@ -6,12 +6,14 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import { Card, CardContent } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import Mail from './Mail';
 
 class Inbox extends React.Component {
   state: {
     addingMail: boolean,
+    selectedInbox: string
   };
   newMailWrite = () => {
     this.setState({
@@ -26,8 +28,10 @@ class Inbox extends React.Component {
 
   render() {
     return (
-      <div className="inbox">     
-      <List>
+      <div>
+      <Card className="inbox">
+        <CardContent>
+           <List>
             <ListItem button>
               <ListItemText primary=""/>
             </ListItem>
@@ -61,8 +65,27 @@ class Inbox extends React.Component {
           <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
              <AddIcon />
           </Fab>
-        </div>       
-       </div>  
+        </div>  
+        </CardContent>  
+        </Card>  
+        <Card className="inbox-menu">
+          <CardContent>
+          <List>
+            <ListItem button>
+              <ListItemText primary="Inbox"/>
+            </ListItem>
+            
+            <ListItem button>
+              <ListItemText primary="Spam"/>
+            </ListItem>
+            
+            <ListItem button>
+              <ListItemText primary="Drafts"/>
+            </ListItem>
+          </List>
+          </CardContent>
+        </Card> 
+      </div>
     );
   }
 }
