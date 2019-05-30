@@ -123,6 +123,9 @@ module ROM
 		# @param [Object] att Attributes of property
 		# @return [ROM::ModelProperty] Resulting property
 		# @raise [Exception] When property already exists
+		# @!macro [attach] model.property
+		# 	@!attribute [rw] $1
+		# 		@return [$2] Value of the $1 property
 		def self.property(nm, type, df = nil, *att)
 			raise("Property '#{nm}' already defined!") unless @props[nm] == nil
 			raise('Model already instantiated!') if @inst
@@ -153,6 +156,9 @@ module ROM
 		# @param [Object] att Attributes of property
 		# @return [ROM::ModelProperty] Resulting property
 		# @raise [Exception] When property already exists
+		# @!macro [attach] model.property!
+		# 	@!attribute [rw] $1
+		# 		@return [$2] Value of the $1 property
 		def self.property!(nm, type, *att)
 			raise("Property '#{nm}' already defined!") unless @props[nm] == nil
 			raise('Model already instantiated!') if @inst

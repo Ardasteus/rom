@@ -1,11 +1,15 @@
 module ROM
+	# Manages DBs
 	class DbServer < Service
+		# Instantiates the {ROM::DbServer} class
+		# @param [ROM::Interconnect] itc Registering interconnect
 		def initialize(itc)
 			super(itc, 'Database server', 'Provides connection to DBs', Filesystem)
 			@dbs = {}
 			@cons = []
 		end
 		
+		# Called to start the service
 		def up
 			cfg = @itc.fetch(DbConfig)
 			log = @itc.fetch(LogServer)
@@ -40,12 +44,16 @@ module ROM
 			end
 		end
 		
+		# Stops the service
 		def down
 			log = @itc.fetch(LogServer)
 			log.trace('Closing open DB connections...')
 			@cons.each(&:close)
 		end
 		
+		# Gets a DB context
+		# @param [Class] ctx DB context class to create
+		# @return [ROM::DbContext] Requested DB context
 		def [](ctx)
 			return nil unless @dbs.has_key?(ctx)
 			db = @dbs[ctx]

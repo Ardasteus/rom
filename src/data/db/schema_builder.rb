@@ -1,24 +1,24 @@
 # Created by Matyáš Pokorný on 2019-05-13.
 
 module ROM
+	# Builds schema from a DB context for a specific driver
 	class SchemaBuilder
+		# Default builder options
 		DEFAULT_OPT = {
 			:str_length => 256
 		}
 		
+		# Instantiates the {ROM::SchemaBuilder} class
+		# @param [ROM::DbDriver] dvr Driver to build schemas for
+		# @option opt [Integer] :str_length Default length of string types
 		def initialize(dvr, **opt)
 			@dvr = dvr
 			@opt = opt
 		end
 		
-		def opt(k)
-			if @opt.has_key?(k)
-				@opt[k]
-			else
-				DEFAULT_OPT[k]
-			end
-		end
-		
+		# Builds a schema for given context
+		# @param [Class] ctx Context class
+		# @return [ROM::DbSchema] Built schema
 		def build(ctx)
 			sch = DbSchema.new
 			tabs = []
@@ -68,6 +68,14 @@ module ROM
 			sch
 		end
 		
+		def opt(k)
+			if @opt.has_key?(k)
+				@opt[k]
+			else
+				DEFAULT_OPT[k]
+			end
+		end
+		
 		def get_type(ctx, prop)
 			bt, null = base_type(prop.type)
 			len = nil
@@ -104,9 +112,9 @@ module ROM
 					raise('There are multiple candidate models for given reference!')
 				end
 			else
-				table = ctx.tables.find { |i| i.name == ref.table }
+				table = ctx.tables.find { |i| i.name.to_sym == ref.table }
 				raise("Target table '#{ref.table}' not found!") if table == nil
-				other = table.model.class.properties.find { |i| i.name == ref.column }
+				other = table.model.class.properties.find { |i| i.name.to_sym == ref.column }
 				raise("Target column '#{ref.column}' not found!") if other == nil
 			end
 			
@@ -139,6 +147,6 @@ module ROM
 			[base, null]
 		end
 		
-		private :base_type, :opt
+		private :resolve_ref, :get_type, :base_type, :opt
 	end
 end

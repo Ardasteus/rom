@@ -1,11 +1,15 @@
 # Created by Matyáš Pokorný on 2019-05-18.
 
 module ROM
+	# A generic driver base for SQL-based DBs
+	# @abstract
 	class SqlDriver < DbDriver
+		# Default types map
 		TYPES = {
 			String => 'NVARCHAR',
 			Types::Boolean => 'TINYINT'
 		}
+		# Default map of int types based on their sizes
 		INTS = {
 			1 => 'TINYINT',
 			2 => 'SMALLINT',
@@ -13,6 +17,11 @@ module ROM
 			8 => 'BIGINT'
 		}
 		
+		# Resolves a type
+		# @param [Class] tp Type to resolve
+		# @param [Boolean] null True if type is nullable; false otherwise
+		# @param [Integer, nil] len Length of the type
+		# @return [ROM::DbType] Resolved DB type; nil if type couldn't be resolved
 		def type(tp, null = false, len = nil)
 			if tp == Integer
 				int = INTS[(len or 4)]
@@ -23,6 +32,14 @@ module ROM
 			(TYPES.has_key?(tp) ? DbType.new(tp, TYPES[tp], TYPES[tp], null, len) : nil)
 		end
 		
+		# Generates a selection query
+		# @param [ROM::DbTable] from Selection source table
+		# @param [ROM::Queries::QueryExpression, nil] where Filtering expression
+		# @param [Array<ROM::Queries::Order>] ord Ordering rules
+		# @param [Array<ROM::Queries::QueryExpression>, nil] vals Values to select; nil to select all
+		# @param [Integer, nil] limit Maximal number of rows to return
+		# @param [Integer, nil] offset Number of rows to skip in the result set
+		# @return [ROM::SqlQuery] Generated query
 		def select(from, where = nil, ord = [], vals = nil, limit = nil, offset = nil)
 			args = []
 			qry = "SELECT " +
@@ -60,6 +77,10 @@ module ROM
 			SqlQuery.new(qry + ';', *args)
 		end
 		
+		# Generates a single row insertion query
+		# @param [ROM::DbTable] to Target table
+		# @param [Hash{String=>ROM::Queries::QueryExpression}] values Hash of column names and their value expressions
+		# @return [ROM::SqlQuery] Generated query
 		def insert(to, values)
 			args = []
 			qry = "INSERT INTO #{obj_name(to.name)} (#{values.keys.collect(&method(:obj_name)).join(', ')}) values "
@@ -68,6 +89,11 @@ module ROM
 			SqlQuery.new(qry + ';', *args)
 		end
 		
+		# Generates an update query
+		# @param [ROM::DbTable] what Table to update
+		# @param [ROM::Queries::QueryExpression] where Filtering expression
+		# @param [Hash{String=>ROM::Queries::QueryExpression}] with Hash of column names and their value expressions
+		# @return [ROM::SqlQuery] Generated query
 		def update(what, where, with)
 			args = []
 			qry = "UPDATE \"#{what.name}\" SET "
@@ -77,6 +103,10 @@ module ROM
 			SqlQuery.new(qry + ';', *args)
 		end
 		
+		# Generates a delete query
+		# @param [ROM::DbTable] from Table to delete rows from
+		# @param [ROM::Queries::QueryExpression] where Filtering expression
+		# @return [ROM::SqlQuery] Generated query
 		def delete(from, where)
 			args = []
 			qry = "DELETE FROM #{obj_name(from.name)} WHERE #{expression(where, args)}"
@@ -84,6 +114,10 @@ module ROM
 			SqlQuery.new(qry + ';', *args)
 		end
 		
+		# Translates an expression into SQL
+		# @param [ROM::Queries::QueryExpression] expr Expression to translate
+		# @param [Array] args Array to save the arguments to
+		# @return [String] Translated SQL
 		def expression(expr, args)
 			case expr
 				when Queries::ColumnValue
@@ -119,34 +153,59 @@ module ROM
 			end
 		end
 		
+		# Checks whether target DB exists
+		# @param [ROM::DbConnection] db DB connection handle
+		# @return [Boolean] True if DB exists; false otherwise
 		def db?(db)
 			raise('Method not implemented!')
 		end
-		
+
+		# Creates the target DB
+		# @param [ROM::DbConnection] db DB connection handle
 		def create_db(db)
 			raise('Method not implemented!')
 		end
 		
+		# Checks whether table exists in target DB
+		# @param [ROM::DbConnection] db DB connection handle
+		# @param [ROM::DbTable] tab Table to check
+		# @return [Boolean] True if table exists; false otherwise
 		def table?(db, tab)
 			raise('Method not implemented!')
 		end
 		
+		# Creates a table in the target DB
+		# @param [ROM::DbConnection] db DB connection handle
+		# @param [ROM::DbTable] tab Table to create
 		def create_table(db, tab)
 			raise('Method not implemented!')
 		end
 		
+		# Creates a foreign key in the target DB
+		# @param [ROM::DbConnection] db DB connection handle
+		# @param [ROM::DbReference] ref Reference to create
 		def create_foreign_key(db, ref)
 			raise('Method not implemented!')
 		end
 		
+		# Creates an index in the target DB
+		# @param [ROM::DbConnection] db DB connection handle
+		# @param [ROM::DbIndex] idx Index to create
 		def create_index(db, idx)
 			raise('Method not implemented!')
 		end
 		
+		# Generates SQL for given object name
+		# @param [String] name Name of object to turn into SQL
+		# @return [String] SQL representation of the object name
 		def obj_name(name)
 			name
 		end
 		
+		# Creates the DB schema
+		# @param [ROM::DbConnection] db Connection to DB
+		# @param [ROM::DbSchema] schema Schema to generate
+		# @return [ROM::DbStatus] Schema generation status
 		def create(db, schema)
 			status = DbStatus.new
 			new_db = if db?(db)
@@ -171,10 +230,6 @@ module ROM
 			end
 			
 			status
-		end
-		
-		def initialize(itc, name, conf)
-			super(itc, name, conf)
 		end
 		
 		protected :db?, :table?, :create_db, :create_table, :create_foreign_key, :create_index, :obj_name

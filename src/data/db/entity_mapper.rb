@@ -1,12 +1,19 @@
 # Created by Matyáš Pokorný on 2019-05-19.
 
 module ROM
+	# Maps DB rows to entities
 	class EntityMapper
+		# Instantiates the {ROM::EntityMapper} class
+		# @param [ROM::DbTable] tab Mapped table
+		# @param [Hash{Symbol=>ROM::LazyLoader}] lazy By-reference hash of lazy loaders for referencing columns
 		def initialize(tab, lazy)
 			@tab = tab
 			@lazy = lazy
 		end
 		
+		# Maps all rows of result set
+		# @param [ROM::DbResults] res Result set to map
+		# @return [Array<ROM::Entity>] Mapped entities
 		def map_all(res)
 			ret = []
 			res.each { |row| ret << map(row) }
@@ -14,6 +21,9 @@ module ROM
 			ret
 		end
 		
+		# Maps a single DB row to an entity
+		# @param [ROM::DbResults::RowReader] row Row to map into an entity
+		# @return [ROM::Entity] Mapped entity
 		def map(row)
 			vals = {}
 			@tab.columns.each do |col|

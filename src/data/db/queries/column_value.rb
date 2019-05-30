@@ -2,19 +2,29 @@
 
 module ROM
 	module Queries
+		# Represents a column value expression
 		class ColumnValue < QueryExpression
+			# Gets the tracked column
+			# @return [ROM::DbColumn] Tracked column
 			def column
 				@col
 			end
 			
+			# Gets the resulting type of the expression
+			# @return [ROM::Types::Type] Resulting type of expression
 			def type
 				Types::Type.to_t(@col.type.primitive)
 			end
 			
+			# Instantiates the {ROM::Queries::ColumnValue} class
+			# @param [ROM::DbColumn] col Column to take the value of
 			def initialize(col)
 				@col = col
 			end
 
+			# Creates an expression of equivalence operator for the column's value (on left) and some other expression (on right)
+			# @param [ROM::Queries::QueryExpression] other Other expression to compare this column's value against
+			# @return [ROM::Queries::QueryExpression] Resulting comparison expression
 			def ==(other)
 				if other.is_a?(Model)
 					raise('Columns is not a reference source!') if @col.reference == nil
@@ -24,7 +34,10 @@ module ROM
 					super(other)
 				end
 			end
-
+			
+			# Creates an expression of inequivalence operator for the column's value (on left) and some other expression (on right)
+			# @param [ROM::Queries::QueryExpression] other Other expression to compare this column's value against
+			# @return [ROM::Queries::QueryExpression] Resulting comparison expression
 			def !=(other)
 				if other.is_a?(Model)
 					raise('Columns is not a reference source!') if @col.reference == nil

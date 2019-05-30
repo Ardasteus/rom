@@ -7,6 +7,8 @@ RSpec::Core::RakeTask.new(:spec)
 
 YARD::Rake::YardocTask.new do |yard|
 	yard.files = ['src/**/*.rb']
+	yard.options = %w(-c)
+	yard.stats_options = %w(--compact)
 end
 
 Inch::Rake::Suggest.new('inch') do |inch|

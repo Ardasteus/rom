@@ -86,7 +86,6 @@ module ROM
 					'sqlite_driver' => 'ROM::Sqlite::SqliteDriver'
 				},
 				'queries' => {
-					'query' => 'ROM::Queries::Query',
 					'query_expression' => 'ROM::Queries::QueryExpression',
 					'column_value' => 'ROM::Queries::ColumnValue',
 					'binary_operator' => 'ROM::Queries::BinaryOperator',
