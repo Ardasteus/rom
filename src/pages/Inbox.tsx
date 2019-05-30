@@ -6,7 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardContent } from '@material-ui/core';
+import { Card, CardContent, CardActions } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import Mail from './Mail';
 
@@ -60,12 +60,7 @@ class Inbox extends React.Component {
               <ListItemText primary=""/>
             </ListItem>
             <Divider />
-          </List>  
-        <div className="writeMailButton">         
-          <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
-             <AddIcon />
-          </Fab>
-        </div>  
+          </List>        
         </CardContent>  
         </Card>  
         <Card className="inbox-menu">
@@ -85,7 +80,13 @@ class Inbox extends React.Component {
           </List>
           </CardContent>
         </Card> 
+        <div className="writeMailButton">         
+             <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
+               <AddIcon />
+             </Fab>
+        </div>  
       </div>
+      
     );
   }
 }
