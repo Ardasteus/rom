@@ -7,7 +7,8 @@ module ROM
       end
 
       def authenticate(username, password)
-        return User.new("Hello There","Hello", "There")
+        first, last = username.split(" ");
+        return User.new(username,first, last)
       end
     end
   end

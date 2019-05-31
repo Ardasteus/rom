@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'json', '~> 2.2'
 gem 'safe_yaml', '~> 1.0'
-gem 'mysql2', '~> 0.5'
+#gem 'mysql2', '~> 0.5'
 gem 'net-ldap', '~> 0.16'
 
 group :development do
