@@ -11,6 +11,7 @@ class LoginPage extends React.Component {
 
   state = {
     redirect: false,
+    redirect1: false,
     name: '',
     password: '',
   };
@@ -23,6 +24,14 @@ class LoginPage extends React.Component {
     }
   }
 
+  setRedirect1 = () => {
+      this.setState({
+        redirect1: true,
+      });
+    
+  }
+
+
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
@@ -34,6 +43,12 @@ class LoginPage extends React.Component {
       return <Redirect to='/home' />;
     }
   }
+  registerRedirect = () => {
+    if (this.state.redirect1) {
+      return <Redirect to='/register' />;
+    }
+  }
+  
 
   render() {
     const { name, password } = this.state;
@@ -70,9 +85,11 @@ class LoginPage extends React.Component {
         </Card>
         <div>
           <Card className='register-Link'>
-            <CardContent>
-              <p>If you dont have an account </p><p><Link to='/register'>Register</Link></p>
-            </CardContent>
+            <CardActions>
+            {this.registerRedirect()}           
+             <Button variant="contained" color="secondary" >Login</Button>
+             <Button variant="contained" onClick={this.setRedirect1}>Register</Button>           
+            </CardActions>
           </Card>
         </div>
       </div>

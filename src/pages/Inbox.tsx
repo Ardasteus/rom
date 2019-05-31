@@ -6,9 +6,13 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardContent, CardActions } from '@material-ui/core';
+import { Card, CardContent, CardActions, CardHeader } from '@material-ui/core';
 import WriteMail from './WriteMail';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import Mail from './Mail';
+import Checkbox from '@material-ui/core/Checkbox';
 
 class Inbox extends React.Component {
   state: {
@@ -30,7 +34,11 @@ class Inbox extends React.Component {
     return (
       <div>
       <Card className="inbox">
-        <CardContent>
+        <CardHeader>
+        <DeleteRoundedIcon/>
+        <DeleteForeverRoundedIcon />
+        </CardHeader>
+        <CardContent>      
            <List>
             <ListItem button>
               <ListItemText primary=""/>

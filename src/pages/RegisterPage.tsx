@@ -18,6 +18,7 @@ class RegisterPage extends React.Component {
 
   state = {
     redirect: false,
+    redirect1: false,
     open: false,
     name: '',
     password: '',
@@ -28,9 +29,20 @@ class RegisterPage extends React.Component {
       redirect: true,
     });
   }
+  setRedirect1 = () => {
+    this.setState({
+      redirect1: true,
+    });
+  }
+  
   homeRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/home' />;
+    }
+  }
+  loginRedirect = () => {
+    if (this.state.redirect1) {
+      return <Redirect to='/' />;
     }
   }
 
@@ -107,10 +119,12 @@ class RegisterPage extends React.Component {
         </Dialog>
       <div>
         <Card className='login-Link'>
-          <CardContent>
-          <p>If you have an account already </p><p><Link to='/'>Login</Link></p>
-          </CardContent>
-        </Card>
+          <CardActions>
+            {this.loginRedirect()}                        
+             <Button variant="contained" onClick={this.setRedirect1}>Login</Button>        
+             <Button variant="contained" color="secondary">Register</Button>   
+            </CardActions>
+         </Card>
       </div>
     </div>
     );

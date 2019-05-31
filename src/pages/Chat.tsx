@@ -13,9 +13,7 @@ class Chat extends React.Component {
     <div>
       <Card className="personChat">
         <CardHeader>
-          <IconButton>
-          <AccountCircle />
-          </IconButton>          
+          <AccountCircle />      
         </CardHeader>
         <Divider/>
         <CardContent>
