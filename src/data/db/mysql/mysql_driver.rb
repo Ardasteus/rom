@@ -39,7 +39,6 @@ module ROM
 			# Creates the target DB
 			# @param [ROM::MySql::MySqlDriver::MySqlConnection] db DB connection handle
 			def create_db(db)
-				args = []
 				sql = "CREATE DATABASE #{obj_name(db.database)}"
 				sql += " CHARACTER SET = '#{db.charset}'"
 				sql += " COLLATE = '#{db.collation}';"
