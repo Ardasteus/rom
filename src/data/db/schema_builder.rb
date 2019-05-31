@@ -58,7 +58,7 @@ module ROM
 			
 			ctx.tables.each do |table|
 				table.model.properties.select { |i| Types::Just[Model].accepts(i.type) or i.attribute?(ReferenceAttribute) }.each do |prop|
-					tb, col = resolve_ref(ctx, prop)
+					_, col = resolve_ref(ctx, prop)
 					from = trans[prop]
 					to = trans[col]
 					sch.reference(conv.call(:fk_key, from.table.name, to.table.name, from.name, to.name), from, to)
@@ -81,7 +81,7 @@ module ROM
 			len = nil
 			if bt < Model
 				_, other = resolve_ref(ctx, prop)
-				bt, _ = base_type(other.type)
+				bt, = base_type(other.type)
 				len = other.attribute(LengthAttribute).length if other.attribute?(LengthAttribute)
 				return get_type(ctx, other) if bt < Model
 			end
@@ -94,7 +94,7 @@ module ROM
 		end
 		
 		def resolve_ref(ctx, prop)
-			bt, _ = base_type(prop.type)
+			bt, = base_type(prop.type)
 			ref = prop.attribute(ReferenceAttribute)
 			table = nil
 			other = nil

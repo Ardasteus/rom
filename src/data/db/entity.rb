@@ -71,7 +71,7 @@ module ROM
 					self.class.send(:define_method, sym) { @mod[sym] }
 				end
 				
-				self.class.send(:define_method, "#{sym.to_s}=".to_sym) do |val|
+				self.class.send(:define_method, "#{sym}=".to_sym) do |val|
 					if @mod[sym] != val
 						@changes[sym] = val
 						@mod[sym] = val

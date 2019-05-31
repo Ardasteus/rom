@@ -86,16 +86,16 @@ module ROM
 			
 			def strategy(g)
 				case g
-					when :cascade
-						'CASCADE'
-					when :null
-						'SET NULL'
-					when :fail
-						'NO ACTION'
-					when :default
-						'SET DEFAULT'
-					else
-						raise('Unsupported foreign key strategy!')
+				when :cascade
+					'CASCADE'
+				when :null
+					'SET NULL'
+				when :fail
+					'NO ACTION'
+				when :default
+					'SET DEFAULT'
+				else
+					raise('Unsupported foreign key strategy!')
 				end
 			end
 			
@@ -222,7 +222,6 @@ module ROM
 						if res == nil
 							@cols = []
 							@res = [].each
-							@row = nil
 						else
 							@cols = res.fields
 							@res = Array.new(res.size)
@@ -232,18 +231,16 @@ module ROM
 								i += 1
 							end
 							@res = @res.each
-							@row = nil
 						end
+						@row = nil
 					end
 					
 					# Fetches next record
 					# @return [Boolean] True if row was fetched; false otherwise
 					def next
-						begin
-							@row = @res.next
-						rescue StopIteration
-							nil
-						end
+						@row = @res.next
+					rescue StopIteration
+						nil
 					end
 					
 					# Gets the value of column on current row
