@@ -1,9 +1,12 @@
 # Created by Matyáš Pokorný on 2019-05-25.
 
 module ROM
-	class ContactGroupUser < Model
-		property :id, Integer
-		property! :contact_group, ContactGroup
-		property! :can_edit, Types::Boolean
+	module DB
+		# N:M mapping between users and contact group
+		class ContactGroupUser < Model
+			property! :user, User, KeyAttribute[]
+			property! :contact_group, ContactGroup, KeyAttribute[]
+			property! :can_edit, Types::Boolean
+		end
 	end
 end
