@@ -14,10 +14,11 @@ class LoginPage extends React.Component {
     redirect1: false,
     name: '',
     password: '',
+    authenticated: true
   };
 
   setRedirect = () => {
-    if (this.state.name === 'admin' && this.state.password === '123456') {
+    if(this.state.authenticated) {
       this.setState({
         redirect: true,
       });

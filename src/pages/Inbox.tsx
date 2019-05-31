@@ -35,10 +35,9 @@ class Inbox extends React.Component {
       <div>
       <Card className="inbox">
         <CardHeader>
-        <DeleteRoundedIcon/>
-        <DeleteForeverRoundedIcon />
+          selectedInbox
         </CardHeader>
-        <CardContent>      
+        <CardContent>   
            <List>
             <ListItem button>
               <ListItemText primary=""/>
@@ -91,7 +90,7 @@ class Inbox extends React.Component {
         <div className="writeMailButton">         
              <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
                <AddIcon />
-             </Fab>
+             </Fab>       
         </div>  
       </div>
       
