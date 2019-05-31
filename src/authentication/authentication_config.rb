@@ -19,15 +19,15 @@ module ROM
         @config = conf
       end
 
+      class AuthConfig < Model
+        property! :config, Hash
+      end
+
       # Model defining the data binding
       class AuthConfigModel < Model
         property! :token_lifetime, Integer
         property! :rsa_size, Integer
         property! :onion, Types::Hash[String, AuthConfig]
-      end
-
-      class AuthConfig < Model
-        property! :config, Hash
       end
     end
   end

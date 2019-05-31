@@ -7,7 +7,7 @@ module ROM
 				end
 
 				def open(conf)
-					return TestAuthenticator.new(conf.user, conf.password)
+					return Authentication::Authenticators::TestAuthenticator.new(conf.user, conf.password)
 				end
 
 				class TestModel < Model

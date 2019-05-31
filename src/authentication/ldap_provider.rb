@@ -12,7 +12,7 @@ module ROM
 
 				class LDAPModel < Model
 					property! :host, String
-					property! :port, Integer, 389
+					property :port, Integer, 389
 				end
 			end
 		end

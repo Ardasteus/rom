@@ -7,7 +7,7 @@ module ROM
       end
 
       def authenticate(username, password)
-        return User.mew("Hello There","Hello", "There")
+        return User.new("Hello There","Hello", "There")
       end
     end
   end

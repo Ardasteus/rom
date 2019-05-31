@@ -152,15 +152,15 @@ module ROM
 				'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
 				'authentication_service' => 'ROM::Authentication::AuthenticationService',
 				'authenticator' => 'ROM::Authentication::Authenticator',
-				'jwl_token_factory' => 'ROM::Authentication::JWLTokenFactor',
+				'jwt_token_factory' => 'ROM::Authentication::Factories::JWTTokenFactory',
 				'ldap_authenticator' => 'ROM::Authentication::Authenticators::LDAPAuthenticator',
-				'ldap_provider' => 'ROM::Authentication:.Providers::::LDAPProvider',
+				'ldap_provider' => 'ROM::Authentication::Providers::LDAPProvider',
 				'token' => 'ROM::Authentication::Token',
-				'token_factory' => 'ROM::Authentication::Factories::TokenFactory',
+				'token_factory' => 'ROM::Authentication::TokenFactory',
 				'user' => 'ROM::Authentication::User',
 				'testing' => {
-						'test_provider' => 'ROM::Authentication::TestProvider',
-						'test_authenticator' => 'ROM::Authentication::TestAuthenticator'
+						'test_provider' => 'ROM::Authentication::Providers::TestProvider',
+						'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
 				}
 		},
 		'serializers' => {

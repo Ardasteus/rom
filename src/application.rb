@@ -13,7 +13,7 @@ module ROM
 		def initialize(data, **opt)
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exist?(data)
 			@data = File.expand_path(data)
-			@debug = (opt[:debug] or false)
+			@debug = true # (opt[:debug] or false)
 			@itc = Interconnect.new
 			@itc.register(LogServer)
 			@log = @itc.fetch(LogServer)
@@ -22,12 +22,14 @@ module ROM
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
 			@itc.register(Authentication::AuthenticationService)
+			@itc.register(Authentication::AuthenticationConfig)
 			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
 			@itc.load(ROM::HTTP)
 			@itc.load(ROM::HTTP::Methods)
 			@itc.load(ROM::Authentication::Factories)
+			@itc.load(ROM::Authentication::Providers)
 			
 			# TODO: Add all interconnect imports
 		end

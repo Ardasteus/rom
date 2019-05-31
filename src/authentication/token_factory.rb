@@ -1,6 +1,5 @@
 module ROM
   module Authentication
-		module Factories
 		class TokenFactory
 			include ROM::Component
 
@@ -18,6 +17,5 @@ module ROM
 			 def from_string(string)
 			 end
 		end
-	end
 	end
 	end
