@@ -19,11 +19,14 @@ class Inbox extends React.Component {
     addingMail: boolean,
     selectedInbox: string
   };
+  
+  // Sets declarable addingMail true
   newMailWrite = () => {
     this.setState({
       addingMail: true,
     });
   }
+  // If declarable addingMail is true, show component WriteMail
   MailWriting = () => {
     if (this.state.addingMail == true) {
       return <WriteMail />;

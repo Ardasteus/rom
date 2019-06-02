@@ -10,42 +10,43 @@ import { Redirect, Link } from 'react-router-dom';
 class LoginPage extends React.Component {
 
   state = {
-    redirect: false,
-    redirect1: false,
+    redirectLogin: false,
+    redirectRegister: false,
     name: '',
     password: '',
     authenticated: true
   };
-
-  setRedirect = () => {
+  // Sets declarable redirectLogin true
+  setRedirectLogin = () => {
     if(this.state.authenticated) {
       this.setState({
-        redirect: true,
+        redirectLogin: true,
       });
     }
   }
-
-  setRedirect1 = () => {
+  // Sets declarable redirectRegister true
+  setRedirectRegister = () => {
       this.setState({
-        redirect1: true,
+        redirectRegister: true,
       });
     
   }
 
-
+  // Handles change in name/password field
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
     });
   }
-
+  // If declarable redirectLogin is true, redirect to login page
   homeRedirect = () => {
-    if (this.state.redirect) {
+    if (this.state.redirectLogin) {
       return <Redirect to='/home' />;
     }
   }
+  // If declarable redirectRegister is true, redirect to register page
   registerRedirect = () => {
-    if (this.state.redirect1) {
+    if (this.state.redirectRegister) {
       return <Redirect to='/register' />;
     }
   }
@@ -81,7 +82,7 @@ class LoginPage extends React.Component {
           </CardContent>
           <CardActions>
             {this.homeRedirect()}
-            <Button disabled={!enabled} onClick={this.setRedirect}>Login</Button>
+            <Button disabled={!enabled} onClick={this.setRedirectLogin}>Login</Button>
           </CardActions>
         </Card>
         <div>
@@ -89,7 +90,7 @@ class LoginPage extends React.Component {
             <CardActions>
             {this.registerRedirect()}           
              <Button variant="contained" color="secondary" >Login</Button>
-             <Button variant="contained" onClick={this.setRedirect1}>Register</Button>           
+             <Button variant="contained" onClick={this.setRedirectRegister}>Register</Button>           
             </CardActions>
           </Card>
         </div>

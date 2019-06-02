@@ -17,39 +17,43 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 class RegisterPage extends React.Component {
 
   state = {
-    redirect: false,
-    redirect1: false,
+    redirectSignIn: false,
+    redirectLogin: false,
     open: false,
     name: '',
     password: '',
     conpassword: '',
   };
-  setRedirect = () => {
+  // Sets declarable redirectSignIn true
+  setRedirectSignIn = () => {
     this.setState({
-      redirect: true,
+      redirectSignIn: true,
     });
   }
-  setRedirect1 = () => {
+  // Sets declarable redirectLogin true
+  setRedirectLogin = () => {
     this.setState({
-      redirect1: true,
+      redirectLogin: true,
     });
   }
-  
+  // If declarable redirectSignIn is true, redirect to home page
   homeRedirect = () => {
-    if (this.state.redirect) {
+    if (this.state.redirectSignIn) {
       return <Redirect to='/home' />;
     }
   }
+  // If declarable redirectLogin is true, redirect to login page
   loginRedirect = () => {
-    if (this.state.redirect1) {
+    if (this.state.redirectLogin) {
       return <Redirect to='/' />;
     }
   }
-
+  // Handles create account dialog
   handleClickOpen = () => {
     this.setState({ open: true });
   }
 
+  // Handles change in name/password field
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
@@ -112,7 +116,7 @@ class RegisterPage extends React.Component {
           </DialogContent>
           <DialogActions>
           {this.homeRedirect()}
-            <Button onClick={this.setRedirect} color='primary' autoFocus>
+            <Button onClick={this.setRedirectSignIn} color='primary' autoFocus>
               Ok
             </Button>
           </DialogActions>
@@ -121,7 +125,7 @@ class RegisterPage extends React.Component {
         <Card className='login-Link'>
           <CardActions>
             {this.loginRedirect()}                        
-             <Button variant="contained" onClick={this.setRedirect1}>Login</Button>        
+             <Button variant="contained" onClick={this.setRedirectLogin}>Login</Button>        
              <Button variant="contained" color="secondary">Register</Button>   
             </CardActions>
          </Card>

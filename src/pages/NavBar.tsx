@@ -73,36 +73,36 @@ class NavBar extends React.Component<Props, State> {
       </Typography>
     );
   }
+  // Set declarable redirect to true
   setRedirect = () => {
     this.setState({
       redirect: true,
     });
   }
+  // If declarable redirect is true, redirect to LoginPage
   loginRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/' />;
     }
   }
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ auth: event.target.checked });
-  }
-  handleChange1 = (event, value) => {
+  // Tab switching between chat and inbox
+  handleChangeTab = (event, value) => {
     this.setState({ value });
   }
-
+  // Opening menu
   handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     this.setState({ anchorEl: event.currentTarget });
   }
-
+  // Closing menu
   handleClose = () => {
     this.setState({ anchorEl: null });
   }
+  // Opens settings dialog
   handleClickOpen = () => {
     this.setState({ open: true });
   };
-  
-  handleClose1 = () => {
+  // Close settings dialog
+  handleCloseSettings = () => {
     this.setState({ open: false });
   };
 
@@ -118,18 +118,18 @@ class NavBar extends React.Component<Props, State> {
         <Dialog
           fullScreen
           open={this.state.open}
-          onClose={this.handleClose1}
+          onClose={this.handleCloseSettings}
           TransitionComponent={Transition}
         >
           <AppBar className={classes.appBar} color="secondary">
             <Toolbar>
-              <IconButton color="inherit" onClick={this.handleClose1} aria-label="Close">
+              <IconButton color="inherit" onClick={this.handleCloseSettings} aria-label="Close">
                 <CloseIcon />
               </IconButton>
               <Typography variant="h6" color="inherit" className={classes.flex}>
                 Settings
               </Typography>
-              <Button color="inherit" onClick={this.handleClose1}>
+              <Button color="inherit" onClick={this.handleCloseSettings}>
                 Save
               </Button>
             </Toolbar>
@@ -166,7 +166,7 @@ class NavBar extends React.Component<Props, State> {
           <Toolbar color="secondary">
             <Typography variant='h6' color='inherit' className={classes.grow}>
               Ruby On Mails
-              <Tabs value={value} onChange={this.handleChange1}>
+              <Tabs value={value} onChange={this.handleChangeTab}>
                <Tab label="Inbox" />
                <Tab label="Chat" />
               </Tabs>
