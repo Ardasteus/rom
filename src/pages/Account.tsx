@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-class Header extends React.Component {
+class NotFoundPage extends React.Component {
   render() {
     return (
       <h1>Page not Found.</h1>
@@ -8,4 +8,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+export default NotFoundPage;
