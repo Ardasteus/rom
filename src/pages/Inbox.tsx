@@ -32,7 +32,7 @@ class Inbox extends React.Component {
     });
   }
   // If declarable addingMail is true, show component WriteMail
-  MailWriting = (props) => {
+  MailWriting = () => {
     if (this.state.addingMail == true) {
       return <WriteMail/>;
     }
@@ -96,7 +96,8 @@ class Inbox extends React.Component {
           </List>
           </CardContent>
         </Card> 
-        <div className="writeMailButton">         
+        <div className="writeMailButton">  
+           {this.MailWriting()}         
              <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
                <AddIcon/>
              </Fab>       
