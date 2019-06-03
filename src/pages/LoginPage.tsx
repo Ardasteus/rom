@@ -43,14 +43,16 @@ class LoginPage extends React.Component {
   // If declarable redirectLogin is true, redirect to login page
   homeRedirect = () => {
     if (this.state.redirectLogin) {
-      axios.post('/api/v1/login', {
+      return <Redirect to='/home' />;
+      /*
+      axios.post('/login', {
         header: { "Content-Type": "application/json"},
         username: this.state.name,
         password: this.state.password
       })
       .then(function (response) {
         console.log(response);
-      })
+      })*/
     }
   }
   // If declarable redirectRegister is true, redirect to register page

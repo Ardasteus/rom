@@ -28,6 +28,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import AddIcon from '@material-ui/icons/Add';
 import Inbox from './Inbox';
 import Chat from './Chat';
+import WriteMail from './WriteMail';
 
 const styles = createStyles({
   root: {

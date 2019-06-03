@@ -14,11 +14,16 @@ import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import Mail from './Mail';
 import Checkbox from '@material-ui/core/Checkbox';
 
+export interface State {
+  addingMail: boolean,
+  selectedInbox: string
+}
+
 class Inbox extends React.Component {
-  state: {
-    addingMail: boolean,
-    selectedInbox: string
-  };
+  state: State = {
+    addingMail: false,
+    selectedInbox: "Inbox"
+  }
   
   // Sets declarable addingMail true
   newMailWrite = () => {
@@ -27,11 +32,12 @@ class Inbox extends React.Component {
     });
   }
   // If declarable addingMail is true, show component WriteMail
-  MailWriting = () => {
+  MailWriting = (props) => {
     if (this.state.addingMail == true) {
-      return <WriteMail />;
+      return <WriteMail/>;
     }
   }
+  
 
   render() {
     return (
@@ -92,7 +98,7 @@ class Inbox extends React.Component {
         </Card> 
         <div className="writeMailButton">         
              <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
-               <AddIcon />
+               <AddIcon/>
              </Fab>       
         </div>  
       </div>
