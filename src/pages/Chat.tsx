@@ -11,9 +11,9 @@ class Chat extends React.Component {
   render() {
     return (
     <div>
-      <Card className="personChat">
+      <Card className='personChat'>
         <CardHeader>
-          <AccountCircle />      
+          <AccountCircle />
         </CardHeader>
         <Divider/>
         <CardContent>
@@ -26,17 +26,17 @@ class Chat extends React.Component {
            margin='normal'
         </TextField>
       </Card>
-      <Card className="chat-menu">
+      <Card className='chat-menu'>
         <CardContent>
           <List>
           <ListItem button>
-              
+
             </ListItem>
             <Divider />
             <ListItem button>
-              
+
             </ListItem>
-          </List>         
+          </List>
         </CardContent>
       </Card>
     </div>

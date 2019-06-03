@@ -15,16 +15,16 @@ import Mail from './Mail';
 import Checkbox from '@material-ui/core/Checkbox';
 
 export interface State {
-  addingMail: boolean,
-  selectedInbox: string
+  addingMail: boolean;
+  selectedInbox: string;
 }
 
 class Inbox extends React.Component {
   state: State = {
     addingMail: false,
-    selectedInbox: "Inbox"
-  }
-  
+    selectedInbox: 'Inbox',
+  };
+
   // Sets declarable addingMail true
   newMailWrite = () => {
     this.setState({
@@ -33,77 +33,76 @@ class Inbox extends React.Component {
   }
   // If declarable addingMail is true, show component WriteMail
   MailWriting = () => {
-    if (this.state.addingMail == true) {
+    if (this.state.addingMail === true) {
       return <WriteMail/>;
     }
   }
-  
 
   render() {
     return (
       <div>
-      <Card className="inbox">
+      <Card className='inbox'>
         <CardHeader>
           selectedInbox
         </CardHeader>
-        <CardContent>   
+        <CardContent>
            <List>
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary=""/>
+              <ListItemText primary=''/>
             </ListItem>
             <Divider />
-          </List>        
-        </CardContent>  
-        </Card>  
-        <Card className="inbox-menu">
+          </List>
+        </CardContent>
+        </Card>
+        <Card className='inbox-menu'>
           <CardContent>
           <List>
             <ListItem button>
-              <ListItemText primary="Inbox"/>
+              <ListItemText primary='Inbox'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="Spam"/>
+              <ListItemText primary='Spam'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="Drafts"/>
+              <ListItemText primary='Drafts'/>
             </ListItem>
           </List>
           </CardContent>
-        </Card> 
-        <div className="writeMailButton">  
-           {this.MailWriting()}         
-             <Fab color="primary" aria-label="Add" onClick={this.newMailWrite} >
+        </Card>
+        <div className='writeMailButton'>
+           {this.MailWriting()}
+             <Fab color='primary' aria-label='Add' onClick={this.newMailWrite} >
                <AddIcon/>
-             </Fab>       
-        </div>  
+             </Fab>
+        </div>
       </div>
-      
+
     );
   }
 }

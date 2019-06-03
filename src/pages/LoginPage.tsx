@@ -8,7 +8,6 @@ import 'styles/HomePage.scss';
 import { Redirect, Link } from 'react-router-dom';
 import axios from 'classes/axios.instance';
 
-
 class LoginPage extends React.Component {
 
   state = {
@@ -16,11 +15,11 @@ class LoginPage extends React.Component {
     redirectRegister: false,
     name: '',
     password: '',
-    authenticated: true
+    authenticated: true,
   };
   // Sets declarable redirectLogin true
   setRedirectLogin = () => {
-    if(this.state.authenticated) {
+    if (this.state.authenticated) {
       this.setState({
         redirectLogin: true,
       });
@@ -31,7 +30,7 @@ class LoginPage extends React.Component {
       this.setState({
         redirectRegister: true,
       });
-    
+
   }
 
   // Handles change in name/password field
@@ -61,7 +60,6 @@ class LoginPage extends React.Component {
       return <Redirect to='/register' />;
     }
   }
-  
 
   render() {
     const { name, password } = this.state;
@@ -99,9 +97,9 @@ class LoginPage extends React.Component {
         <div>
           <Card className='register-Link'>
             <CardActions>
-            {this.registerRedirect()}           
-             <Button variant="contained" color="secondary" >Login</Button>
-             <Button variant="contained" onClick={this.setRedirectRegister}>Register</Button>           
+            {this.registerRedirect()}
+             <Button variant='contained' color='secondary' >Login</Button>
+             <Button variant='contained' onClick={this.setRedirectRegister}>Register</Button>
             </CardActions>
           </Card>
         </div>

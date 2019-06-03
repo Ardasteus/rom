@@ -65,11 +65,11 @@ class NavBar extends React.Component<Props, State> {
     anchorEl: null,
     redirect: false,
     value: false,
-    open: false
+    open: false,
   };
   TabContainer = (props) => {
     return (
-      <Typography component="div" style={{ padding: 8 * 3 }}>
+      <Typography component='div' style={{ padding: 8 * 3 }}>
         {props.children}
       </Typography>
     );
@@ -101,11 +101,11 @@ class NavBar extends React.Component<Props, State> {
   // Opens settings dialog
   handleClickOpen = () => {
     this.setState({ open: true });
-  };
+  }
   // Close settings dialog
   handleCloseSettings = () => {
     this.setState({ open: false });
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -115,61 +115,61 @@ class NavBar extends React.Component<Props, State> {
 
     return (
       <div className={classes.root}>
-        <AppBar position='static' color="secondary">
+        <AppBar position='static' color='secondary'>
         <Dialog
           fullScreen
           open={this.state.open}
           onClose={this.handleCloseSettings}
           TransitionComponent={Transition}
         >
-          <AppBar className={classes.appBar} color="secondary">
+          <AppBar className={classes.appBar} color='secondary'>
             <Toolbar>
-              <IconButton color="inherit" onClick={this.handleCloseSettings} aria-label="Close">
+              <IconButton color='inherit' onClick={this.handleCloseSettings} aria-label='Close'>
                 <CloseIcon />
               </IconButton>
-              <Typography variant="h6" color="inherit" className={classes.flex}>
+              <Typography variant='h6' color='inherit' className={classes.flex}>
                 Settings
               </Typography>
-              <Button color="inherit" onClick={this.handleCloseSettings}>
+              <Button color='inherit' onClick={this.handleCloseSettings}>
                 Save
               </Button>
             </Toolbar>
           </AppBar>
           <List>
             <ListItem button>
-              <ListItemText primary="Dashboard"/>
+              <ListItemText primary='Dashboard'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="Personal data"/>
+              <ListItemText primary='Personal data'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="Data and personalisation"/>
+              <ListItemText primary='Data and personalisation'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="Security"/>
+              <ListItemText primary='Security'/>
             </ListItem>
-            
+
             <ListItem button>
-              <ListItemText primary="People and sharing"/>
+              <ListItemText primary='People and sharing'/>
             </ListItem>
             <Divider />
             <ListItem button>
-              <ListItemText primary="Send feedback"/>
+              <ListItemText primary='Send feedback'/>
             </ListItem>
             <ListItem button>
-              <ListItemText primary="Report bugs"/>
+              <ListItemText primary='Report bugs'/>
             </ListItem>
           </List>
         </Dialog>
-          <Toolbar color="secondary">
+          <Toolbar color='secondary'>
             <Typography variant='h6' color='inherit' className={classes.grow}>
               Ruby On Mails
               <Tabs value={value} onChange={this.handleChangeTab}>
-               <Tab label="Inbox" />
-               <Tab label="Chat" />
+               <Tab label='Inbox' />
+               <Tab label='Chat' />
               </Tabs>
             </Typography>
             {auth && (
@@ -205,8 +205,8 @@ class NavBar extends React.Component<Props, State> {
             )}
           </Toolbar>
         </AppBar>
-        {value == false && <this.TabContainer><Inbox /></this.TabContainer>}
-        {value == true && <this.TabContainer><Chat /></this.TabContainer>}
+        {value === false && <this.TabContainer><Inbox /></this.TabContainer>}
+        {value === true && <this.TabContainer><Chat /></this.TabContainer>}
       </div>
     );
   }

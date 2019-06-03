@@ -63,7 +63,7 @@ class RegisterPage extends React.Component {
   render() {
     const { name, password, conpassword } = this.state;
     const enabled =
-          this.state.password == this.state.conpassword &&
+          this.state.password === this.state.conpassword &&
           name.length > 0 &&
           password.length > 0 &&
           conpassword.length > 0;
@@ -124,9 +124,9 @@ class RegisterPage extends React.Component {
       <div>
         <Card className='login-Link'>
           <CardActions>
-            {this.loginRedirect()}                        
-             <Button variant="contained" onClick={this.setRedirectLogin}>Login</Button>        
-             <Button variant="contained" color="secondary">Register</Button>   
+            {this.loginRedirect()}
+             <Button variant='contained' onClick={this.setRedirectLogin}>Login</Button>
+             <Button variant='contained' color='secondary'>Register</Button>
             </CardActions>
          </Card>
       </div>
