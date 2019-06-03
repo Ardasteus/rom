@@ -6,6 +6,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import 'styles/HomePage.scss';
 import { Redirect, Link } from 'react-router-dom';
+import axios from 'classes/axios.instance';
+
 
 class LoginPage extends React.Component {
 
@@ -41,7 +43,14 @@ class LoginPage extends React.Component {
   // If declarable redirectLogin is true, redirect to login page
   homeRedirect = () => {
     if (this.state.redirectLogin) {
-      return <Redirect to='/home' />;
+      axios.post('/api/v1/login', {
+        header: { "Content-Type": "application/json"},
+        username: this.state.name,
+        password: this.state.password
+      })
+      .then(function (response) {
+        console.log(response);
+      })
     }
   }
   // If declarable redirectRegister is true, redirect to register page
