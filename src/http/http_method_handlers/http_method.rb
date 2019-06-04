@@ -32,8 +32,8 @@ module ROM
           path = input
           path[0] = '' if path[0] == '/'
           path = path.split('/')
-          path = path.map{|part| part.to_sym}
-          return path
+          
+					path.map(&:to_sym)
         end
 
         # Runs the given api plan, invoking it with arguments depending on the type of the request's content

@@ -16,8 +16,8 @@ module ROM
 
 		# Gets the path of temporary directory (cleared with ever run)
 		# @return [Pathname] Path of temporary directory
-		def temp
-			path('temp')
+		def temp(*file)
+			path('temp', *file)
 		end
 
 		# Gets the path of self-signed certificates directory

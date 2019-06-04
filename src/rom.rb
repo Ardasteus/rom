@@ -6,13 +6,13 @@ module ROM
 	class Importer
 		# Indicates whether benchmarking should be enabled
 		BENCHMARK = true
-
+		
 		# Instantiates the {ROM::Importer} class
 		# @param [String] root Location of the source files
 		# @yield [] Block of the importer
 		def initialize(root, dyn = true, &block)
-			@root  = root
-			@ctx   = root
+			@root = root
+			@ctx = root
 			@files = []
 			t = Time.new
 			instance_eval(&block) if block != nil
@@ -24,7 +24,7 @@ module ROM
 		# @param [String] file Path to file
 		# @param [String] klass Classes to be mapped
 		def file(file, *klass)
-			klass.each do |k| 
+			klass.each do |k|
 				mods = k.split('::')
 				kl = mods.delete_at(mods.length - 1)
 				mod = mods.collect { |m| m.to_sym }.reduce(Object) do |last, m|
@@ -54,11 +54,11 @@ module ROM
 		def gems(*gem)
 			gem.each(&method(:require))
 		end
-
+		
 		def path(*parts)
 			File.join(@ctx, *parts)
 		end
-
+		
 		# Loads all files statically
 		def load_all
 			puts 'Loading ROM statically...'
@@ -69,7 +69,7 @@ module ROM
 				puts " #{(Time.now - t).round(2)}s" if BENCHMARK
 			end
 		end
-
+		
 		private :path
 	end
 	
@@ -78,8 +78,88 @@ module ROM
 	# File to class map of the application
 	MAP = {
 		'data' => {
-			'attribute' => 'ROM::Attribute' ,
-			'model' => [ 'ROM::Model', 'ROM::ModelProperty' ],
+			'db' => {
+				'mysql' => {
+					'mysql_driver' => 'ROM::MySql::MySqlDriver'
+				},
+				'sqlite' => {
+					'sqlite_driver' => 'ROM::Sqlite::SqliteDriver'
+				},
+				'queries' => {
+					'query_expression' => 'ROM::Queries::QueryExpression',
+					'column_value' => 'ROM::Queries::ColumnValue',
+					'binary_operator' => 'ROM::Queries::BinaryOperator',
+					'function_expression' => 'ROM::Queries::FunctionExpression',
+					'unary_operator' => 'ROM::Queries::UnaryOperator',
+					'constant_value' => 'ROM::Queries::ConstantValue',
+					'order' => 'ROM::Queries::Order'
+				},
+				'db_column' => 'ROM::DbColumn',
+				'db_driver' => 'ROM::DbDriver',
+				'db_index' => 'ROM::DbIndex',
+				'db_reference' => 'ROM::DbReference',
+				'db_schema' => 'ROM::DbSchema',
+				'db_table' => 'ROM::DbTable',
+				'db_type' => 'ROM::DbType',
+				'db_server' => 'ROM::DbServer',
+				'db_context' => 'ROM::DbContext',
+				'db_results' => 'ROM::DbResults',
+				'db_key' => 'ROM::DbKey',
+				'db_collection' => 'ROM::DbCollection',
+				'db_seed' => 'ROM::DbSeed',
+				'entity' => 'ROM::Entity',
+				'entity_mapper' => 'ROM::EntityMapper',
+				'lazy_promise' => 'ROM::LazyPromise',
+				'lazy_loader' => 'ROM::LazyLoader',
+				'schema_builder' => 'ROM::SchemaBuilder',
+				'key_attribute' => 'ROM::KeyAttribute',
+				'reference_attribute' => 'ROM::ReferenceAttribute',
+				'suffix_attribute' => 'ROM::SuffixAttribute',
+				'index_attribute' => 'ROM::IndexAttribute',
+				'auto_attribute' => 'ROM::AutoAttribute',
+				'sql_query' => 'ROM::SqlQuery',
+				'sql_driver' => 'ROM::SqlDriver',
+				'db_connection' => 'ROM::DbConnection',
+				'length_attribute' => 'ROM::LengthAttribute',
+				'db_status' => 'ROM::DbStatus',
+				'db_config' => 'ROM::DbConfig',
+				'db_hook' => 'ROM::DbHook'
+			},
+			'rom_db_context' => 'ROM::DB::RomDbContext',
+			'rom_db_hook' => 'ROM::RomDbHook',
+			'attribute' => 'ROM::Attribute',
+			'models' => {
+				'user' => 'ROM::DB::User',
+				'type_driver' => 'ROM::DB::TypeDriver',
+				'contact' => 'ROM::DB::Contact',
+				'collection' => 'ROM::DB::Collection',
+				'login' => 'ROM::DB::Login',
+				'contact_address' => 'ROM::DB::ContactAddress',
+				'contact_group' => 'ROM::DB::ContactGroup',
+				'contact_group_user' => 'ROM::DB::ContactGroupUser',
+				'contact_contact_group' => 'ROM::DB::ContactContactGroup',
+				'type_address' => 'ROM::DB::TypeAddress',
+				'type_protection' => 'ROM::DB::TypeProtection',
+				'connection' => 'ROM::DB::Connection',
+				'mailbox' => 'ROM::DB::Mailbox',
+				'mailbox_user' => 'ROM::DB::MailboxUser',
+				'map' => 'ROM::DB::Map',
+				'tag' => 'ROM::DB::Tag',
+				'participant' => 'ROM::DB::Participant',
+				'mail' => 'ROM::DB::Mail',
+				'mail_participant' => 'ROM::DB::MailParticipant',
+				'mail_tag' => 'ROM::DB::MailTag',
+				'collection_mail' => 'ROM::DB::CollectionMail',
+				'attachment' => 'ROM::DB::Attachment',
+				'type_media' => 'ROM::DB::TypeMedia',
+				'media' => 'ROM::DB::Media',
+				'type_channel' => 'ROM::DB::TypeChannel',
+				'channel' => 'ROM::DB::Channel',
+				'channel_contact' => 'ROM::DB::ChannelContact',
+				'type_message' => 'ROM::DB::TypeMessage',
+				'message' => 'ROM::DB::Message'
+			},
+			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
 				'ROM::Types::Type',
 				'ROM::Types::Just',
@@ -103,7 +183,7 @@ module ROM
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',
 			'interconnect' => 'ROM::Interconnect',
-			'resource' => [ 
+			'resource' => [
 				'ROM::Resource',
 				'ROM::StaticResource',
 				'ROM::ResourceAction',
@@ -170,9 +250,9 @@ module ROM
 		'application' => 'ROM::Application',
 		'filesystem' => 'ROM::Filesystem'
 	}
-
+	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|
@@ -186,9 +266,9 @@ module ROM
 				end
 			end
 		end
-
+		
 		map
-
+		
 		all 'api/**/*.rb'
 	end
 end

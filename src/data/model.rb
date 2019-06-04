@@ -123,10 +123,19 @@ module ROM
 		# @param [Object] att Attributes of property
 		# @return [ROM::ModelProperty] Resulting property
 		# @raise [Exception] When property already exists
+		# @!macro [attach] model.property
+		# 	@!attribute [rw] $1
+		# 		@return [$2] Value of the $1 property
 		def self.property(nm, type, df = nil, *att)
 			raise("Property '#{nm}' already defined!") unless @props[nm] == nil
 			raise('Model already instantiated!') if @inst
-			prop       = ModelProperty.new(nm.to_s, type, false, df, *att)
+			type = Types::Type.to_t(type)
+			unless not df.is_a?(Attribute) or type <= Attribute
+				att << df
+				df = nil
+			end
+			type = Types::Maybe[type] if df == nil and not type <= NilClass
+			prop = ModelProperty.new(nm.to_s, type, false, df, *att)
 			@props[nm] = prop
 			
 			define_method nm do
@@ -147,10 +156,13 @@ module ROM
 		# @param [Object] att Attributes of property
 		# @return [ROM::ModelProperty] Resulting property
 		# @raise [Exception] When property already exists
+		# @!macro [attach] model.property!
+		# 	@!attribute [rw] $1
+		# 		@return [$2] Value of the $1 property
 		def self.property!(nm, type, *att)
 			raise("Property '#{nm}' already defined!") unless @props[nm] == nil
 			raise('Model already instantiated!') if @inst
-			prop       = ModelProperty.new(nm.to_s, type, true, nil, *att)
+			prop = ModelProperty.new(nm.to_s, type, true, nil, *att)
 			@props[nm] = prop
 			
 			define_method nm do
@@ -163,6 +175,38 @@ module ROM
 			end
 			
 			return prop
+		end
+		
+		def to_object
+			ret = {}
+			self.class.properties.each do |prop|
+				key = prop.name.to_sym
+				ret[key] = Model.resolve(self[key], prop.type)
+			end
+			
+			ret
+		end
+		
+		def self.resolve(val, type)
+			case type
+				when Types::Just
+					if type.type < self
+						val.to_object
+					else
+						val
+					end
+				when Types::Union
+					type.types.each do |t|
+						return resolve(val, t) if t.is(val)
+					end
+					raise ConversionException.new(val, type, 'Value is not of a type of the given union!')
+				when Types::Array
+					val.collect { |i| resolve(i, type.type) }
+				when Types::Hash
+					val.collect { |i| [resolve(i[0], type.key), resolve(i[1], type.value)] }.to_h
+				else
+					raise ConversionException.new(val, type, 'Unable to resolve type!')
+			end
 		end
 		
 		# Creates a type from given object
@@ -235,9 +279,9 @@ module ROM
 			# @param [Class, ROM::Types::Type] type Expected type
 			# @param [String] err Conversion error
 			def initialize(obj, type, err)
-				@obj  = obj
+				@obj = obj
 				@type = Types::Type.to_t(type)
-				@err  = err
+				@err = err
 				super("Failed to convert object '#{obj}' of type '#{obj.class}' to type '#{type}'!: #{err}")
 			end
 		end
@@ -285,9 +329,9 @@ module ROM
 		def initialize(nm, type, req, df = nil, *att)
 			@name = nm
 			@type = Types::Type.to_t(type)
-			@att  = (att == nil ? [] : att)
-			@req  = req
-			@def  = df
+			@att = (att == nil ? [] : att)
+			@req = req
+			@def = df
 			
 			@att.each { |i| raise("Attributes must inherit the class #{Attribute.name}, got #{i.class.name}!") unless i.is_a?(Attribute) }
 		end
@@ -297,9 +341,12 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Object] First attribute of given type; nil otherwise
-		def attribute(&block)
-			idx = @att.index(&block)
-			return idx == nil ? nil : @att[idx]
+		def attribute(t = nil, &block)
+			if t == nil
+				@att.find(&block)
+			else
+				@att.find { |i| i.is_a?(t) and (not block_given? or block.call(i)) }
+			end
 		end
 		
 		# Searches for an attribute
@@ -307,8 +354,12 @@ module ROM
 		# @yieldparam [Object] item Attribute to match against
 		# @yieldreturn [Boolean] True if attribute matched; false otherwise
 		# @return [Boolean] True if matching attribute was found; false otherwise
-		def attribute?(&block)
-			return @att.any?(&block)
+		def attribute?(t = nil, &block)
+			if t == nil
+				@att.any?(&block)
+			else
+				@att.any? { |i| i.is_a?(t) and (not block_given? or block.call(i)) }
+			end
 		end
 	end
 end

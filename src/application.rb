@@ -14,6 +14,7 @@ module ROM
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exist?(data)
 			@data = File.expand_path(data)
 			@debug = true # (opt[:debug] or false)
+			@debug = (opt[:debug] or false)
 			@itc = Interconnect.new
 			@itc.register(LogServer)
 			@log = @itc.fetch(LogServer)
@@ -21,6 +22,11 @@ module ROM
 			@itc.register(JobServer)
 			@itc.register(ApiGateway)
 			@itc.register(Filesystem)
+			@itc.register(DbServer)
+			@itc.register(DbConfig)
+			@itc.register(MySql::MySqlDriver)
+			@itc.register(Sqlite::SqliteDriver)
+			@itc.register(RomDbHook)
 			@itc.register(Authentication::AuthenticationService)
 			@itc.register(Authentication::AuthenticationConfig)
 			
@@ -68,10 +74,25 @@ module ROM
 				end
 			end
 			
-			@log.info('Starting services...')
-			@itc.lookup(Service).sort_by(&method(:dep_level)).each do |svc|
-				svc.start
+			@log.info('Starting log servers...')
+			@itc.lookup(Service).select { |i| i.is_a?(LogServer) }.sort_by(&method(:dep_level)).each do |svc|
 				begin
+					svc.start
+				rescue Exception => ex
+					@log.error("Failed to start log server!: #{ex.message}", ex)
+					if @debug
+						sleep DBG_SLEEP # Wait for debug output to catch up
+						raise
+					else
+						return
+					end
+				end
+			end
+			
+			@log.info('Starting services...')
+			@itc.lookup(Service).select { |i| not i.is_a?(LogServer) }.sort_by(&method(:dep_level)).each do |svc|
+				begin
+					svc.start
 				rescue Exception => ex
 					@log.error("Failed to start service!: #{ex.message}", ex)
 					if @debug
