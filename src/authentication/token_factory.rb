@@ -1,21 +1,35 @@
 module ROM
-  module Authentication
+	module Authentication
 		class TokenFactory
 			include ROM::Component
-
-			 def initialize(itc)
+			
+			def name
+				@name
+			end
+			
+			def config_model
+				@conf
+			end
+			
+			def initialize(itc, nm, conf)
 				@itc = itc
-			 end
-
-			 def issue_token(user, login, stamp)
-
-			 end
-
-			 def to_string(token)
-			 end
-
-			 def from_string(string)
-			 end
+				@name = nm
+				@conf = conf
+			end
+			
+			def issue_token(user, login, stamp)
+			
+			end
+			
+			def config(conf)
+			
+			end
+			
+			def to_string(token)
+			end
+			
+			def from_string(string)
+			end
 		end
 	end
-	end
+end

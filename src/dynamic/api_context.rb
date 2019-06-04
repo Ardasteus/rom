@@ -10,6 +10,14 @@ module ROM
 		def context
 			self
 		end
+		
+		def user
+			@user
+		end
+		
+		def user=(val)
+			@user = val
+		end
 
 		def interconnect
 			@itc

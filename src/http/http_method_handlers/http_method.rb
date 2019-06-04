@@ -19,6 +19,7 @@ module ROM
 				@input = i
 				@output = o
 				@gateway = itc.fetch(ApiGateway)
+				@handlers = itc.view(HTTPHeaderHandler)
 			end
 			
 			# Resolves the given http request and formats the content with the given input/output serializers
@@ -61,7 +62,14 @@ module ROM
 			# @param [ROM::ApiPlan] plan Plan to run
 			# @param [ROM:HTTP:HTTPRequest] request HTTP Request
 			# @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
-			def run_plan(plan, request, serializer, ctx = ApiContext.new(@itc))
+			def run_plan(plan, request, serializer)
+				ctx = ApiContext.new(@itc)
+				request.headers.each_pair do |k, v|
+					@handlers.select { |i| i.accepts?(k) }.each do |h|
+						h.handle(k, v, ctx)
+					end
+				end
+				
 				args = []
 				body = plan.signature[0]
 				if body != nil
@@ -78,7 +86,7 @@ module ROM
 							type.type.from_object(serializer.to_object(data))
 						end
 					elsif body[:required]
-						raise("Unknown API action input argument type '#{type.name}'!")
+						raise("Unknown API action input argument type '#{type}'!")
 					end
 				end
 				plan.signature.each do |arg|

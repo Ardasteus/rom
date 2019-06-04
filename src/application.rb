@@ -36,6 +36,8 @@ module ROM
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
 			@itc.load(ROM::HTTP::Methods)
+			@itc.load(ROM::HTTP::Filters)
+			@itc.load(ROM::HTTP::HeaderHandlers)
 			@itc.load(ROM::Authentication::Factories)
 			@itc.load(ROM::Authentication::Providers)
 			
