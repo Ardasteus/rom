@@ -30,8 +30,8 @@ module ROM
           str_token += base_64_header + "."
           str_token += base_64_body + "."
           str_token += Base64.urlsafe_encode64(rsa_string)
-          puts @rsa.verify_pss('sha512', Base64.urlsafe_decode64(str_token.split('.').last), rsa_to_sign, salt_length: :auto, mgf1_hash: 'sha512')
-          str_token
+          
+					str_token
         end
 
         def from_string(string)

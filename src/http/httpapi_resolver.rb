@@ -48,7 +48,7 @@ module ROM
 				rescue ApiException => ex
 					HTTPResponse.new(EXCEPTION_CODES[ex.class])
 				rescue Exception => ex
-					@log.error('Unknown exception raised during HTTP request!', ex)
+					@log.item&.error('Unknown exception raised during HTTP request!', ex)
 					
 					HTTPResponse.new(StatusCode::INTERNAL_SEVER_ERROR)
 				end

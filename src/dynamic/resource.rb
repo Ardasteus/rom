@@ -55,7 +55,7 @@ module ROM
 		PATH_SEPARATOR = '.'
 		# Gets the union type that is allowed as arguments and return values
 		ALLOWED_TYPE = Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[], IO]]
-
+		
 		# Gets actions declared within the resource
 		# @return [Array<ROM::ResourceAction>] Actions declared within the resource
 		def self.actions
@@ -88,20 +88,20 @@ module ROM
 			@path = ''
 			@def = nil
 		end
-
+		
 		# Invoked when the class is inherited
 		# @param [Class] klass Inheriting class
 		def self.inherited(klass)
 			klass.prepare_resource
 		end
-
+		
 		# Sets the path of the resource
 		# @param [String] path Path of the resource
 		def self.namespace(*path)
 			raise('Path parts cannot contain path separator!') if path.include?(PATH_SEPARATOR)
 			@path = path.collect(&:to_s).join(PATH_SEPARATOR)
 		end
-
+		
 		# Defines an action
 		# @param [String, Symbol] name Name of the action
 		# @param [Class, ROM::Types::Type] ret Return type of the action
@@ -137,7 +137,7 @@ module ROM
 		
 		end
 	end
-
+	
 	# Represents an API action
 	class ResourceAction
 		# Gets the name of action
@@ -145,32 +145,32 @@ module ROM
 		def name
 			@name
 		end
-
+		
 		# Gets the signature of the action
 		# @return [ROM::ActionSignature] Signature of the action
 		def signature
 			@sig
 		end
-
+		
 		# Gets the metadata attributes of the action
 		# @return [Array<ROM::Attribute>] Attributes of the action
 		def attributes
 			@att
 		end
-
+		
 		# Gets the resource to which this action is bound
 		# @return [ROM::Resource] Parent resource
 		def resource
 			@res
 		end
-
+		
 		# Invokes the action with given arguments
 		# @param [Object, nil] args Arguments to invoke the action with
 		# @return [Object, nil] Result of the action
 		def invoke(ctx, inst = nil, *args)
 			ctx.context_exec((inst or @action.binding.eval('self')), *args, &@action)
 		end
-
+		
 		# Instantiates the {ROM::ResourceAction} class
 		# @param [Symbol] nm Name of action
 		# @param [Class] res Parent resource
@@ -190,7 +190,7 @@ module ROM
 		# @return [ROM::Attribute, nil] First attribute of the given type; nil of no such attribute could be found
 		def attribute(klass)
 			@att.each { |i| return i if i.is_a?(klass) }
-			end
+		end
 		
 		# Gets whether the action has a metadata attribute of the given type
 		# @param [Class] klass Class of the attribute to look for
@@ -198,7 +198,7 @@ module ROM
 		def attribute?(klass)
 			@att.any? { |i| i.is_a?(klass) }
 		end
-
+		
 		# Gets the path and signature of the action
 		# @return [String] Path and signature of the action
 		def to_s
@@ -206,7 +206,7 @@ module ROM
 			"#{(p == '' ? '' : "#{p}.")}#{@name}#{@sig}"
 		end
 	end
-
+	
 	# Represents the signature of the action
 	class ActionSignature
 		# Gets the type which the action returns
@@ -214,34 +214,35 @@ module ROM
 		def return_type
 			@ret
 		end
-
+		
 		# Gets the specification of the action arguments
 		# @return [Hash{Symbol => Hash{Symbol => Object}}] Specification of the action arguments
 		def arguments
 			@sig.keys
 		end
-
+		
 		# Instantiates the {ROM::ActionSignature} class
 		# @param [ROM::Types::Type] ret Return type of the action
 		# @param [Hash{Symbol => Hash}] sig Specification of the action arguments
 		def initialize(ret, sig)
 			@sig = {}
 			@ret = Types::Type.to_t(ret)
-
+			
 			order = 0
 			sig.each_pair do |k, v|
 				raise("Expecting argument name #{k.inspect} to be a symbol!") unless k.is_a?(Symbol)
-
+				
 				k = k.to_s
 				req = k.end_with?('!')
 				name = (req ? k[0..k.length - 2] : k).to_sym
 				case v
 					when Types::Type
-						@sig[name] = { :type => v, :required => req, :default => nil, :order => order }
+						@sig[name] = { :name => name, :type => v, :required => req, :default => nil, :order => order }
 					when Class
-						@sig[name] = { :type => Types::Type.to_t(v), :required => req, :default => nil, :order => order }
+						@sig[name] = { :name => name, :type => Types::Type.to_t(v), :required => req, :default => nil, :order => order }
 					when Hash
 						raise("Argument '#{name}' doesn't specify type!") unless v.has_key?(:type)
+						v[:name] = name
 						v[:required] = req unless v.has_key?(:required)
 						v[:default] = nil unless v.has_key?(:default)
 						v[:order] = order unless v.has_key?(:order)
@@ -252,11 +253,15 @@ module ROM
 				order += 1
 			end
 		end
-
+		
 		# Gets the string representation of the signature
 		# @return [String] String representation fo the signature
 		def to_s
 			"(#{@sig.keys.collect { |k| "#{k}: #{self[k][:type]}#{(self[k][:required] ? '' : " = #{self[k][:default].inspect}")}" }.join(', ')}): #{@ret}"
+		end
+		
+		def each
+			@sig.values.sort_by { |i| i[:order] }.each { |i| yield(i) }
 		end
 		
 		# Checks whether supplied arguments may be used to invoke this action
@@ -266,7 +271,7 @@ module ROM
 			req = @sig.count { |arg| arg[1][:required] }
 			return args.length >= req
 		end
-
+		
 		# @overload [](arg)
 		# 	Gets specification of an argument based on its name
 		# 	@param [Symbol] arg Name of the argument

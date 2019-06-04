@@ -63,24 +63,34 @@ module ROM
 			# @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
 			def run_plan(plan, request, serializer, ctx = ApiContext.new(@itc))
 				args = []
-				arg = plan.signature[0]
-				type = arg[:type]
-				if arg != nil
+				body = plan.signature[0]
+				if body != nil
+					type = body[:type]
 					if type <= IO
 						args << request.stream
 					elsif type <= Model
 						data = request.stream.read(request[:content_length].to_i)
 						
 						args << if data == nil
-							type.type.from_object(serializer.to_object(data))
-						else
-							raise(ArgumentException.new(data, 'Body expected!')) unless type <= NilClass
+							raise(ArgumentException.new(body[:name], 'Body expected!')) unless type <= NilClass
 							args << nil
+						else
+							type.type.from_object(serializer.to_object(data))
 						end
-					elsif arg[:required]
+					elsif body[:required]
 						raise("Unknown API action input argument type '#{type.name}'!")
 					end
 				end
+				plan.signature.each do |arg|
+					next if arg == body
+					
+					val = request.query[arg[:name].to_s]
+					raise(ArgumentException.new(arg[:name], 'Argument required!')) if arg[:required] and val == nil
+					raise(ArgumentException.new(arg[:name], "Argument doesn't accept String!")) unless arg[:type] <= String
+					args << (val == nil ? arg[:default] : val)
+				end
+				unk = request.query.keys.find { |k| plan.signature[k.to_sym] == nil }
+				raise(ArgumentException.new(unk, 'Unknown action argument!')) if unk != nil
 				
 				plan.run(ctx, *args)
 			end
