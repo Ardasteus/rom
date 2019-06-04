@@ -3,6 +3,10 @@
 module ROM
 	# Connects components together
 	class Interconnect
+		def generation
+			@gen
+		end
+		
 		# Instantiates the {ROM::Interconnect} class
 		def initialize(**opt)
 			@log   = BufferLogger.new
@@ -10,6 +14,7 @@ module ROM
 			@hooks = []
 			@opt = opt
 			@opt[:log] = true
+			@gen = 0
 			
 			hook(LogServer) do |log|
 				if @log.is_a?(BufferLogger)
@@ -27,6 +32,14 @@ module ROM
 		def hook(type, &block)
 			@log.trace("Setting interconnect hook for '#{type.name}'...") if opt? :hooks
 			@hooks << { :type => type, :hook => block }
+		end
+		
+		def view(type, &filter)
+			View.new(self, type, filter)
+		end
+		
+		def pin(type, &filter)
+			Pin.new(self, type, filter)
 		end
 		
 		# Loads all components in a module
@@ -48,6 +61,7 @@ module ROM
 			com.register(self).each do |i|
 				@reg << i
 				hooks.each { |h| @log.trace('Invoking hook...'); h[:hook].call(i) }
+				@gen += 1
 			end
 		end
 		
@@ -89,5 +103,52 @@ module ROM
 		end
 
 		private :opt?
+		
+		class View
+			include Enumerable
+			
+			def initialize(itc, type, filter)
+				@itc = itc
+				@type = type
+				@filter = filter
+				@view = nil
+				@last = nil
+			end
+			
+			def reload
+				@view = @itc.lookup(@type, &@filter)
+				@last = @itc.generation
+			end
+			
+			def each
+				reload if (@last == nil or @last < @itc.generation)
+				@view.each { |i| yield i }
+			end
+		end
+		
+		class Pin
+			def item
+				reload if (@last == nil or @last < @itc.generation)
+				
+				@item
+			end
+			
+			def initialize(itc, type, filter)
+				@itc = itc
+				@type = type
+				@filter = filter
+				@item = nil
+				@last = nil
+			end
+			
+			def reload
+				@item = @itc.fetch(@type, &@filter)
+				@last = @itc.generation
+			end
+			
+			def method_missing(name, *args, &block)
+				item.send(name, *args, &block)
+			end
+		end
 	end
 end

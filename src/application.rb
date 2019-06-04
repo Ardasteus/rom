@@ -29,10 +29,12 @@ module ROM
 			@itc.register(RomDbHook)
 			@itc.register(Authentication::AuthenticationService)
 			@itc.register(Authentication::AuthenticationConfig)
+			@itc.register(HTTP::HTTPService)
+			@itc.register(HTTP::HTTPConfig)
+			@itc.register(HTTP::HTTPAPIResolver)
 			
 			@itc.load(ROM::API)
 			@itc.load(ROM::DataSerializers)
-			@itc.load(ROM::HTTP)
 			@itc.load(ROM::HTTP::Methods)
 			@itc.load(ROM::Authentication::Factories)
 			@itc.load(ROM::Authentication::Providers)

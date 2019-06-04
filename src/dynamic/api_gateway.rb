@@ -102,7 +102,7 @@ module ROM
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
 			def run(ctx, *args)
-				raise('Plan signature not met!') unless signature.accepts(*args)
+				raise(SignatureException.new(signature, args)) unless signature.accepts(*args)
 				@plan.reduce(nil) do |last, act|
 					if last == nil
 						next act.invoke(ctx, nil, *args)

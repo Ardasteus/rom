@@ -170,6 +170,11 @@ module ROM
 				'ROM::Types::Maybe',
 			]
 		},
+		'exceptions' => {
+			'planning_exception' => 'ROM::PlanningException',
+			'argument_exception' => 'ROM::ArgumentException',
+			'signature_exception' => 'ROM::SignatureException'
+		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
 			'log_server' => 'ROM::LogServer',
@@ -180,6 +185,7 @@ module ROM
 		'dynamic' => {
 			'api_context' => 'ROM::ApiContext',
 			'api_gateway' => 'ROM::ApiGateway',
+			'api_exception' => 'ROM::ApiException',
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',
 			'interconnect' => 'ROM::Interconnect',
@@ -201,7 +207,7 @@ module ROM
 			'http_method_handlers' => {
 				'delete_method' => 'ROM::HTTP::Methods::DeleteMethod',
 				'get_method' => 'ROM::HTTP::Methods::GetMethod',
-				'http_method' => 'ROM::HTTP::Methods::HTTPMethod',
+				'http_method' => 'ROM::HTTP::HTTPMethod',
 				'post_method' => 'ROM::HTTP::Methods::PostMethod',
 				'put_method' => 'ROM::HTTP::Methods::PutMethod'
 			},
