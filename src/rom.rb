@@ -213,12 +213,35 @@ module ROM
 			'httpapi_resolver' => 'ROM::HTTP::HTTPAPIResolver',
 			'object_content' => 'ROM::HTTP::ObjectContent',
 			'status_code' => 'ROM::HTTP::StatusCode',
-			'security' => 'ROM::HTTP::Security'
+			'security' => 'ROM::HTTP::Security',
+			'header_filters' => {
+					'http_header_filter' => 'ROM::HTTP::Filters::HTTPHeaderFilter',
+					'content_length_filter' => 'ROM::HTTP::Filters::ContentLengthFilter'
+			},
+			'header_handlers' => {
+					'http_header_handler' => 'ROM::HTTP::HeaderHandlers::HTTPHeaderHandler'
+			}
 		},
 		'jobs' => {
 			'job' => 'ROM::Job',
 			'job_pool' => 'ROM::JobPool',
 			'job_server' => 'ROM::JobServer'
+		},
+		'authentication' => {
+				'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
+				'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
+				'authentication_service' => 'ROM::Authentication::AuthenticationService',
+				'authenticator' => 'ROM::Authentication::Authenticator',
+				'jwt_token_factory' => 'ROM::Authentication::Factories::JWTTokenFactory',
+				'ldap_authenticator' => 'ROM::Authentication::Authenticators::LDAPAuthenticator',
+				'ldap_provider' => 'ROM::Authentication::Providers::LDAPProvider',
+				'token' => 'ROM::Authentication::Token',
+				'token_factory' => 'ROM::Authentication::TokenFactory',
+				'user' => 'ROM::Authentication::User',
+				'testing' => {
+						'test_provider' => 'ROM::Authentication::Providers::TestProvider',
+						'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
+				}
 		},
 		'serializers' => {
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
@@ -229,7 +252,7 @@ module ROM
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'pathname', 'sqlite3', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

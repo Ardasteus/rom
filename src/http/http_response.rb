@@ -18,6 +18,10 @@ module ROM
 				@headers
 			end
 			
+			def [](header)
+			   @headers[header]
+			end
+
 			# Content of the HTTP response
 			# @return [HTTPContent]
 			def content

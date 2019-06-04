@@ -9,6 +9,7 @@ module ROM
         # @param [ROM::Interconnect] itc Interconnect
         def initialize(itc)
           super(itc)
+          @log = itc.fetch(LogServer)
           @name = "POST"
         end
 

@@ -59,16 +59,16 @@ module ROM
         loop do
           ln = io.readline
           break if ln.strip.chomp == ''
-          header, value = ln.split
-          header = header.gsub("_", "-").downcase.to_sym
-          case @headers[header]
-          when NilClass
-            @headers[header] = value
-          when String
-            @headers[header] = [@headers[header], value]
-          when Array
-            @headers[header] << value
-          end
+          header, value = ln.split(':').collect(&:strip)
+          header = header.tr('-', '_').downcase.to_sym
+					case @headers[header]
+						when NilClass
+							@headers[header] = value
+						when String
+							@headers[header] = [@headers[header], value]
+						when Array
+							@headers[header] << value
+					end
         end
       end
 

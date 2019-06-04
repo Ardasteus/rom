@@ -9,6 +9,7 @@ module ROM
 			@reg   = Set.new
 			@hooks = []
 			@opt = opt
+			@opt[:log] = true
 			
 			hook(LogServer) do |log|
 				if @log.is_a?(BufferLogger)
@@ -46,7 +47,7 @@ module ROM
 			hooks = @hooks.select { |i| com <= i[:type] }
 			com.register(self).each do |i|
 				@reg << i
-				hooks.each { |h| h[:hook].call(i) }
+				hooks.each { |h| @log.trace('Invoking hook...'); h[:hook].call(i) }
 			end
 		end
 		

@@ -10,6 +10,14 @@ module ROM
 		def context
 			self
 		end
+
+		def interconnect
+			@itc
+		end
+
+		def initialize(itc = nil)
+			@itc = itc
+		end
 		
 		# Invokes a block using this context
 		# @param [Binding] bind Block binding to use

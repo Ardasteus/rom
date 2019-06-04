@@ -9,7 +9,7 @@ module ROM
         # Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
         # @param [ROM::Interconnect] itc Interconnect
         def initialize(itc)
-          @itx = itc
+          @itc = itc
 					@gateway = itc.fetch(ApiGateway)
         end
 
@@ -40,14 +40,14 @@ module ROM
         # @param [ROM::ApiPlan] plan Plan to run
         # @param [ROM:HTTP:HTTPRequest] request HTTP Request
         # @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
-        def run_plan(plan, request, serializer, ctx = ApiContext.new)
+        def run_plan(plan, request, serializer, ctx = ApiContext.new(@itc))
           args = []
           arg = plan.signature[0]
           if arg != nil
-            if arg[:type].accepts(IO)
+            if arg[:type] <= IO
               args << request.stream
-            elsif arg[:type].accepts(Model)
-              args << serializer.to_object(request.stream.read)
+            elsif arg[:type] <= Model
+              args << arg[:type].type.from_object(serializer.to_object(request.stream.read(request[:content_length].to_i)))
             elsif arg[:required]
               raise("Unknown input argument type !")
             end
