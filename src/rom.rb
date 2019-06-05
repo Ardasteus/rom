@@ -210,7 +210,8 @@ module ROM
 				'get_method' => 'ROM::HTTP::Methods::GetMethod',
 				'http_method' => 'ROM::HTTP::HTTPMethod',
 				'post_method' => 'ROM::HTTP::Methods::PostMethod',
-				'put_method' => 'ROM::HTTP::Methods::PutMethod'
+				'put_method' => 'ROM::HTTP::Methods::PutMethod',
+				'options_method' => 'ROM::HTTP::Methods::OptionsMethod'
 			},
 			'http_config' => 'ROM::HTTP::HTTPConfig',
 			'http_content' => 'ROM::HTTP::HTTPContent',

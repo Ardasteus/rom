@@ -14,7 +14,6 @@ module ROM
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exist?(data)
 			@data = File.expand_path(data)
 			@debug = true # (opt[:debug] or false)
-			@debug = (opt[:debug] or false)
 			@itc = Interconnect.new
 			@itc.register(LogServer)
 			@log = @itc.fetch(LogServer)
