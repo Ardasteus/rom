@@ -6,8 +6,7 @@ module ROM
 	class SqlDriver < DbDriver
 		# Default types map
 		TYPES = {
-			String => 'NVARCHAR',
-			Types::Boolean => 'TINYINT'
+			String => 'NVARCHAR'
 		}
 		# Default map of int types based on their sizes
 		INTS = {

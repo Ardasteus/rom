@@ -130,7 +130,6 @@ module ROM
 			'attribute' => 'ROM::Attribute',
 			'models' => {
 				'user' => 'ROM::DB::User',
-				'type_driver' => 'ROM::DB::TypeDriver',
 				'contact' => 'ROM::DB::Contact',
 				'collection' => 'ROM::DB::Collection',
 				'login' => 'ROM::DB::Login',
@@ -157,7 +156,8 @@ module ROM
 				'channel' => 'ROM::DB::Channel',
 				'channel_contact' => 'ROM::DB::ChannelContact',
 				'type_message' => 'ROM::DB::TypeMessage',
-				'message' => 'ROM::DB::Message'
+				'message' => 'ROM::DB::Message',
+				'password' => 'ROM::DB::Password'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
@@ -252,6 +252,10 @@ module ROM
 			'testing' => {
 				'test_provider' => 'ROM::Authentication::Providers::TestProvider',
 				'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
+			},
+			'local' => {
+				'local_auth' => 'ROM::Authentication::Authenticators::LocalAuthenticator',
+				'local_auth_provider' => 'ROM::Authentication::Providers::LocalAuthenticationProvider'
 			}
 		},
 		'serializers' => {
@@ -267,7 +271,7 @@ module ROM
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'bcrypt', 'sqlite3', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

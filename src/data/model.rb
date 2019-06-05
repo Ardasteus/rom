@@ -66,6 +66,8 @@ module ROM
 		# Converts model to human readable string representation for debugging inspection
 		# @return [String] String representation of this model
 		def inspect
+			return '###'
+			
 			str = "<#{self.class.name}"
 			self.class.properties.each do |prop|
 				str += " :#{prop.name}=#{@values[prop.name.to_sym].inspect}"

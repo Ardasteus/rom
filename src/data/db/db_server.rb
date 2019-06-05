@@ -63,6 +63,8 @@ module ROM
 			if block_given?
 				begin
 					yield(ret)
+				rescue Exception => ex
+					raise
 				ensure
 					con.close
 				end
@@ -71,5 +73,7 @@ module ROM
 				@cons << con
 			end
 		end
+		
+		alias open []
 	end
 end

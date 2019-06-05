@@ -6,7 +6,7 @@ module ROM
 		class ContactGroupUser < Model
 			property! :user, User, KeyAttribute[]
 			property! :contact_group, ContactGroup, KeyAttribute[]
-			property! :can_edit, Types::Boolean
+			property! :can_edit, Integer, LengthAttribute[1]
 		end
 	end
 end

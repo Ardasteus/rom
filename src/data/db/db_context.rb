@@ -425,7 +425,7 @@ module ROM
 				end
 			end
 			
-			private :add_recursive, :update_recursive, :get_matcher
+			private :get_matcher
 			
 			# Represents a reduced query
 			class CollectQuery

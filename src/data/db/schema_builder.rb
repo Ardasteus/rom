@@ -57,7 +57,7 @@ module ROM
 			end
 			
 			ctx.tables.each do |table|
-				table.model.properties.select { |i| Types::Just[Model].accepts(i.type) or i.attribute?(ReferenceAttribute) }.each do |prop|
+				table.model.properties.select { |i| t, = base_type(i.type); Types::Just[Model].accepts(t) or i.attribute?(ReferenceAttribute) }.each do |prop|
 					_, col = resolve_ref(ctx, prop)
 					from = trans[prop]
 					to = trans[col]
@@ -66,6 +66,10 @@ module ROM
 			end
 			
 			sch
+		end
+		
+		def flatten_type
+		
 		end
 		
 		def opt(k)
@@ -79,11 +83,11 @@ module ROM
 		def get_type(ctx, prop)
 			bt, null = base_type(prop.type)
 			len = nil
-			if bt < Model
+			if bt <= Model
 				_, other = resolve_ref(ctx, prop)
 				bt, = base_type(other.type)
 				len = other.attribute(LengthAttribute).length if other.attribute?(LengthAttribute)
-				return get_type(ctx, other) if bt < Model
+				return get_type(ctx, other) if bt <= Model
 			end
 			len = opt(:str_length) if bt <= String and len == nil
 			
@@ -128,6 +132,8 @@ module ROM
 				case type
 					when Types::Just
 						base = type.type
+					when Types::Boolean
+						base = type
 					when Types::Union
 						if type.types.size == 2 and type.types.any? { |i| i <= NilClass }
 							base = type.types.find { |i| i != NilClass }.type
@@ -135,8 +141,6 @@ module ROM
 						else
 							raise("Union is only supported with NilClass as a database type!")
 						end
-					when Types::Boolean
-						base = type
 					else
 						raise("Type '#{type.name}' may not be resolved as a database type!")
 				end

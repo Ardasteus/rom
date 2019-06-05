@@ -13,8 +13,8 @@ module ROM
 			property :reply_address, String
 			property! :mailbox, Mailbox
 			property :references, Integer, 1
-			property! :is_local, Types::Boolean
-			property! :is_read, Types::Boolean
+			property! :is_local, Integer, LengthAttribute[1]
+			property! :is_read, Integer, LengthAttribute[1]
 		end
 	end
 end

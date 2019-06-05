@@ -8,8 +8,7 @@ module ROM
 			# Mapping table of types
 			TYPES = {
 				Integer => 'INTEGER',
-				String => 'NVARCHAR',
-				Types::Boolean => 'TINYINT'
+				String => 'NVARCHAR'
 			}
 			# Query builders
 			QUERIES = {

@@ -14,17 +14,19 @@ module ROM
         @config
       end
 
-      # @param [Config] config Config file
+      # @param [Config] conf Config file
       def load(conf)
         @config = conf
       end
 
       class AuthConfig < Model
         property! :config, Hash
+				property :import, Types::Boolean[], true
       end
 
 			class TokensConfigModel < Model
 				property! :factory, String
+				property :lifetime, Integer, 8 * 60 * 60
 				property :config, Hash, {}
 			end
 			

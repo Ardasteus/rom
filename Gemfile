@@ -5,6 +5,7 @@ gem 'safe_yaml', '~> 1.0'
 gem 'net-ldap', '~> 0.16'
 gem 'mysql2', '~> 0.5'
 gem 'sqlite3', '~> 1.4'
+gem 'bcrypt', '~> 3.1'
 
 group :development do
   gem 'bundler', '~> 2.0'

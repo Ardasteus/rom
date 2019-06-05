@@ -9,25 +9,26 @@ module ROM
 					@header = {}
 					@header[:typ] = "JWT"
 					@header[:alg] = "RS512"
+					@iss = nil
 				end
 				
 				def config(conf)
 					@rsa = OpenSSL::PKey::RSA.new(conf.rsa_size)
-				end
-				
-				def issue_token(type, user, login, stamp)
-					Token.new(type, user, login, stamp)
+					@iss = conf.issuer
 				end
 				
 				def to_string(token)
 					base_64_header = Base64.urlsafe_encode64(JSON.generate(@header))
 					body = {}
+					body[:iss] = @iss
 					body[:auth] = token.type
-					body[:username] = token.login
-					body[:security_stamp] = token.security_stamp
-					body[:full_name] = token.user.full_name
-					body[:first_name] = token.user.first_name
-					body[:last_name] = token.user.last_name
+					body[:sub] = token.login
+					body[:iat] = Time.now.to_i
+					body[:stamp] = token.security_stamp.to_i
+					body[:cn] = token.user.full_name
+					body[:fn] = token.user.first_name
+					body[:ln] = token.user.last_name
+					body[:exp] = token.expiry.to_i
 					base_64_body = Base64.urlsafe_encode64(JSON.generate(body))
 					rsa_to_sign = base_64_header + "." + base_64_body
 					rsa_string = @rsa.sign_pss(HASH, rsa_to_sign.encode(Encoding.find('ASCII-8BIT')), salt_length: :max, mgf1_hash: HASH)
@@ -50,7 +51,7 @@ module ROM
 						raise("JWT header '' is of unexpected value!") unless v == hdr[k.to_s]
 					end
 					
-					Token.new(body['auth'], User.new(body['full_name'], body['first_name'], body['last_name']), body['username'], body['security_stamp'])
+					Token.new(body['auth'], User.new(body['cn'], body['fn'], body['ln']), body['sub'], body['stamp'], Time.at(body['exp']))
 				end
 			end
 		end
