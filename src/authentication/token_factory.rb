@@ -17,7 +17,7 @@ module ROM
 				@conf = conf
 			end
 			
-			def issue_token(user, login, stamp)
+			def issue_token(type, user, login, stamp)
 			
 			end
 			

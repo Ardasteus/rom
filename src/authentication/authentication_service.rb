@@ -16,15 +16,19 @@ module ROM
 			end
 			
 			def resolve(username, password)
+				type = nil
 				user = @authenticators.each do |auth|
-					usr = auth.authenticate(username, password)
-					break usr unless usr == nil
+					usr = auth[:auth].authenticate(username, password)
+					unless usr == nil
+						type = auth[:name]
+						break usr
+					end
 				end
 				
 				return nil unless user.is_a?(User)
 				
 				tok = @itc.fetch(ROM::Authentication::TokenFactory)
-				token = tok.to_string(tok.issue_token(user, username, nil))
+				token = tok.to_string(tok.issue_token(type, user, username, nil))
 				
 				return token
 			end
@@ -39,7 +43,7 @@ module ROM
 				config.onion.each_pair do |name, model|
 					provider = @providers.select { |prov| prov.is_name?(name) }.first
 					authenticator = provider.open(provider.config_model.from_object(model.config))
-					@authenticators.push(authenticator)
+					@authenticators.push({ :name => name, :auth => authenticator })
 				end
 				
 				f = config.tokens.factory

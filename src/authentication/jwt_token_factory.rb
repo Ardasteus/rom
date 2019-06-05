@@ -15,13 +15,14 @@ module ROM
 					@rsa = OpenSSL::PKey::RSA.new(conf.rsa_size)
 				end
 				
-				def issue_token(user, login, stamp)
-					Token.new(user, login, stamp)
+				def issue_token(type, user, login, stamp)
+					Token.new(type, user, login, stamp)
 				end
 				
 				def to_string(token)
 					base_64_header = Base64.urlsafe_encode64(JSON.generate(@header))
 					body = {}
+					body[:auth] = token.type
 					body[:username] = token.login
 					body[:security_stamp] = token.security_stamp
 					body[:full_name] = token.user.full_name
@@ -49,7 +50,7 @@ module ROM
 						raise("JWT header '' is of unexpected value!") unless v == hdr[k.to_s]
 					end
 					
-					Token.new(User.new(body['full_name'], body['first_name'], body['last_name']), body['username'], body['security_stamp'])
+					Token.new(body['auth'], User.new(body['full_name'], body['first_name'], body['last_name']), body['username'], body['security_stamp'])
 				end
 			end
 		end
