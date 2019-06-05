@@ -34,7 +34,7 @@ module ROM
 				# @param [IO] io Data stream to deserialize
 				def to_object(io)
 					io.set_encoding(@encoding)
-					JSON.parse(io)
+					JSON.load(io)
 				end
 				
 				# Serializes an object into a json data stream

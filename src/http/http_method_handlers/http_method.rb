@@ -80,13 +80,16 @@ module ROM
 					if type <= IO
 						args << request.stream
 					elsif type <= Model
-						data = request.stream.read(request[:content_length].to_i)
-						
-						args << if data == nil
+						length = request[:content_length].to_i
+						args << if length == 0
 							raise(ArgumentException.new(body[:name], 'Body expected!')) unless type <= NilClass
 							args << nil
 						else
-							type.type.from_object(serializer.to_object(data))
+							buffer = StringIO.new
+							bytes = IO.copy_stream(request.stream, buffer, request[:content_length].to_i)
+							raise('Failed to read body!') if bytes != length
+							buffer.pos = 0
+							type.type.from_object(serializer.to_object(buffer))
 						end
 					elsif body[:required]
 						raise("Unknown API action input argument type '#{type}'!")
