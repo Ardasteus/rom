@@ -29,6 +29,21 @@ import AddIcon from '@material-ui/icons/Add';
 import Inbox from './Inbox';
 import Chat from './Chat';
 import WriteMail from './WriteMail';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 const styles = createStyles({
   root: {
@@ -43,6 +58,8 @@ const styles = createStyles({
   },
   appBar: {
     position: 'relative',
+    backgroundColor: 'black',
+    Color: 'white'
   },
   flex: {
     flex: 1,
@@ -57,6 +74,7 @@ export interface State {
   anchorEl: null | HTMLElement;
   value: boolean;
   open: boolean;
+  openAcc: boolean;
 }
 
 class NavBar extends React.Component<Props, State> {
@@ -66,6 +84,7 @@ class NavBar extends React.Component<Props, State> {
     redirect: false,
     value: false,
     open: false,
+    openAcc: false,
   };
   TabContainer = (props) => {
     return (
@@ -107,6 +126,13 @@ class NavBar extends React.Component<Props, State> {
     this.setState({ open: false });
   }
 
+  handleClickOpenAcc = () => {
+    this.setState({ openAcc: true });
+  }
+  handleCloseAcc = () => {
+    this.setState({ openAcc: false });
+  }
+
   render() {
     const { classes } = this.props;
     const { auth, anchorEl } = this.state;
@@ -115,22 +141,23 @@ class NavBar extends React.Component<Props, State> {
 
     return (
       <div className={classes.root}>
-        <AppBar position='static' color='secondary'>
+        <MuiThemeProvider theme={theme}>
+        <AppBar position='static' color='primary'>
         <Dialog
           fullScreen
           open={this.state.open}
           onClose={this.handleCloseSettings}
           TransitionComponent={Transition}
         >
-          <AppBar className={classes.appBar} color='secondary'>
+          <AppBar className={classes.appBar} color='primary'>
             <Toolbar>
-              <IconButton color='inherit' onClick={this.handleCloseSettings} aria-label='Close'>
+              <IconButton color='secondary'  onClick={this.handleCloseSettings} aria-label='Close'>
                 <CloseIcon />
               </IconButton>
-              <Typography variant='h6' color='inherit' className={classes.flex}>
+              <Typography variant='h6' color='secondary'className={classes.flex}>
                 Settings
               </Typography>
-              <Button color='inherit' onClick={this.handleCloseSettings}>
+              <Button color='secondary'  onClick={this.handleCloseSettings}>
                 Save
               </Button>
             </Toolbar>
@@ -164,21 +191,20 @@ class NavBar extends React.Component<Props, State> {
             </ListItem>
           </List>
         </Dialog>
-          <Toolbar color='secondary'>
-            <Typography variant='h6' color='inherit' className={classes.grow}>
+          <AppBar className="header">
+            <Typography variant='h6' color='secondary' className={classes.grow}>
               Ruby On Mails
               <Tabs value={value} onChange={this.handleChangeTab}>
                <Tab label='Inbox' />
                <Tab label='Chat' />
               </Tabs>
-            </Typography>
-            {auth && (
-              <div>
+              {auth && (
+              <div className="AccountCircle">
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : undefined}
                   aria-haspopup='true'
                   onClick={this.handleMenu}
-                  color='inherit'
+                  color='secondary'
                 >
                   <AccountCircle />
                 </IconButton>
@@ -197,16 +223,18 @@ class NavBar extends React.Component<Props, State> {
                   onClose={this.handleClose}
                 >
                   {this.loginRedirect()}
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClickOpen}>Settings</MenuItem>
-                  <MenuItem onClick={this.setRedirect}>Logout</MenuItem>
+                  <MenuItem  onClick={this.handleClickOpenAcc}>Profile</MenuItem>
+                  <MenuItem  onClick={this.handleClickOpen}>Settings</MenuItem>
+                  <MenuItem  onClick={this.setRedirect}>Logout</MenuItem>
                 </Menu>
               </div>
             )}
-          </Toolbar>
+            </Typography>           
+          </AppBar>
         </AppBar>
-        {value === false && <this.TabContainer><Inbox /></this.TabContainer>}
-        {value === true && <this.TabContainer><Chat /></this.TabContainer>}
+        {value == false && <this.TabContainer><Inbox /></this.TabContainer>}
+        {value == true && <this.TabContainer><Chat /></this.TabContainer>}
+        </MuiThemeProvider>
       </div>
     );
   }

@@ -4,12 +4,33 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import { IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
-class WriteMail extends React.Component {
+
+interface Props {
+  updateAddingMail: (event: any) => void;
+}
+
+class WriteMail extends React.Component<Props, {}> {
+  constructor(props: Props) {
+    super(props);
+  }
+
+
+  closeMailWrite = () => {
+    this.setState({
+      addingMail: false,
+    });
+  }
   render() {
     return (
+    <div>
       <Card className='writemail-card'>
           <CardContent>
+          <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateAddingMail}>
+                <CloseIcon />
+          </IconButton>
             <TextField
               variant='filled'
               id='sendTo'
@@ -24,6 +45,7 @@ class WriteMail extends React.Component {
             />
           </CardContent>
         </Card>
+       </div>
     );
   }
 }

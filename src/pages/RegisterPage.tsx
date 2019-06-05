@@ -13,6 +13,21 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 class RegisterPage extends React.Component {
 
@@ -70,11 +85,12 @@ class RegisterPage extends React.Component {
     return (
 
       <div className='create-page'>
-        <img src={'public/images/homepage-background.png'} className='bg' />
+        <MuiThemeProvider theme={theme}>
+        <img src={'public/images/homepage-background.jpg'} className='bg' />
       <Card className='create-card'>
       <CardContent>
       <TextField
-          variant='filled'
+          variant="outlined"
           id='new-name'
           label='Choose a Name'
           margin='normal'
@@ -82,7 +98,7 @@ class RegisterPage extends React.Component {
           onChange={this.handleChange('name')}
         />
         <TextField
-          variant='filled'
+          variant="outlined"
           id='new-password'
           label='Create a Password'
           type='password'
@@ -91,7 +107,7 @@ class RegisterPage extends React.Component {
           onChange={this.handleChange('password')}
         />
         <TextField
-          variant='filled'
+          variant="outlined"
           id='confirm-password'
           label='Confirm your Password'
           type='password'
@@ -101,7 +117,7 @@ class RegisterPage extends React.Component {
         />
       </CardContent>
       <CardActions>
-        <Button disabled={!enabled} onClick={this.handleClickOpen}>Create account</Button>
+        <Button disabled={!enabled} color='secondary' onClick={this.handleClickOpen}>Create account</Button>
       </CardActions>
       </Card>
       <Dialog
@@ -130,6 +146,7 @@ class RegisterPage extends React.Component {
             </CardActions>
          </Card>
       </div>
+      </MuiThemeProvider>
     </div>
     );
   }

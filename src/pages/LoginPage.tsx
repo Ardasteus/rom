@@ -7,6 +7,21 @@ import TextField from '@material-ui/core/TextField';
 import 'styles/HomePage.scss';
 import { Redirect, Link } from 'react-router-dom';
 import axios from 'classes/axios.instance';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 class LoginPage extends React.Component {
 
@@ -68,11 +83,13 @@ class LoginPage extends React.Component {
       password.length > 0;
     return (
       <div className='login-page'>
-        <img src={'public/images/homepage-background.png'} className='bg' />
-        <Card className='login-card'>
+        <MuiThemeProvider theme={theme}>
+        <img src={'public/images/homepage-background.jpg'} className='bg' />
+        <Card className='login-card' color='primary'>
           <CardContent>
             <TextField
-              variant='filled'
+              variant="outlined"
+              color='secondary'
               id='name'
               label='Name'
               margin='normal'
@@ -80,7 +97,8 @@ class LoginPage extends React.Component {
               onChange={this.handleChange('name')}
             />
             <TextField
-              variant='filled'
+              variant="outlined"
+              color='secondary'
               id='password'
               type='password'
               label='Password'
@@ -91,11 +109,11 @@ class LoginPage extends React.Component {
           </CardContent>
           <CardActions>
             {this.homeRedirect()}
-            <Button disabled={!enabled} onClick={this.setRedirectLogin}>Login</Button>
+            <Button disabled={!enabled} color='secondary' onClick={this.setRedirectLogin}>Login</Button>
           </CardActions>
         </Card>
         <div>
-          <Card className='register-Link'>
+          <Card className='register-Link' color='primary'>
             <CardActions>
             {this.registerRedirect()}
              <Button variant='contained' color='secondary' >Login</Button>
@@ -103,6 +121,7 @@ class LoginPage extends React.Component {
             </CardActions>
           </Card>
         </div>
+        </MuiThemeProvider>
       </div>
     );
   }
