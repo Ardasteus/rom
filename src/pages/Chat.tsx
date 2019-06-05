@@ -10,7 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 
 class Chat extends React.Component {
   state = {
-    message: ''
+    message: '',
+    showingMessage: false
   };
   handleChange = name => event => {
     this.setState({
@@ -22,34 +23,17 @@ class Chat extends React.Component {
       [name]: event.target.value,
     });
   }
+  showingMessage = () => {
+    this.setState({
+      showingMessage: true,
+    });
+  }
 
   render() {
     const { message } = this.state;
     return (
     <div>
-      <Card className='personChat'>
-        <CardContent>
-          John Generic
-          <Divider/>
-          this.state.message
-          <Divider/>
-          <TextField
-          id='message'
-          label='Message'
-          variant="outlined"
-          margin='normal'
-          value={this.state.message}
-          onChange={this.handleChange('message')}
-          fullWidth>
-        </TextField>
-        </CardContent> 
-        <CardActions className='sendButton'>
-          <Button  onClick={this.sendMessage}>Send</Button>
-        </CardActions>      
-      </Card>
-      <Card className='chat-menu'>
-        <CardContent>
-        <Paper style={{maxHeight: 200, overflow: 'auto'}}>
+        <Paper className='chat-menu' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            <ListItem button>
              <ListItemIcon>
@@ -71,8 +55,6 @@ class Chat extends React.Component {
             </ListItem>
            </List>
         </Paper>
-        </CardContent>
-      </Card>
     </div>
     );
   }

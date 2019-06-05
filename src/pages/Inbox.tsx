@@ -18,12 +18,17 @@ import CloseIcon from '@material-ui/icons/Close';
 
 interface State {
   addingMail: boolean;
+  text: string;
 }
 
 class Inbox extends React.Component<{}, State> {
   constructor(props) {
     super(props);
-    this.state = { addingMail: false };
+    this.state = { 
+      addingMail: false, 
+     // mails: [],
+      text: 'TODO: Mails',
+    };
   }
 
 
@@ -50,33 +55,26 @@ class Inbox extends React.Component<{}, State> {
   render() {
     return (
       <div>
-      <Card className='inbox'>
-        <CardContent>
-        <Paper style={{maxHeight: 200, overflow: 'auto'}}>
+        <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            <ListItem button>
-              <ListItemText primary='this.state.sender________________________________________________________________this.state.title'/>
+              <ListItemText primary={this.state.text}/>
             </ListItem>
             <Divider/>
             <ListItem button>
-              <ListItemText primary='this.state.sender________________________________________________________________this.state.title'/> 
+              <ListItemText primary={this.state.text}/> 
             </ListItem>
             <Divider/>
             <ListItem button>
-              <ListItemText primary='this.state.sender________________________________________________________________this.state.title'/>
+              <ListItemText primary={this.state.text}/>
             </ListItem>
             <Divider/>
             <ListItem button>
-              <ListItemText primary='this.state.sender________________________________________________________________this.state.title'/>
-            </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary='this.state.sender________________________________________________________________this.state.title'/> 
+              <ListItemText primary={this.state.text}/>
             </ListItem>
            </List>
         </Paper>
-        </CardContent>
-        </Card>
+        
         <Card className='inbox-menu'>
           <CardContent>
           <List>
