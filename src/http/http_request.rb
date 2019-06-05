@@ -63,7 +63,7 @@ module ROM
         loop do
           ln = io.readline
           break if ln.strip.chomp == ''
-          header, value = ln.split(':').collect(&:strip)
+          header, value = ln.split(':', 2).collect(&:strip)
           header = header.tr('-', '_').downcase.to_sym
 					case @headers[header]
 						when NilClass
