@@ -20,6 +20,7 @@ module ROM
     def initialize(nm = nil)
       @name = nm
       @state = :not_started
+      Thread.abort_on_exception = true
     end
 
     # Current state of the job
@@ -36,6 +37,7 @@ module ROM
             @value = job_task(log)
             @state = :finished
           rescue Exception => ex
+            raise ex
             @state = :failed
             @exception = ex
           ensure

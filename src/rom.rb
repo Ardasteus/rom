@@ -243,6 +243,10 @@ module ROM
 						'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
 				}
 		},
+		'smtp' => {
+				'smtp_job' => 'ROM::SMTP::SMTPJob',
+				'smtp_message' => 'ROM::SMTP::SMTPMessage'
+		},
 		'serializers' => {
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
 			'serializer' => 'ROM::DataSerializers::Serializer'
@@ -252,7 +256,7 @@ module ROM
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

@@ -18,12 +18,17 @@ module ROM
         @message_body
       end
 
+      def body_raw
+        @body
+      end
+
       def headers
         @message_headers
       end
 
       def initialize(body, **message_headers)
         @message_headers = message_headers
+        @body = body
         @message_body = format_body(body)
         @recipients = get_recipients(:to)
         @ccs = get_recipients(:cc)
@@ -32,10 +37,16 @@ module ROM
 
       def get_recipients(hdr)
         recpts = []
-        recpts_raw = @message_headers[hdr]
-        recpts_raw.each do |recip|
-          recpts.push(recip)
+        case @message_headers[hdr]
+        when String
+          recpts.push(@message_headers[hdr])
+        when Array
+          recpts_raw = @message_headers[hdr]
+          recpts_raw.each do |recip|
+            recpts.push(recip)
+          end
         end
+
         return recpts
       end
 
@@ -44,23 +55,22 @@ module ROM
       end
 
       def format_body(body)
-        formatted = body.split("\n")
+        formatted = body.lines.collect(&:strip)
+        formatted.push("\r\n")
         formatted.push(".")
         return formatted
       end
 
       def format_header(header)
+        str = ""
         case @message_headers[header]
         when String
-          str = header.to_s + ": " + @message_headers[header]
+          str = header.to_s.split('_').collect(&:capitalize).join('-') + ": " + @message_headers[header]
         when Array
           val = @message_headers[header]
-          str = header.to_s + ": "
-          val.each do |part|
-            str += part
-          end
-
+          str = header.to_s.split('_').collect(&:capitalize).join('-') + ": " + val.join(', ')
         end
+        return str
       end
 
     end
