@@ -43,6 +43,12 @@ class WriteMail extends React.Component<Props, {}> {
               label='Title'
               margin='normal'
             />
+            <TextField
+              variant='filled'
+              id='message'
+              label='Message'
+              margin='normal'
+            />
           </CardContent>
         </Card>
        </div>

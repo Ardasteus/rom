@@ -76,7 +76,7 @@ class Inbox extends React.Component<{}, State> {
   render() {
     return (
       <div>     
-        {this.showingMail()}   
+        
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>        
            <List>
            <ListItem button onClick={this.newShowMail}>
@@ -96,7 +96,7 @@ class Inbox extends React.Component<{}, State> {
             </ListItem>
            </List>
         </Paper>
-        
+        {this.showingMail()}   
         <Card className='inbox-menu'>
           <CardContent>
           <List>
