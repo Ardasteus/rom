@@ -5,8 +5,7 @@ module ROM
 				PREFIX = 'access_control_request'
 
 				def initialize(itc)
-					super(itc, false, false)
-					@name = "OPTIONS"
+					super(itc, 'options', false, false)
 				end
 
 				def resolve(http_request, input_serializer, output_serializer)

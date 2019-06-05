@@ -1,16 +1,13 @@
 module ROM
 	module HTTP
 		module Methods
-			
 			# Class that handles all POST HTTP requests
 			class PostMethod < HTTPMethod
-				
 				# Instantiates the {ROM::HTTP::Methods::PostMethod} class
 				# @param [ROM::Interconnect] itc Interconnect
 				def initialize(itc)
-					super(itc, true, false)
+					super(itc, 'post', true, false)
 					@log = itc.fetch(LogServer)
-					@name = "POST"
 				end
 				
 				# Resolves the given http request and formats the content with the given input/output serializers

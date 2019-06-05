@@ -69,7 +69,8 @@ module ROM
 				next n
 			end
 			raise("Path doesn't specify an action!") if last.is_a?(ResourceModule)
-			return ret
+			
+			ret
 		end
 		
 		private :index

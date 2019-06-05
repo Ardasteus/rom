@@ -8,8 +8,7 @@ module ROM
 				# Instantiates the {ROM::HTTP::Methods::GetMethod} class
 				# @param [ROM::Interconnect] itc Interconnect
 				def initialize(itc)
-					super(itc, false, true)
-					@name = "GET"
+					super(itc, 'get', false, true)
 				end
 				
 				# Resolves the given http request and formats the content with the given input/output serializers

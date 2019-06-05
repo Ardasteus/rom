@@ -14,8 +14,9 @@ module ROM
 			
 			# Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
 			# @param [ROM::Interconnect] itc Interconnect
-			def initialize(itc, i, o)
+			def initialize(itc, name, i, o)
 				@itc = itc
+				@name = name.upcase
 				@input = i
 				@output = o
 				@gateway = itc.fetch(ApiGateway)
@@ -33,7 +34,9 @@ module ROM
 				f = nil
 				paths.each do |path|
 					begin
-						return @gateway.plan(*path)
+						plan = @gateway.plan(*path)
+						raise('API call plan returns a resource!') if plan.signature.return_type <= Resource
+						return plan
 					rescue Exception => ex
 						f = ex if f == nil
 					end
@@ -44,8 +47,8 @@ module ROM
 			
 			# Checks if the given method is corresponding to the method of [HTTPMethod] class
 			# @return [Boolean]
-			def is_name(method_name)
-				@name == method_name
+			def is_method?(mtd)
+				@name == mtd.upcase
 			end
 			
 			# Creates an array of symbols from the request path

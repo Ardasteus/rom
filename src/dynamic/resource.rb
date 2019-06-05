@@ -196,7 +196,7 @@ module ROM
 		# @param [Class] klass Class of the attribute to look for
 		# @return [Bool] True if attribute of given type is found; false otherwise
 		def attribute?(klass)
-			@att.any? { |i| i.is_a?(klass) }
+			@att.find { |i| i.is_a?(klass) } != nil
 		end
 		
 		# Gets the path and signature of the action

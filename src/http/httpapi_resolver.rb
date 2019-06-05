@@ -9,19 +9,21 @@ module ROM
 				PlanningException => StatusCode::NOT_FOUND,
 				ArgumentException => StatusCode::BAD_REQUEST,
 				SignatureException => StatusCode::BAD_REQUEST,
-				UnauthenticatedException => StatusCode::UNAUTHORIZED
+				UnauthenticatedException => StatusCode::UNAUTHORIZED,
+				CharsetNotFoundException => StatusCode::BAD_REQUEST
 			}
+			DEFAULT_ENCODING = Encoding::UTF_8
 			
 			# Instantiates the {ROM::HTTP::HTTPAPIResolver} class
 			# @param [ROM::Interconnect] itc Interconnect
 			def initialize(itc)
 				@itc = itc
 				@gateway = itc.fetch(ApiGateway)
-				@serializers = itc.view(DataSerializers::Serializer)
+				@serializers = itc.view(SerializerProvider)
 				@http_methods = itc.view(HTTPMethod)
 				@header_filters = itc.view(HTTPHeaderFilter)
 				@log = itc.pin(LogServer)
-				@json = itc.pin(DataSerializers::JSONSerializer)
+				@json = itc.pin(DataSerializers::JsonSerializerProvider)
 			end
 			
 			# Resolves the given http request, fetching the correct {ROM::HTTP::Methods::HTTPMethod} and input/output {ROM::DataSerializers::Serializer} based on the http request headers
@@ -44,17 +46,19 @@ module ROM
 				return HTTPResponse.new(StatusCode::BAD_REQUEST) unless filter == nil
 				
 				begin
-					method = @http_methods.find { |mtd| mtd.is_name(request.method) }
+					method = @http_methods.find { |mtd| mtd.is_method?(request.method) }
 					return HTTPResponse.new(StatusCode::METHOD_NOT_ALLOWED) if method == nil
 					
-					input_serializer = @serializers.find { |srl| srl.is_content_type(request[:content_type]) }
+					content_type = (request[:content_type] == nil ? nil : ContentType.from_header(request[:content_type]))
+					input_serializer = get_serializer(content_type)
 					return HTTPResponse.new(StatusCode::UNSUPPORTED_MEDIA_TYPE) if input_serializer == nil and request[:content_type] != nil
 					return HTTPResponse.new(StatusCode::BAD_REQUEST) if input_serializer == nil and method.input?
 					
-					output_serializer = @serializers.find { |srl| srl.is_content_type(request[:accepts]) }
+					accepts_type = (request[:accepts] == nil ? nil : ContentType.from_header(request[:accepts]))
+					output_serializer = get_serializer(accepts_type)
 					return HTTPResponse.new(StatusCode::NOT_ACCEPTABLE) if output_serializer == nil and request[:accepts] != nil
 					
-					output_serializer = (output_serializer or @json)
+					output_serializer = (output_serializer or @json.get_serializer(nil, DEFAULT_ENCODING))
 					
 					method.resolve(request, input_serializer, output_serializer)
 				rescue ApiException => ex
@@ -64,6 +68,22 @@ module ROM
 					
 					HTTPResponse.new(StatusCode::INTERNAL_SEVER_ERROR)
 				end
+			end
+			
+			def get_serializer(hdr)
+				return nil if hdr == nil
+				
+				encoding = if hdr.charset != nil
+					begin
+						Encoding.find(hdr.charset)
+					rescue ArgumentError
+						raise(CharsetNotFoundException.new(hdr.charset))
+					end
+				else
+					DEFAULT_ENCODING
+				end
+				
+				@serializers.find { |i| i.accepts?(hdr.type) }.get_serializer(hdr, encoding)
 			end
 		end
 	end

@@ -8,8 +8,7 @@ module ROM
 				# Instantiates the {ROM::HTTP::Methods::PutMethod} class
 				# @param [ROM::Interconnect] itc Interconnect
 				def initialize(itc)
-					super(itc, true, true)
-					@name = "PUT"
+					super(itc, 'put', true, true)
 				end
 				
 				# Resolves the given http request and formats the content with the given input/output serializers

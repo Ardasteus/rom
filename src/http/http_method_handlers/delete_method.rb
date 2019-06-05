@@ -8,8 +8,7 @@ module ROM
 				# Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
 				# @param [ROM::Interconnect] itc Interconnect
 				def initialize(itc)
-					super(itc, false, false)
-					@name = "DELETE"
+					super(itc, 'delete', false, false)
 				end
 				
 				# Resolves the given http request and formats the content with the given input/output serializers

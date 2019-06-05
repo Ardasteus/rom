@@ -174,7 +174,8 @@ module ROM
 			'planning_exception' => 'ROM::PlanningException',
 			'argument_exception' => 'ROM::ArgumentException',
 			'signature_exception' => 'ROM::SignatureException',
-			'unauthenticated_exception' => 'ROM::UnauthenticatedException'
+			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
+			'charset_not_found_exception'=>'ROM::CharsetNotFoundException'
 		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
@@ -254,8 +255,12 @@ module ROM
 			}
 		},
 		'serializers' => {
-			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
-			'serializer' => 'ROM::DataSerializers::Serializer'
+			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',
+			'serializer_provider' => 'ROM::SerializerProvider',
+			'data_serializer' => 'ROM::DataSerializer'
+		},
+		'net' => {
+			'content_type' => 'ROM::ContentType'
 		},
 		'application' => 'ROM::Application',
 		'filesystem' => 'ROM::Filesystem'
