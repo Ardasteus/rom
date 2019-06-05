@@ -27,7 +27,8 @@ module ROM
     # Checks if the given content type is supported by this serializer
     # @param [String] content_type Content-Type to check
     def is_content_type(content_type)
-      @content_types.include?(content_type)
+      return false if content_type == nil
+      @content_types.include?(content_type.split(';').first.chomp)
       end
     end
   end
