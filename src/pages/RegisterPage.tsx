@@ -117,7 +117,7 @@ class RegisterPage extends React.Component {
         />
       </CardContent>
       <CardActions>
-        <Button disabled={!enabled} color='secondary' onClick={this.handleClickOpen}>Create account</Button>
+        <Button disabled={!enabled} variant='contained' color='secondary' onClick={this.handleClickOpen}>Create account</Button>
       </CardActions>
       </Card>
       <Dialog

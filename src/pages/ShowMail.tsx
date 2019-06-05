@@ -9,10 +9,10 @@ import CloseIcon from '@material-ui/icons/Close';
 
 
 interface Props {
-  updateAddingMail: (event: any) => void;
+  updateShowingMail: (event: any) => void;
 }
 
-class WriteMail extends React.Component<Props, {}> {
+class ShowMail extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
   }
@@ -20,15 +20,15 @@ class WriteMail extends React.Component<Props, {}> {
 
   closeMailWrite = () => {
     this.setState({
-      addingMail: false,
+      showingMail: false,
     });
   }
   render() {
     return (
     <div>
-      <Card className='writemail-card'>      
+      <Card className='showmail-card'>
           <CardContent>
-          <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateAddingMail}>
+          <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateShowingMail}>
                 <CloseIcon />
           </IconButton>
             <TextField
@@ -50,4 +50,4 @@ class WriteMail extends React.Component<Props, {}> {
   }
 }
 
-export default WriteMail;
+export default ShowMail;

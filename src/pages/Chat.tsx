@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
+import ChatMessage from './ChatMessage';
 
 class Chat extends React.Component {
   state = {
@@ -18,9 +19,14 @@ class Chat extends React.Component {
       [name]: event.target.value,
     });
   }
-  sendMessage = () => event => {
+  showMessage = () => {
+    if (this.state.showingMessage === true) {
+      return <ChatMessage updateShowingMessage={this.updateShowingMessage} />;
+    }
+  }
+  updateShowingMessage = (event: any) => {
     this.setState({
-      [name]: event.target.value,
+      showingMessage: false,
     });
   }
   showingMessage = () => {
@@ -35,7 +41,7 @@ class Chat extends React.Component {
     <div>
         <Paper className='chat-menu' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
-           <ListItem button>
+           <ListItem button onClick={this.showingMessage}>
              <ListItemIcon>
                <AccountCircle />
              </ListItemIcon>
@@ -55,6 +61,7 @@ class Chat extends React.Component {
             </ListItem>
            </List>
         </Paper>
+        {this.showMessage()}
     </div>
     );
   }

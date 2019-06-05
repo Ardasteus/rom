@@ -30,6 +30,14 @@
   margin: 0 auto;
   margin-top: 20%;
 }
+.showmail-card {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  position: fixed;
+  margin-left: 60%;
+  margin-top: -5%;
+}
 .writeMailButton{
   margin-left: 92%;
   margin-top:  5%;
@@ -49,8 +57,13 @@
 }
 .personChat {
   margin-left: 30%;
-  margin-top: 10%;
-  height: 150px;
+  margin-top: -10%;
+  height: 250px;
+}
+.sendButton{
+  margin-top: -6%;
+  margin-left: 90%;
+
 }
 .chat-menu {
   margin-right: 80%;

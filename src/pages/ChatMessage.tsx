@@ -1,7 +1,16 @@
 import * as React from 'react';
 import { CardContent, Card, Divider, TextField, CardActions, Button } from '@material-ui/core';
 
-class ChatMessage extends React.Component {
+interface Props {
+  updateShowingMessage: (event: any) => void;
+}
+
+class ChatMessage extends React.Component<Props, {}> {
+  constructor(props: Props) {
+    super(props);
+  }
+
+
   render() {
     return (
       <Card className='personChat'>
@@ -18,9 +27,9 @@ class ChatMessage extends React.Component {
           fullWidth>
         </TextField>
         </CardContent> 
-        <CardActions className='sendButton'>
-          <Button >Send</Button>
-        </CardActions>      
+        <div className='sendButton'>
+          <Button variant='contained' onClick={this.props.updateShowingMessage} >Send</Button>
+        </div>      
       </Card>
     );
   }

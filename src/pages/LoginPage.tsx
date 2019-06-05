@@ -107,7 +107,7 @@ class LoginPage extends React.Component {
           </CardContent>
           <CardActions>
             {this.homeRedirect()}
-            <Button disabled={!enabled} color='secondary' onClick={this.setRedirectLogin}>Login</Button>
+            <Button variant='contained' disabled={!enabled} color='secondary' onClick={this.setRedirectLogin}>Login</Button>
           </CardActions>
         </Card>
         <div>

@@ -15,9 +15,11 @@ import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import Mail from './Mail';
 import Checkbox from '@material-ui/core/Checkbox';
 import CloseIcon from '@material-ui/icons/Close';
+import ShowMail from './ShowMail';
 
 interface State {
   addingMail: boolean;
+  showingMail: boolean;
   text: string;
 }
 
@@ -26,6 +28,7 @@ class Inbox extends React.Component<{}, State> {
     super(props);
     this.state = { 
       addingMail: false, 
+      showingMail: false,
      // mails: [],
       text: 'TODO: Mails',
     };
@@ -52,12 +55,31 @@ class Inbox extends React.Component<{}, State> {
     }
   }
 
+  showingMail = () => {
+    if (this.state.showingMail === true) {
+      return <ShowMail updateShowingMail={this.updateShowingMail} />;
+    }
+  }
+
+  updateShowingMail = (event: any) => {
+    this.setState({
+      showingMail: false,
+    });
+  }
+
+  newShowMail = () => {
+    this.setState({
+      showingMail: true,
+    });
+  }
+
   render() {
     return (
-      <div>
-        <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
+      <div>     
+        {this.showingMail()}   
+        <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>        
            <List>
-           <ListItem button>
+           <ListItem button onClick={this.newShowMail}>
               <ListItemText primary={this.state.text}/>
             </ListItem>
             <Divider/>
@@ -98,6 +120,7 @@ class Inbox extends React.Component<{}, State> {
                <AddIcon/>
              </Fab>
         </div>
+
       </div>
 
     );
