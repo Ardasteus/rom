@@ -15,8 +15,16 @@ interface Props {
 class WriteMail extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      message: '',
+    };
   }
 
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  }
 
   closeMailWrite = () => {
     this.setState({
@@ -24,6 +32,7 @@ class WriteMail extends React.Component<Props, {}> {
     });
   }
   render() {
+  //  const { message } = this.state;
     return (
     <div>
       <Card className='writemail-card'>      
@@ -48,7 +57,12 @@ class WriteMail extends React.Component<Props, {}> {
               id='message'
               label='Message'
               margin='normal'
+         //     value={this.state.message}
+              onChange={this.handleChange('message')}
             />
+            <div>
+              <Button variant='contained'>Send</Button>
+            </div> 
           </CardContent>
         </Card>
        </div>

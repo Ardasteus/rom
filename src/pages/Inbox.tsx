@@ -20,6 +20,7 @@ import ShowMail from './ShowMail';
 interface State {
   addingMail: boolean;
   showingMail: boolean;
+  sentMail: boolean;
   text: string;
 }
 
@@ -29,6 +30,7 @@ class Inbox extends React.Component<{}, State> {
     this.state = { 
       addingMail: false, 
       showingMail: false,
+      sentMail: false,
      // mails: [],
       text: 'TODO: Mails',
     };
@@ -52,6 +54,18 @@ class Inbox extends React.Component<{}, State> {
   MailWriting = () => {
     if (this.state.addingMail === true) {
       return <WriteMail updateAddingMail={this.updateAddingMail} />;
+    }
+  }
+  
+  sendingMail = (event: any) => {
+    this.setState({
+      sentMail: false,
+    });
+  }
+
+  SendingMail = () => {
+    if (this.state.sentMail === true) {
+      
     }
   }
 
