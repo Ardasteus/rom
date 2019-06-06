@@ -17,6 +17,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CloseIcon from '@material-ui/icons/Close';
 import ShowMail from './ShowMail';
 
+
+const emails = ['Email01', 'Email02', 'Email03','Email04','Email05'];
+
 interface State {
   addingMail: boolean;
   showingMail: boolean;
@@ -93,21 +96,11 @@ class Inbox extends React.Component<{}, State> {
         
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>        
            <List>
-           <ListItem button onClick={this.newShowMail}>
-              <ListItemText primary={this.state.text}/>
+           {emails.map(email => (
+           <ListItem key={email} button onClick={this.newShowMail}>
+              <ListItemText primary={email}/>
             </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary={this.state.text}/> 
-            </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary={this.state.text}/>
-            </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary={this.state.text}/>
-            </ListItem>
+            ))}           
            </List>
         </Paper>
         {this.showingMail()}   

@@ -31,8 +31,9 @@ import Chat from './Chat';
 import WriteMail from './WriteMail';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import { ListItemAvatar, Avatar, DialogTitle } from '@material-ui/core';
 
-
+const accounts = ['username@gmail.com', 'username02@gmail.com'];
 const theme = createMuiTheme({
   palette: {
       primary: {
@@ -67,6 +68,7 @@ const styles = createStyles({
 });
 
 export interface Props extends WithStyles<typeof styles> {}
+
 
 export interface State {
   redirect: any;
@@ -191,6 +193,29 @@ class NavBar extends React.Component<Props, State> {
             </ListItem>
           </List>
         </Dialog>
+      <Dialog open={this.state.openAcc} onClose={this.handleCloseAcc} aria-labelledby="account-dialog">
+      <DialogTitle id="account-dialog">Switch account</DialogTitle>
+      <List>
+        {accounts.map(account => (
+          <ListItem button key={account}>
+            <ListItemAvatar>
+              <Avatar>
+                <PersonIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={account} />
+          </ListItem>
+        ))}
+        <ListItem button >
+          <ListItemAvatar>
+            <Avatar>
+              <AddIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="add account" />
+        </ListItem>
+      </List>
+    </Dialog>
           <AppBar className="header">
             <Typography variant='h6' color='secondary' className={classes.grow}>
               Ruby On Mails
