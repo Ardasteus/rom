@@ -181,7 +181,6 @@ module ROM
 				# @param [ROM::SqlQuery] q Query to execute
 				# @return [ROM::DbResults] DB query results reader
 				def query(q)
-					puts "MYSQL: #{q.query}"
 					stmt = @db.prepare(q.query)
 					begin
 						Results.new(stmt.execute(*q.arguments, :as => :array))

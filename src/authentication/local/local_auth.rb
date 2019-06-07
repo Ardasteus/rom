@@ -13,11 +13,34 @@ module ROM
 				end
 				
 				def authenticate(username, password)
-					@db.open(RomDbContext) do |ctx|
-						login = ctx.logins.select { |i| (i.login == username).and(i.driver == @name) }
+					@db.open(DB::RomDbContext) do |ctx|
+						login = ctx.logins.find { |i| (i.login == username).and(i.driver == @name) }
 						return nil if login == nil
-
+						
 						pwd = ctx.passwords.find(login.id)
+						return nil if pwd == nil or not LocalAuthenticator.check_hash(pwd.hash, password)
+						
+						if LocalAuthenticator.hash_cost(pwd.hash) != @conf.cost
+							pwd.hash = LocalAuthenticator.get_hash(pwd.hash, @conf.cost)
+							ctx.passwords.update(pwd)
+						end
+						
+						contact = login.user.contact
+						
+						cn = contact.first_name
+						cn += " #{contact.last_name}" if contact.last_name != nil
+						
+						return User.new(cn, contact.first_name, contact.last_name)
+					end
+				end
+				
+				def create_user(login, pwd, fn, ln, sa = false)
+					@db.open(DB::RomDbContext) do |ctx|
+						user = DB::User.create(ctx, login, fn, ln, sa)
+						login = DB::Login.new(:driver => @name, :user => user, :login => login)
+						ctx.passwords << DB::Password.new(:login => login, :hash => LocalAuthenticator.get_hash(pwd, @conf.cost))
+						
+						return user
 					end
 				end
 				
@@ -27,6 +50,10 @@ module ROM
 				
 				def self.check_hash(hash, pwd)
 					BCrypt::Password.new(hash) == pwd
+				end
+				
+				def self.hash_cost(hash)
+					BCrypt::Password.new(hash).cost
 				end
 				
 				def self.rand_pwd(len = 12)

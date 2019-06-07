@@ -64,7 +64,7 @@ module ROM
 					
 					fake = Module.new
 					fake.define_singleton_method :is_a? do |klass|
-						prop.type <= klass
+						klass == Fake or prop.type <= klass
 					end
 					ctr[sym] = fake
 				else

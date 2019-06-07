@@ -123,7 +123,8 @@ module ROM
 				'length_attribute' => 'ROM::LengthAttribute',
 				'db_status' => 'ROM::DbStatus',
 				'db_config' => 'ROM::DbConfig',
-				'db_hook' => 'ROM::DbHook'
+				'db_hook' => 'ROM::DbHook',
+				'fake' => 'ROM::Fake'
 			},
 			'rom_db_context' => 'ROM::DB::RomDbContext',
 			'rom_db_hook' => 'ROM::RomDbHook',

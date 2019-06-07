@@ -29,7 +29,7 @@ module ROM
 				lazy = {}
 				map = { :map => EntityMapper.new(t, lazy), :lazy => lazy }
 				col = TableCollection.new(@db, self, t, map[:map])
-				self.class.send(:define_method, tab.name.to_sym) do
+				self.define_singleton_method(tab.name.to_sym) do
 					col
 				end
 				@tabs[tab.name.to_sym] = col
@@ -271,7 +271,7 @@ module ROM
 							new = v[sym]
 							with[col.name] = Queries::ConstantValue.new(new) unless new == old
 						end
-					elsif v.is_a?(Model)
+					elsif v.is_a?(Model) and not v.is_a?(Fake)
 						if full or deep
 							raise('Recursive insert required!') if history.include?(v)
 							tgt = col.reference.target

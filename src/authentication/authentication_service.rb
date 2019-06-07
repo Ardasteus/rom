@@ -3,6 +3,7 @@ module ROM
 		class AuthenticationService < ROM::Service
 			ROOT = 'root'
 			ROOT_DRIVER = '__root'
+			ROOT_COST = 14
 			
 			def initialize(itc)
 				super(itc, "Authentication Service", "Authenticates people", DbServer)
@@ -33,6 +34,7 @@ module ROM
 							
 							user = auth.authenticate(login.login, password)
 							login.last_logon = Time.now.to_i
+							ctx.logins.update(login)
 							return create_token(login.driver, username, user) unless user == nil
 						end
 						
@@ -54,14 +56,9 @@ module ROM
 				nil
 			end
 			
-			def import_user(db, login, driver, user)
-				root = db.collections << DB::Collection.new(:name => '/')
-				contact = db.contacts << DB::Contact.new(:first_name => user.first_name, :last_name => user.last_name)
-				user = db.users << DB::User.new(:login => login, :collection => root, :contact => contact, :super => 1)
+			def import_user(db, login, driver, user, sa = false)
+				user = DB::User.create(db, login, user.first_name, user.last_name, sa)
 				db.logins << DB::Login.new(:driver => driver, :user => user, :login => login, :last_logon => Time.now.to_i)
-				%w(inbox sent spam trash).each do |folder|
-					db.collections << DB::Collection.new(:name => folder, :collection => root)
-				end
 				
 				user
 			end
@@ -73,10 +70,11 @@ module ROM
 					raise('Root user not found!') if root == nil
 					
 					login = ctx.logins.find { |i| (i.user == root).and(i.driver == ROOT_DRIVER) }
-					login.last_logon = Time.now.to_i
 					pass = ctx.passwords.find { |i| i.login == login }
 					
 					return nil unless Authenticators::LocalAuthenticator.check_hash(pass.hash, password)
+					login.last_logon = Time.now.to_i
+					ctx.logins.update(login)
 					contact = root.contact
 				end
 				
@@ -118,9 +116,9 @@ module ROM
 					if root == nil
 						pwd = Authenticators::LocalAuthenticator.rand_pwd
 						@log.info("Creating root user with password '#{pwd}'...")
-						root = import_user(ctx, ROOT, ROOT_DRIVER, User.new('Administrator', 'Administrator', nil))
+						root = import_user(ctx, ROOT, ROOT_DRIVER, User.new('Administrator', 'Administrator', nil), true)
 						login = ctx.logins.find { |i| i.user == root }
-						ctx.passwords << DB::Password.new(:login => login, :hash => Authenticators::LocalAuthenticator.get_hash(pwd, 12))
+						ctx.passwords << DB::Password.new(:login => login, :hash => Authenticators::LocalAuthenticator.get_hash(pwd, ROOT_COST))
 					end
 				end
 			end

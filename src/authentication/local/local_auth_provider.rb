@@ -9,7 +9,7 @@ module ROM
 				end
 				
 				def open(name, conf)
-					Authentication::Authenticators::LocalAuthenticator.new(@itc.fetch(DbServer), name, conf.users)
+					Authentication::Authenticators::LocalAuthenticator.new(@itc.fetch(DbServer), name, conf)
 				end
 				
 				class LocalConfig < Model
