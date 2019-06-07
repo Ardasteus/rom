@@ -102,8 +102,8 @@ module ROM
 				config = @config.config
 				
 				config.onion.each_pair do |name, model|
-					provider = @providers.select { |prov| prov.is_name?(name) }.first
-					@onion[name] = provider.open(provider.config_model.from_object(model.config))
+					provider = @providers.select { |prov| prov.is_name?(model.driver) }.first
+					@onion[name] = provider.open(name, provider.config_model.from_object(model.config))
 				end
 				
 				f = config.tokens.factory

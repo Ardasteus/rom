@@ -20,6 +20,7 @@ module ROM
       end
 
       class AuthConfig < Model
+        property! :driver, String
         property! :config, Hash
 				property :import, Types::Boolean[], true
       end

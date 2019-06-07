@@ -6,13 +6,19 @@ module ROM
 			class LocalAuthenticator < Authenticator
 				PASSWORD_CHARS = %w(a b c d e f g h i j k l m n o p q r s t u v w x y z - . _)
 				
-				def initialize(db, conf)
+				def initialize(db, name, conf)
 					@db = db
+					@name = name
 					@conf = conf
 				end
 				
 				def authenticate(username, password)
-				
+					@db.open(RomDbContext) do |ctx|
+						login = ctx.logins.select { |i| (i.login == username).and(i.driver == @name) }
+						return nil if login == nil
+
+						pwd = ctx.passwords.find(login.id)
+					end
 				end
 				
 				def self.get_hash(pwd, cost)

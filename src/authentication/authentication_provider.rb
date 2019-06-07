@@ -13,7 +13,7 @@ module ROM
 					@mod = mod
 				end
 
-				def open(conf)
+				def open(name, conf)
 					
 				end
 

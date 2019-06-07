@@ -6,7 +6,7 @@ module ROM
 					super(itc, "test", TestModel)
 				end
 
-				def open(conf)
+				def open(name, conf)
 					return Authentication::Authenticators::TestAuthenticator.new(conf.users)
 				end
 
