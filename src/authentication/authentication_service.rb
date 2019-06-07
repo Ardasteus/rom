@@ -32,6 +32,7 @@ module ROM
 							next if auth == nil
 							
 							user = auth.authenticate(login.login, password)
+							login.last_logon = Time.now.to_i
 							return create_token(login.driver, username, user) unless user == nil
 						end
 						
@@ -49,16 +50,18 @@ module ROM
 						return create_token(k, username, user)
 					end
 				end
+
+				nil
 			end
 			
 			def import_user(db, login, driver, user)
-				root = DB::Collection.new(:name => '/')
-				contact = DB::Contact.new(:first_name => user.first_name, :last_name => user.last_name)
+				root = db.collections << DB::Collection.new(:name => '/')
+				contact = db.contacts << DB::Contact.new(:first_name => user.first_name, :last_name => user.last_name)
 				user = db.users << DB::User.new(:login => login, :collection => root, :contact => contact, :super => 1)
+				db.logins << DB::Login.new(:driver => driver, :user => user, :login => login, :last_logon => Time.now.to_i)
 				%w(inbox sent spam trash).each do |folder|
 					db.collections << DB::Collection.new(:name => folder, :collection => root)
 				end
-				db.logins << DB::Login.new(:driver => driver, :user => user, :login => login)
 				
 				user
 			end
@@ -70,6 +73,7 @@ module ROM
 					raise('Root user not found!') if root == nil
 					
 					login = ctx.logins.find { |i| (i.user == root).and(i.driver == ROOT_DRIVER) }
+					login.last_logon = Time.now.to_i
 					pass = ctx.passwords.find { |i| i.login == login }
 					
 					return nil unless Authenticators::LocalAuthenticator.check_hash(pass.hash, password)
@@ -87,7 +91,11 @@ module ROM
 			end
 			
 			def validate(str)
-				@itc.fetch(ROM::Authentication::TokenFactory).from_string(str).user
+				token = @itc.fetch(ROM::Authentication::TokenFactory).from_string(str)
+
+				return nil if token.expiry <= Time.now
+
+				token.user
 			end
 			
 			def up
