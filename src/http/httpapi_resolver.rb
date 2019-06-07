@@ -54,11 +54,13 @@ module ROM
 					return HTTPResponse.new(StatusCode::UNSUPPORTED_MEDIA_TYPE) if input_serializer == nil and request[:content_type] != nil
 					return HTTPResponse.new(StatusCode::BAD_REQUEST) if input_serializer == nil and method.input?
 					
-					accepts_type = (request[:accepts] == nil ? nil : ContentType.from_header(request[:accepts]))
-					output_serializer = get_serializer(accepts_type)
-					return HTTPResponse.new(StatusCode::NOT_ACCEPTABLE) if output_serializer == nil and request[:accepts] != nil
+					# TODO: This is ACTUALLY NOT working by the standard (I know, I know, I told you to do it this way.)
+					#
+					# accepts_type = (request[:accept] == nil ? nil : ContentType.from_header(request[:accept]))
+					# output_serializer = get_serializer(accepts_type)
+					# return HTTPResponse.new(StatusCode::NOT_ACCEPTABLE) if output_serializer == nil and request[:accept] != nil
 					
-					output_serializer = (output_serializer or @json.get_serializer(nil, DEFAULT_ENCODING))
+					output_serializer = @json.get_serializer(nil, DEFAULT_ENCODING) # (output_serializer or @json.get_serializer(nil, DEFAULT_ENCODING))
 					
 					method.resolve(request, input_serializer, output_serializer)
 				rescue ApiException => ex

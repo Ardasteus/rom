@@ -32,10 +32,10 @@ module ROM
 							auth = @onion[login.driver]
 							next if auth == nil
 							
-							user = auth.authenticate(login.login, password)
+							u = auth.authenticate(login.login, password)
 							login.last_logon = Time.now.to_i
 							ctx.logins.update(login)
-							return create_token(login.driver, username, user) unless user == nil
+							return create_token(login.driver, login.generation, Identity.new(u, username, user.super)) unless u == nil
 						end
 						
 						return nil
@@ -49,7 +49,7 @@ module ROM
 						
 						import_user(ctx, username, k, user)
 						
-						return create_token(k, username, user)
+						return create_token(k, 0, Identity.new(user, username, false))
 					end
 				end
 
@@ -65,6 +65,7 @@ module ROM
 			
 			def login_root(password)
 				contact = nil
+				login = nil
 				@db.open(DB::RomDbContext) do |ctx|
 					root = ctx.users.find { |i| i.login == ROOT }
 					raise('Root user not found!') if root == nil
@@ -78,12 +79,12 @@ module ROM
 					contact = root.contact
 				end
 				
-				create_token('local', ROOT, User.new(contact.first_name, contact.first_name, contact.last_name))
+				create_token(ROOT_DRIVER, login.generation, Identity.new(User.new(contact.first_name, contact.first_name, contact.last_name), ROOT, true))
 			end
 			
-			def create_token(type, login, user)
+			def create_token(type, stamp, id)
 				fact = @itc.fetch(ROM::Authentication::TokenFactory)
-				token = Token.new(type, user, login, Time.now, Time.now + @lifetime)
+				token = Token.new(type, id, stamp, Time.now + @lifetime)
 				
 				fact.to_string(token)
 			end
@@ -93,7 +94,7 @@ module ROM
 
 				return nil if token.expiry <= Time.now
 
-				token.user
+				token.identity
 			end
 			
 			def up

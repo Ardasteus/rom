@@ -7,6 +7,7 @@ module ROM
 			property! :user, User
 			property! :login, String
 			property :last_logon, Integer
+			property :generation, Integer, 0
 		end
 	end
 end

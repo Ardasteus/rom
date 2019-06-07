@@ -176,7 +176,8 @@ module ROM
 			'argument_exception' => 'ROM::ArgumentException',
 			'signature_exception' => 'ROM::SignatureException',
 			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
-			'charset_not_found_exception'=>'ROM::CharsetNotFoundException'
+			'charset_not_found_exception'=>'ROM::CharsetNotFoundException',
+			'unauthorized_exception' => 'ROM::UnauthorizedException'
 		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
@@ -250,9 +251,11 @@ module ROM
 			'token' => 'ROM::Authentication::Token',
 			'token_factory' => 'ROM::Authentication::TokenFactory',
 			'user' => 'ROM::Authentication::User',
-			'testing' => {
-				'test_provider' => 'ROM::Authentication::Providers::TestProvider',
-				'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
+			'authorize_attribute' => 'ROM::AuthorizeAttribute',
+			'identity' => 'ROM::Identity',
+			'list' => {
+				'list_provider' => 'ROM::Authentication::Providers::ListProvider',
+				'list_authenticator' => 'ROM::Authentication::Authenticators::ListAuthenticator'
 			},
 			'local' => {
 				'local_auth' => 'ROM::Authentication::Authenticators::LocalAuthenticator',

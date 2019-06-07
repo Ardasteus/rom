@@ -124,6 +124,14 @@ module ROM
 			def [](idx)
 				@plan[idx]
 			end
+			
+			def attribute(t)
+				@plan.collect { |i| i.attribute(t) }.select { |i| i != nil }
+			end
+			
+			def attribute?(t)
+				@plan.any? { |i| i.attribute?(t) }
+			end
 		end
 		
 		# Prepends arguments to an action call 

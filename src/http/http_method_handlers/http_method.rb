@@ -73,6 +73,14 @@ module ROM
 					end
 				end
 				
+				if plan.attribute?(AuthorizeAttribute)
+					raise(UnauthenticatedException.new) if ctx.identity == nil
+					plan.attribute(AuthorizeAttribute).each do |att|
+						att.judgements.each do |jdg|
+							raise(UnauthorizedException.new) unless jdg.judge(ctx.identity)
+						end
+					end
+				end
 				args = []
 				body = plan.signature[0]
 				if body != nil

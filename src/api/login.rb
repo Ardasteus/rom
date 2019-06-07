@@ -13,7 +13,9 @@ module ROM
 			end
 			
 			class UserModel < Model
+				property! :login, String
 				property! :name, String
+				property! :super, Types::Boolean[]
 			end
 			
 			action :login, String, :body! => LoginModel do |login|
@@ -26,8 +28,8 @@ module ROM
 				end
 			end
 			
-			action :me, UserModel do
-				UserModel.new(:name => user.full_name) if user != nil
+			action :me, UserModel, AuthorizeAttribute[] do
+				UserModel.new(:login => identity.login,:name => identity.user.full_name, :super => identity.super)
 			end
 		end
 	end

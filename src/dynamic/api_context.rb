@@ -11,12 +11,12 @@ module ROM
 			self
 		end
 		
-		def user
-			@user
+		def identity
+			@id
 		end
 		
-		def user=(val)
-			@user = val
+		def identity=(val)
+			@id = val
 		end
 
 		def interconnect

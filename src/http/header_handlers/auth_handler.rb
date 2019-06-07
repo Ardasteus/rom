@@ -13,13 +13,13 @@ module ROM
 					mtd, token = value.split(' ')
 					raise(UnauthenticatedException.new) if mtd != 'Bearer'
 					begin
-						user = @auth.validate(token)
+						id = @auth.validate(token)
 					rescue
 						raise(UnauthenticatedException.new)
 					end
-					raise(UnauthenticatedException.new) if user == nil
+					raise(UnauthenticatedException.new) if id == nil
 					
-					ctx.user = user
+					ctx.identity = id
 				end
 			end
 		end

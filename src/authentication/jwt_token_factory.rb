@@ -4,11 +4,26 @@ module ROM
 			class JWTTokenFactory < TokenFactory
 				HASH = 'sha512'
 				
+				HEADER_TYPE = 'typ'
+				HEADER_ALGORITHM = 'alg'
+				
+				CLAIM_ISSUER = 'iss'
+				CLAIM_AUTHORIZATION = 'auth'
+				CLAIM_SUBJECT = 'sub'
+				CLAIM_TIMESTAMP = 'iat'
+				CLAIM_STAMP = 'stamp'
+				CLAIM_CANONICAL_NAME = 'cn'
+				CLAIM_FIRST_NAME = 'fn'
+				CLAIM_LAST_NAME = 'ln'
+				CLAIM_EXPIRY = 'exp'
+				CLAIM_SUPER = 'sup'
+				
 				def initialize(itc)
 					super(itc, 'jwt', JwtConfig)
-					@header = {}
-					@header[:typ] = "JWT"
-					@header[:alg] = "RS512"
+					@header = {
+						HEADER_TYPE => 'JWT',
+						HEADER_ALGORITHM => 'RS512'
+					}
 					@iss = nil
 				end
 				
@@ -19,25 +34,23 @@ module ROM
 				
 				def to_string(token)
 					base_64_header = Base64.urlsafe_encode64(JSON.generate(@header))
-					body = {}
-					body[:iss] = @iss
-					body[:auth] = token.type
-					body[:sub] = token.login
-					body[:iat] = Time.now.to_i
-					body[:stamp] = token.security_stamp.to_i
-					body[:cn] = token.user.full_name
-					body[:fn] = token.user.first_name
-					body[:ln] = token.user.last_name
-					body[:exp] = token.expiry.to_i
+					body = {
+						CLAIM_ISSUER => @iss,
+						CLAIM_AUTHORIZATION => token.type,
+						CLAIM_SUBJECT => token.identity.login,
+						CLAIM_TIMESTAMP => Time.now.to_i,
+						CLAIM_STAMP => token.security_stamp.to_i,
+						CLAIM_CANONICAL_NAME => token.identity.user.full_name,
+						CLAIM_FIRST_NAME => token.identity.user.first_name,
+						CLAIM_LAST_NAME => token.identity.user.last_name,
+						CLAIM_EXPIRY => token.expiry.to_i,
+						CLAIM_SUPER => token.identity.super
+					}
 					base_64_body = Base64.urlsafe_encode64(JSON.generate(body))
 					rsa_to_sign = base_64_header + "." + base_64_body
 					rsa_string = @rsa.sign_pss(HASH, rsa_to_sign.encode(Encoding.find('ASCII-8BIT')), salt_length: :max, mgf1_hash: HASH)
-					str_token = ''
-					str_token += base_64_header + "."
-					str_token += base_64_body + "."
-					str_token += Base64.urlsafe_encode64(rsa_string)
 					
-					str_token
+					"#{base_64_header}.#{base_64_body}.#{Base64.urlsafe_encode64(rsa_string)}"
 				end
 				
 				def from_string(str)
@@ -51,7 +64,20 @@ module ROM
 						raise("JWT header '' is of unexpected value!") unless v == hdr[k.to_s]
 					end
 					
-					Token.new(body['auth'], User.new(body['cn'], body['fn'], body['ln']), body['sub'], body['stamp'], Time.at(body['exp']))
+					Token.new(
+						body[CLAIM_AUTHORIZATION],
+						Identity.new(
+							User.new(
+								body[CLAIM_CANONICAL_NAME],
+								body[CLAIM_FIRST_NAME],
+								body[CLAIM_LAST_NAME]
+							),
+							body[CLAIM_SUBJECT],
+							body[CLAIM_SUPER]
+						),
+						body[CLAIM_STAMP],
+						Time.at(body[CLAIM_EXPIRY])
+					)
 				end
 			end
 		end
