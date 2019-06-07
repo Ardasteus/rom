@@ -9,6 +9,8 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import ChatMessage from './ChatMessage';
 
+const contacts = ['John generic', 'Roman Spanko', 'Matyas Pokorny']
+
 class Chat extends React.Component {
   state = {
     message: '',
@@ -36,29 +38,18 @@ class Chat extends React.Component {
   }
 
   render() {
-    const { message } = this.state;
     return (
     <div>
         <Paper className='chat-menu' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
-           <ListItem button onClick={this.showingMessage}>
+           {contacts.map(contact => (
+           <ListItem key={contact} button onClick={this.showingMessage}>
              <ListItemIcon>
                <AccountCircle />
              </ListItemIcon>
-              <ListItemText primary='John Generic'/>
-            </ListItem>
-            <ListItem button>
-             <ListItemIcon>
-               <AccountCircle />
-             </ListItemIcon>
-              <ListItemText primary='John Generic'/>
-            </ListItem>           
-            <ListItem button>
-             <ListItemIcon>
-               <AccountCircle />
-             </ListItemIcon>
-              <ListItemText primary='John Generic'/>
-            </ListItem>
+              <ListItemText  primary={contact}/>
+            </ListItem>     
+            ))}       
            </List>
         </Paper>
         {this.showMessage()}

@@ -34,7 +34,6 @@ class Inbox extends React.Component<{}, State> {
       addingMail: false, 
       showingMail: false,
       sentMail: false,
-     // mails: [],
       text: 'TODO: Mails',
     };
   }
