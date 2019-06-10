@@ -83,7 +83,7 @@ module ROM
 					end
 				end
 				args = []
-				body = (plan.signature[0][:type] <= Model) ? plan.signature[0] : nil
+				body = (plan.signature[0] != nil and plan.signature[0][:type] <= Model) ? plan.signature[0] : nil
 				if body != nil
 					type = body[:type]
 					if type <= IO
