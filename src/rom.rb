@@ -158,7 +158,8 @@ module ROM
 				'channel_contact' => 'ROM::DB::ChannelContact',
 				'type_message' => 'ROM::DB::TypeMessage',
 				'message' => 'ROM::DB::Message',
-				'password' => 'ROM::DB::Password'
+				'password' => 'ROM::DB::Password',
+				'data_page' => 'ROM::DataPage'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
@@ -260,7 +261,8 @@ module ROM
 			'local' => {
 				'local_auth' => 'ROM::Authentication::Authenticators::LocalAuthenticator',
 				'local_auth_provider' => 'ROM::Authentication::Providers::LocalAuthenticationProvider'
-			}
+			},
+			'judgements' => 'ROM::SuperJudgement'
 		},
 		'serializers' => {
 			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',

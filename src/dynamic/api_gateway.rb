@@ -26,7 +26,7 @@ module ROM
 		def index(rsc)
 			mod = rsc.class.path.split(Resource::PATH_SEPARATOR)
 			rsc.class.actions.each do |act|
-				@root.add(act, *mod)
+				@root.add(act.bind(rsc), *mod)
 			end
 		end
 		
@@ -142,7 +142,7 @@ module ROM
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
-				super(@act.name, @act.resource, @act.signature, @act.attributes) do |*args|
+				super(@act.name, @act.parent, @act.signature, @act.attributes) do |*args|
 					act.invoke(context, nil, *prepend, *args)
 				end
 			end

@@ -37,6 +37,7 @@ module ROM
 			MOVED_PERMANENTLY = self.new(301, 'Moved Permanently')
 			BAD_REQUEST = self.new(400, 'Bad Request')
 			UNAUTHORIZED = self.new(401, 'Unauthorized')
+			FORBIDDEN = self.new(403, 'Forbidden')
 			NOT_FOUND = self.new(404, 'Not Found')
 			METHOD_NOT_ALLOWED = self.new(405, 'Method not allowed')
 			NOT_ACCEPTABLE = self.new(406, 'Not acceptable')

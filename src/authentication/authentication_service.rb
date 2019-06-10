@@ -35,7 +35,7 @@ module ROM
 							u = auth.authenticate(login.login, password)
 							login.last_logon = Time.now.to_i
 							ctx.logins.update(login)
-							return create_token(login.driver, login.generation, Identity.new(u, username, user.super)) unless u == nil
+							return create_token(login.driver, login.generation, Identity.new(u, username, user.super == 1 ? true : false)) unless u == nil
 						end
 						
 						return nil

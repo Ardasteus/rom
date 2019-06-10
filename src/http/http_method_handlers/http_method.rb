@@ -20,7 +20,7 @@ module ROM
 				@name = name.upcase
 				@input = i
 				@output = o
-				@gateway = itc.fetch(ApiGateway)
+				@gateway = itc.pin(ApiGateway)
 				@handlers = itc.view(HTTPHeaderHandler)
 			end
 			
@@ -83,7 +83,7 @@ module ROM
 					end
 				end
 				args = []
-				body = plan.signature[0]
+				body = (plan.signature[0][:type] <= Model) ? plan.signature[0] : nil
 				if body != nil
 					type = body[:type]
 					if type <= IO
@@ -109,13 +109,32 @@ module ROM
 					
 					val = request.query[arg[:name].to_s]
 					raise(ArgumentException.new(arg[:name], 'Argument required!')) if arg[:required] and val == nil
-					raise(ArgumentException.new(arg[:name], "Argument doesn't accept String!")) unless arg[:type] <= String
-					args << (val == nil ? arg[:default] : val)
+					args << (val == nil ? arg[:default] : arg_val(arg[:name], arg[:type], val))
 				end
 				unk = request.query.keys.find { |k| plan.signature[k.to_sym] == nil }
 				raise(ArgumentException.new(unk, 'Unknown action argument!')) if unk != nil
 				
 				plan.run(ctx, *args)
+			end
+			
+			def arg_val(name, type, val)
+				if type <= String
+					val
+				elsif type <= Integer
+					return val.to_i if val =~ /(\+|\-)?\d+/
+					raise(ArgumentException.new(name, "Cannot cast '#{val}' as integer!"))
+				elsif type <= Types::Boolean
+					case val.downcase.strip
+						when 'true', '1'
+							true
+						when 'false', '0'
+							false
+						else
+							raise(ArgumentException.new(name, "Cannot cast '#{val}' as boolean!"))
+					end
+				else
+					raise(ArgumentException.new(name, "Argument is of unsupported type!: #{type.name}"))
+				end
 			end
 		end
 	end

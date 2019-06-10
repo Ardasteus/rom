@@ -114,6 +114,7 @@ module ROM
 			raise('Action with same name already defined!') if @act.has_key?(name.to_s)
 			raise('Action name cannot contain path separator!') if name.to_s.include?(PATH_SEPARATOR)
 			raise('Action may only return models, primitives or another resources!') unless ALLOWED_TYPE.accepts(ret)
+			raise('Action block not given!') unless block_given?
 			act = ResourceAction.new(name.to_s, self, ActionSignature.new(ret, sig), att, &block)
 			if att.any? { |i| i.is_a?(DefaultAction) }
 				raise("Default action '#{act.name}' collides with '#{@def.name}'!") unless @def == nil
@@ -130,6 +131,7 @@ module ROM
 	# @see ROM::Resource
 	class StaticResource < Resource
 		include Component
+		modifiers :abstract
 		
 		# Instantiates the {ROM::StaticResource} class
 		# @param [ROM::Interconnect] itc Interconnect which register the instance
@@ -160,8 +162,8 @@ module ROM
 		
 		# Gets the resource to which this action is bound
 		# @return [ROM::Resource] Parent resource
-		def resource
-			@res
+		def parent
+			@parent
 		end
 		
 		# Invokes the action with given arguments
@@ -173,16 +175,20 @@ module ROM
 		
 		# Instantiates the {ROM::ResourceAction} class
 		# @param [Symbol] nm Name of action
-		# @param [Class] res Parent resource
+		# @param [Class] parent Parent resource
 		# @param [ROM::ActionSignature] sig Signature of the action
 		# @param [Array<ROM::Attribute>] att Metadata attributes of the action
 		# @yield [] Block of the action
-		def initialize(nm, res, sig, att, &block)
+		def initialize(nm, parent, sig, att, &block)
 			@name = nm
-			@res = res
+			@parent = parent
 			@action = block
 			@att = att
 			@sig = sig
+		end
+		
+		def bind(res)
+			BoundResourceAction.new(@name, res, @sig, @att, &@action)
 		end
 		
 		# Gets a metadata attribute of the given class
@@ -204,6 +210,20 @@ module ROM
 		def to_s
 			p = @res.path
 			"#{(p == '' ? '' : "#{p}.")}#{@name}#{@sig}"
+		end
+	end
+	
+	class BoundResourceAction < ResourceAction
+		def initialize(nm, res, sig, att, &block)
+			super(nm, res.class, sig, att, &block)
+			@res = res
+		end
+		
+		# Invokes the action with given arguments
+		# @param [Object, nil] args Arguments to invoke the action with
+		# @return [Object, nil] Result of the action
+		def invoke(ctx, inst = nil, *args)
+			ctx.context_exec((inst or @res), *args, &@action)
 		end
 	end
 	

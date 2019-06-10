@@ -22,7 +22,7 @@ module ROM
 				expect(TestResource.default).to be TestResource[:advanced]
 				adv = TestResource[:advanced]
 				expect(adv.name).to eq 'advanced'
-				expect(adv.resource).to eq TestResource
+				expect(adv.parent).to eq TestResource
 				expect(adv.attribute?(DefaultAction)).to eq true
 				expect(adv.attribute(DefaultAction)).to be_kind_of DefaultAction
 				sig = adv.signature

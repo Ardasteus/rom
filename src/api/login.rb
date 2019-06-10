@@ -29,7 +29,7 @@ module ROM
 			end
 			
 			action :me, UserModel, AuthorizeAttribute[] do
-				UserModel.new(:login => identity.login,:name => identity.user.full_name, :super => identity.super)
+				UserModel.new(:login => identity.login, :name => identity.user.full_name, :super => identity.super)
 			end
 			
 			action :logout, NilClass, AuthorizeAttribute[] do

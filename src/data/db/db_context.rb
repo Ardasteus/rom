@@ -62,7 +62,7 @@ module ROM
 		def close
 			@db.close
 		end
-
+		
 		# @overload self.convention(nm, args)
 		# 	Defines a naming convention
 		# 	@param [Symbol] nm Name of convention
@@ -413,6 +413,15 @@ module ROM
 				expr = yield(@tab.double)
 				raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
 				EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :desc)])
+			end
+			
+			def count
+				expr = nil
+				if block_given?
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				end
+				@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }))
 			end
 			
 			# Enumerates all entities

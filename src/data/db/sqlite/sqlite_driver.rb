@@ -124,7 +124,7 @@ module ROM
 					qry += " WHERE #{expression(where, args)}"
 				end
 				
-				if ord.size > 0
+				if ord != nil and ord.size > 0
 					qry += " ORDER BY "
 					qry += ord.collect { |o|
 						res = expression(o.expression, args)

@@ -192,7 +192,7 @@ module ROM
 		def self.resolve(val, type)
 			case type
 				when Types::Just
-					if type.type < self
+					if type.type <= self
 						val.to_object
 					else
 						val

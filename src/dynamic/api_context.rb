@@ -31,7 +31,7 @@ module ROM
 		def interconnect
 			@itc
 		end
-
+		
 		def initialize(itc = nil)
 			@itc = itc
 		end
