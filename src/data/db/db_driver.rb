@@ -5,6 +5,7 @@ module ROM
 	# @abstract
 	class DbDriver
 		include Component
+		modifiers :abstract
 		
 		# Default naming conventions
 		DEFAULT_CONVENTIONS = {

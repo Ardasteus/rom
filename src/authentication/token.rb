@@ -1,5 +1,5 @@
 module ROM
   module Authentication
-    Token = Struct.new(:type, :identity, :security_stamp, :expiry)
+    Token = Struct.new(:type, :identity, :generation, :expiry)
   end
 end

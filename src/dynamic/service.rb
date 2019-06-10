@@ -23,6 +23,7 @@ module ROM
 	# 	end
 	class Service
 		include Component
+		modifiers :abstract
 		
 		# Gets the name of service
 		# @return [String] Name of service

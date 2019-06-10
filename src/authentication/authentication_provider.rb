@@ -2,6 +2,7 @@ module ROM
 	module Authentication
 			class AuthenticationProvider
 				include Component
+				modifiers :abstract
 
 				def config_model
 					@mod

@@ -63,6 +63,20 @@ module ROM
 				user
 			end
 			
+			def invalidate(str)
+				token = @itc.fetch(ROM::Authentication::TokenFactory).from_string(str)
+				
+				return if token.expiry <= Time.now
+				
+				@db.open(DB::RomDbContext) do |ctx|
+					login = ctx.logins.find { |i| i.driver == token.type }
+					return if login == nil
+					
+					login.generation = token.generation + 1
+					ctx.logins.save(login)
+				end
+			end
+			
 			def login_root(password)
 				contact = nil
 				login = nil

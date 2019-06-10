@@ -2,6 +2,7 @@ module ROM
 	module HTTP
 		class HTTPHeaderFilter
 			include Component
+			modifiers :abstract
 			
 			def required?
 				@required

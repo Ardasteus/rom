@@ -18,7 +18,16 @@ module ROM
 		def identity=(val)
 			@id = val
 		end
-
+		
+		def token
+			@tok
+		end
+		
+		def token=(val)
+			@tok = val
+		end
+		
+		
 		def interconnect
 			@itc
 		end

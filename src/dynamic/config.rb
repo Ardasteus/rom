@@ -24,6 +24,7 @@ module ROM
 	# 	end
 	class Config
 		include Component
+		modifiers :abstract
 		
 		# Gets the name of configuration section
 		# @return [String] Name of configuration section

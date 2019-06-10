@@ -11,6 +11,7 @@ module ROM
 		def initialize(**opt)
 			@log   = BufferLogger.new
 			@reg   = Set.new
+			@klass = Set.new
 			@hooks = []
 			@opt = opt
 			@opt[:log] = true
@@ -56,6 +57,8 @@ module ROM
 		# @param [Class] com Component class
 		# @return [void]
 		def register(com)
+			return if (@klass.include?(com) or com.modifier?(:abstract))
+			
 			@log.trace("Importing '#{com.name}'...") if opt? :log
 			hooks = @hooks.select { |i| com <= i[:type] }
 			com.register(self).each do |i|
@@ -63,6 +66,7 @@ module ROM
 				hooks.each { |h| @log.trace('Invoking hook...'); h[:hook].call(i) }
 				@gen += 1
 			end
+			@klass << com
 		end
 		
 		# @overload lookup(type)

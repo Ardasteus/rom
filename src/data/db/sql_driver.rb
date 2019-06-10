@@ -4,6 +4,8 @@ module ROM
 	# A generic driver base for SQL-based DBs
 	# @abstract
 	class SqlDriver < DbDriver
+		modifiers :abstract
+		
 		# Default types map
 		TYPES = {
 			String => 'NVARCHAR'

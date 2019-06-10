@@ -18,7 +18,7 @@ module ROM
 				property! :super, Types::Boolean[]
 			end
 			
-			action :login, String, :body! => LoginModel do |login|
+			action :login, TokenModel, :body! => LoginModel do |login|
 				token = interconnect.fetch(ROM::Authentication::AuthenticationService).resolve(login.username, login.password)
 				
 				if token != nil
@@ -30,6 +30,10 @@ module ROM
 			
 			action :me, UserModel, AuthorizeAttribute[] do
 				UserModel.new(:login => identity.login,:name => identity.user.full_name, :super => identity.super)
+			end
+			
+			action :logout, NilClass, AuthorizeAttribute[] do
+				interconnect.fetch(ROM::Authentication::AuthenticationService).invalidate(token)
 			end
 		end
 	end

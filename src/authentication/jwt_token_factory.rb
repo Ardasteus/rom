@@ -11,7 +11,7 @@ module ROM
 				CLAIM_AUTHORIZATION = 'auth'
 				CLAIM_SUBJECT = 'sub'
 				CLAIM_TIMESTAMP = 'iat'
-				CLAIM_STAMP = 'stamp'
+				CLAIM_GENERATION = 'gen'
 				CLAIM_CANONICAL_NAME = 'cn'
 				CLAIM_FIRST_NAME = 'fn'
 				CLAIM_LAST_NAME = 'ln'
@@ -39,7 +39,7 @@ module ROM
 						CLAIM_AUTHORIZATION => token.type,
 						CLAIM_SUBJECT => token.identity.login,
 						CLAIM_TIMESTAMP => Time.now.to_i,
-						CLAIM_STAMP => token.security_stamp.to_i,
+						CLAIM_GENERATION => token.generation,
 						CLAIM_CANONICAL_NAME => token.identity.user.full_name,
 						CLAIM_FIRST_NAME => token.identity.user.first_name,
 						CLAIM_LAST_NAME => token.identity.user.last_name,
@@ -75,7 +75,7 @@ module ROM
 							body[CLAIM_SUBJECT],
 							body[CLAIM_SUPER]
 						),
-						body[CLAIM_STAMP],
+						body[CLAIM_GENERATION],
 						Time.at(body[CLAIM_EXPIRY])
 					)
 				end

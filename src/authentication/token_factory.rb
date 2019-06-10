@@ -1,7 +1,8 @@
 module ROM
 	module Authentication
 		class TokenFactory
-			include ROM::Component
+			include Component
+			modifiers :abstract
 			
 			def name
 				@name

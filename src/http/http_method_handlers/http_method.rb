@@ -3,6 +3,7 @@ module ROM
 		# Base class for all HTTP method handlers
 		class HTTPMethod
 			include Component
+			modifiers :abstract
 			
 			def input?
 				@input
