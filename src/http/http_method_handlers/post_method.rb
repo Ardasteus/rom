@@ -20,6 +20,7 @@ module ROM
 					
 					plan = get_plan(path, path + [:create])
 					value = run_plan(plan, request, input_serializer)
+					return HTTPResponse.new(StatusCode::NO_CONTENT) if plan.signature.return_type <= Types::Void
 					http_content = ObjectContent.new(value, output_serializer)
 					HTTPResponse.new(StatusCode::CREATED, http_content)
 				end

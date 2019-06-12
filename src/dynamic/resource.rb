@@ -54,7 +54,7 @@ module ROM
 		# Separator character of modules and actions
 		PATH_SEPARATOR = '.'
 		# Gets the union type that is allowed as arguments and return values
-		ALLOWED_TYPE = Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[], IO]]
+		ALLOWED_TYPE = Types::Maybe[Types::Union[Numeric, String, Model, Resource, Types::Boolean[], IO, Types::Void]]
 		
 		# Gets actions declared within the resource
 		# @return [Array<ROM::ResourceAction>] Actions declared within the resource

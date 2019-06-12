@@ -178,7 +178,8 @@ module ROM
 			'signature_exception' => 'ROM::SignatureException',
 			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
 			'charset_not_found_exception'=>'ROM::CharsetNotFoundException',
-			'unauthorized_exception' => 'ROM::UnauthorizedException'
+			'unauthorized_exception' => 'ROM::UnauthorizedException',
+			'invalid_operation_exception' => 'ROM::InvalidOperationException'
 		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',

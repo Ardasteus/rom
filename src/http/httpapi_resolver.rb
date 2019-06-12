@@ -63,7 +63,10 @@ module ROM
 					
 					output_serializer = @json.get_serializer(nil, DEFAULT_ENCODING) # (output_serializer or @json.get_serializer(nil, DEFAULT_ENCODING))
 					
-					method.resolve(request, input_serializer, output_serializer)
+					resp = method.resolve(request, input_serializer, output_serializer)
+					resp[:access_control_allow_origin] = request[:origin] if (request[:origin] != nil and resp[:access_control_allow_origin] == nil)
+					
+					resp
 				rescue ApiException => ex
 					HTTPResponse.new(EXCEPTION_CODES[ex.class])
 				rescue Exception => ex
@@ -86,7 +89,7 @@ module ROM
 					DEFAULT_ENCODING
 				end
 				
-				@serializers.find { |i| i.accepts?(hdr.type) }.get_serializer(hdr, encoding)
+				@serializers.find { |i| i.accepts?(hdr.type) }&.get_serializer(hdr, encoding)
 			end
 		end
 	end

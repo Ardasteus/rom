@@ -35,6 +35,26 @@ module ROM
 			end
 		end
 		
+		class Void < Type
+			def is(x)
+				false
+			end
+			
+			def accepts(klass)
+				klass = Type.to_t(klass)
+				
+				klass.is_a?(Just) ? klass.type == Void : false
+			end
+			
+			def to_s
+				'void'
+			end
+			
+			def self.[]
+				self.new
+			end
+		end
+		
 		# Represents one specific type
 		class Just < Type
 			# Gets the underlying type

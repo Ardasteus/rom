@@ -4,8 +4,10 @@ module ROM
 	module Authentication
 		module Providers
 			class LocalAuthenticationProvider < AuthenticationProvider
+				DRIVER = 'local'
+				
 				def initialize(itc)
-					super(itc, 'local', LocalConfig)
+					super(itc, DRIVER, LocalConfig)
 				end
 				
 				def open(name, conf)
