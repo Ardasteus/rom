@@ -92,7 +92,8 @@ module ROM
 					'function_expression' => 'ROM::Queries::FunctionExpression',
 					'unary_operator' => 'ROM::Queries::UnaryOperator',
 					'constant_value' => 'ROM::Queries::ConstantValue',
-					'order' => 'ROM::Queries::Order'
+					'order' => 'ROM::Queries::Order',
+					'like_expression' => 'ROM::Queries::LikeExpression'
 				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',

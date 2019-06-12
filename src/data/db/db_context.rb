@@ -513,7 +513,7 @@ module ROM
 				def sort_by_desc
 					expr = yield(@expr)
 					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
-					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(desc, :asc)], nil, @limit, @offset)
+					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :desc)], nil, @limit, @offset)
 				end
 				
 				# Executes the query
@@ -577,6 +577,16 @@ module ROM
 				def take(n)
 					raise('Limit already set!') if @limit != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, n, @offset)
+				end
+				
+				def count
+					expr = nil
+					if block_given?
+						expr = yield(@tab.double)
+						raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					end
+					expr = @where.and(expr) unless @where == nil
+					@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, @limit, @offset))
 				end
 				
 				# Filters only values that match given expression
@@ -664,6 +674,10 @@ module ROM
 				def take(n)
 					raise('Limit already set!') if @limit != nil
 					self.class.new(@db, @tab, @map, @where, @ord, n, @offset)
+				end
+				
+				def count
+					@db.scalar(@db.driver.select(@tab, @where, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, @limit, @offset))
 				end
 				
 				# Reduces each entity into a single scalar value

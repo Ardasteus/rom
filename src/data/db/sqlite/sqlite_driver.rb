@@ -179,6 +179,26 @@ module ROM
 						"#{expr.function.name}(#{expr.arguments.collect { |i| expression(i, args) }.join(', ')})"
 					when Queries::UnaryOperator
 						"#{expr.operator.name}#{(expr.operator.name.length > 1 ? ' ' : '')}(#{expression(expr.operand, args)})"
+					when Queries::LikeExpression
+						like = ''
+						expr.segments.each do |seg|
+							case seg[:type]
+								when :string
+									seg[:value].chars.collect(&:downcase).each do |c|
+										case c
+											when "'", '"', '%', '*', '\\'
+												like += "\\#{c}"
+											else
+												like += c
+										end
+									end
+								when :any_char
+									like += '_'
+								when :any_string
+									like += '%'
+							end
+						end
+						"LOWER(#{expression(expr.expression, args)}) LIKE '#{like}'"
 					else
 						raise('Expresion type not supported!')
 				end
