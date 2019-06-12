@@ -24,9 +24,9 @@ module ROM
 			
 			action :password, Types::Void, AuthorizeAttribute[], :body! => PasswordModel do |body|
 				interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
-					user = ctx.users.find { |i| i.login == identity.login }
+					user = ctx.users.find(identity.id)
 					ctx.logins.select { |i| i.user == user }.each do |login|
-						pwd = ctx.passwords.find { |i| i.login == login }
+						pwd = ctx.passwords.find(login)
 						next if pwd == nil
 						raise(UnauthenticatedException.new) unless AUTH.check_hash(pwd.hash, body.old)
 						

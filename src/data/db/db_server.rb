@@ -69,8 +69,9 @@ module ROM
 					con.close
 				end
 			else
-				ret
 				@cons << con
+				
+				ret
 			end
 		end
 		

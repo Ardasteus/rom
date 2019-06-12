@@ -17,6 +17,7 @@ module ROM
 				CLAIM_LAST_NAME = 'ln'
 				CLAIM_EXPIRY = 'exp'
 				CLAIM_SUPER = 'sup'
+				CLAIM_USER_ID = 'uid'
 				
 				def initialize(itc)
 					super(itc, 'jwt', JwtConfig)
@@ -44,7 +45,8 @@ module ROM
 						CLAIM_FIRST_NAME => token.identity.user.first_name,
 						CLAIM_LAST_NAME => token.identity.user.last_name,
 						CLAIM_EXPIRY => token.expiry.to_i,
-						CLAIM_SUPER => token.identity.super
+						CLAIM_SUPER => token.identity.super,
+						CLAIM_USER_ID => token.identity.id
 					}
 					base_64_body = Base64.urlsafe_encode64(JSON.generate(body))
 					rsa_to_sign = base_64_header + "." + base_64_body
@@ -72,6 +74,7 @@ module ROM
 								body[CLAIM_FIRST_NAME],
 								body[CLAIM_LAST_NAME]
 							),
+							body[CLAIM_USER_ID],
 							body[CLAIM_SUBJECT],
 							body[CLAIM_SUPER]
 						),

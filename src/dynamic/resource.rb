@@ -81,6 +81,10 @@ module ROM
 			@act[name.to_s]
 		end
 		
+		def close
+		
+		end
+		
 		# Prepares the resource class
 		# @return [void]
 		def self.prepare_resource

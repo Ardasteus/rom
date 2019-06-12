@@ -35,7 +35,7 @@ module ROM
 							u = auth.authenticate(login.login, password)
 							login.last_logon = Time.now.to_i
 							ctx.logins.update(login)
-							return create_token(login.driver, login.generation, Identity.new(u, username, user.super == 1 ? true : false)) unless u == nil
+							return create_token(login.driver, login.generation, Identity.new(u, user.id, username, user.super == 1 ? true : false)) unless u == nil
 						end
 						
 						return nil
@@ -47,9 +47,9 @@ module ROM
 						user = v.authenticate(username, password)
 						next if user == nil
 						
-						import_user(ctx, username, k, user)
+						acc = import_user(ctx, username, k, user)
 						
-						return create_token(k, 0, Identity.new(user, username, false))
+						return create_token(k, 0, Identity.new(user, acc.id, username, false))
 					end
 				end
 
@@ -78,6 +78,7 @@ module ROM
 			end
 			
 			def login_root(password)
+				root = nil
 				contact = nil
 				login = nil
 				@db.open(DB::RomDbContext) do |ctx|
@@ -93,7 +94,7 @@ module ROM
 					contact = root.contact
 				end
 				
-				create_token(ROOT_DRIVER, login.generation, Identity.new(User.new(contact.first_name, contact.first_name, contact.last_name), ROOT, true))
+				create_token(ROOT_DRIVER, login.generation, Identity.new(User.new(contact.first_name, contact.first_name, contact.last_name), root.id, ROOT, true))
 			end
 			
 			def create_token(type, stamp, id)

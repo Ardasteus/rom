@@ -63,6 +63,15 @@ module ROM
 			@db.close
 		end
 		
+		def protect
+			begin
+				yield
+			rescue
+				@db.close
+				raise
+			end
+		end
+		
 		# @overload self.convention(nm, args)
 		# 	Defines a naming convention
 		# 	@param [Symbol] nm Name of convention

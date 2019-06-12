@@ -50,7 +50,7 @@ module ROM
 		# @param [String] path Path to plan
 		# @return [ROM::ApiGateway::ApiPlan] Plan of the API call
 		def plan(*path)
-			ret  = ApiPlan.new
+			ret = ApiPlan.new
 			last = path.collect(&:to_s).reduce(@root) do |last, part|
 				n = nil
 				case last
@@ -106,9 +106,14 @@ module ROM
 				raise(SignatureException.new(signature, args)) unless signature.accepts(*args)
 				@plan.reduce(nil) do |last, act|
 					if last == nil
-						next act.invoke(ctx, nil, *args)
+						act.invoke(ctx, nil, *args)
+					else
+						begin
+							last.class.actions.first { |i| i.name == act.name }.invoke(ctx, last)
+						ensure
+							last.close
+						end
 					end
-					next last.class.actions.first {|i| i.name == act.name}.invoke(ctx, last)
 				end
 			end
 			
@@ -172,11 +177,11 @@ module ROM
 			# @param [String] name Name of module
 			# @param [ROM::ApiGateway::ResourceModule, nil] parent Parent module
 			def initialize(name, parent = nil)
-				@name    = name
-				@parent  = parent
+				@name = name
+				@parent = parent
 				@actions = {}
 				@modules = {}
-				@def     = nil
+				@def = nil
 			end
 			
 			# Adds a resource action to the module

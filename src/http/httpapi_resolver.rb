@@ -11,7 +11,8 @@ module ROM
 				SignatureException => StatusCode::BAD_REQUEST,
 				UnauthenticatedException => StatusCode::UNAUTHORIZED,
 				CharsetNotFoundException => StatusCode::BAD_REQUEST,
-				UnauthorizedException => StatusCode::FORBIDDEN
+				UnauthorizedException => StatusCode::FORBIDDEN,
+				NotFoundException => StatusCode::NOT_FOUND
 			}
 			DEFAULT_ENCODING = Encoding::UTF_8
 			

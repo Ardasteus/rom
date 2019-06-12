@@ -179,7 +179,8 @@ module ROM
 			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
 			'charset_not_found_exception'=>'ROM::CharsetNotFoundException',
 			'unauthorized_exception' => 'ROM::UnauthorizedException',
-			'invalid_operation_exception' => 'ROM::InvalidOperationException'
+			'invalid_operation_exception' => 'ROM::InvalidOperationException',
+			'not_found_exception' => 'ROM::NotFoundException'
 		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
