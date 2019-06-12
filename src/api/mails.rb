@@ -17,7 +17,13 @@ module ROM
 					@path = path
 				end
 				
+				def name?
+					@col.name =~ /^[a-z0-9 _.\-]+$/i
+				end
+				
 				action :fetch, DataPage, AuthorizeAttribute[] do
+					raise(NotFoundException.new(@path)) unless @col.is_a?(Entity)
+					
 					ret = []
 					@db.collections.select { |i| i.collection == @col }.each do |col|
 						ret << CollectionModel.new(:name => col.name, :flags => [])
@@ -26,33 +32,47 @@ module ROM
 					DataPage.new(:items => ret, :total => ret.length)
 				end
 				
+				action :create, DataPage, AuthorizeAttribute[] do
+					raise(InvalidOperationException.new('Collection name collision!')) if @col.is_a?(Entity)
+					raise(ArgumentException.new('name', "Invalid collection name!: #{@col.name}")) unless name?
+					
+					@db.collections << @col
+					
+					DataPage.new(:items => [], :total => 0)
+				end
+				
 				action :navigate, CollectionResource, AuthorizeAttribute[], DefaultAction[] do |name|
-					col = @db.collections.find { |i| (i.collection == @col).and(i.name == name) }
-					raise(NotFoundException.new("#{@path}/#{name}")) if col == nil
+					col = nil
+					if @col.is_a?(Entity)
+						col = @db.collections.find { |i| (i.collection == @col).and(i.name == name) }
+						col = DB::Collection.new(:name => name, :collection => @col) if col == nil
+					else
+						raise(NotFoundException.new("#{@path}/#{name}"))
+					end
 					
 					CollectionResource.new(@db, col, "#{@path}/#{name}")
 				end
 				
-				def close
-					@db.close
+				def close(tail)
+					@db.close if tail
 				end
+			end
+			
+			def self.get_root(itc, id)
+				db = itc.fetch(DbServer).open(DB::RomDbContext)
+				CollectionResource.new(db, db.protect { db.users.find(id.id).collection }, '')
 			end
 			
 			action :fetch, DataPage, AuthorizeAttribute[] do
-				db = interconnect.fetch(DbServer).open(DB::RomDbContext)
-				CollectionResource.new(db, db.protect { db.users.find(identity.id).collection }, '/').fetch
+				MailsController.get_root(interconnect, identity).fetch
+			end
+			
+			action :create, DataPage, AuthorizeAttribute[] do
+				raise(InvalidOperationException.new('No collection path specified!'))
 			end
 			
 			action :navigate, CollectionResource, AuthorizeAttribute[], DefaultAction[] do |name|
-				db = interconnect.fetch(DbServer).open(DB::RomDbContext)
-				col = nil
-				db.protect do
-					root = db.users.find(identity.id).collection
-					col = db.collections.find { |i| (i.collection == root).and(i.name == name) }
-					raise(NotFoundException.new("/#{name}")) if col == nil
-				end
-				
-				CollectionResource.new(db, col, "/#{name}")
+				MailsController.get_root(interconnect, identity).navigate(name)
 			end
 		end
 	end

@@ -104,15 +104,21 @@ module ROM
 			# @return [Object, nil] Result of API call
 			def run(ctx, *args)
 				raise(SignatureException.new(signature, args)) unless signature.accepts(*args)
+				tail = @plan.last
 				@plan.reduce(nil) do |last, act|
 					if last == nil
 						act.invoke(ctx, nil, *args)
 					else
+						ret = nil
 						begin
-							last.class.actions.first { |i| i.name == act.name }.invoke(ctx, last)
-						ensure
-							last.close
+							ret = act.invoke(ctx, last)
+						rescue
+							last.close(true)
+							raise
 						end
+						last.close(tail == act)
+						
+						ret
 					end
 				end
 			end

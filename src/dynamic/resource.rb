@@ -81,7 +81,7 @@ module ROM
 			@act[name.to_s]
 		end
 		
-		def close
+		def close(tail)
 		
 		end
 		

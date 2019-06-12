@@ -12,7 +12,8 @@ module ROM
 				UnauthenticatedException => StatusCode::UNAUTHORIZED,
 				CharsetNotFoundException => StatusCode::BAD_REQUEST,
 				UnauthorizedException => StatusCode::FORBIDDEN,
-				NotFoundException => StatusCode::NOT_FOUND
+				NotFoundException => StatusCode::NOT_FOUND,
+				InvalidOperationException => StatusCode::BAD_REQUEST
 			}
 			DEFAULT_ENCODING = Encoding::UTF_8
 			
@@ -51,10 +52,11 @@ module ROM
 					method = @http_methods.find { |mtd| mtd.is_method?(request.method) }
 					return HTTPResponse.new(StatusCode::METHOD_NOT_ALLOWED) if method == nil
 					
+					content = (request[:content_length] != nil and request[:content_length])
 					content_type = (request[:content_type] == nil ? nil : ContentType.from_header(request[:content_type]))
 					input_serializer = get_serializer(content_type)
 					return HTTPResponse.new(StatusCode::UNSUPPORTED_MEDIA_TYPE) if input_serializer == nil and request[:content_type] != nil
-					return HTTPResponse.new(StatusCode::BAD_REQUEST) if input_serializer == nil and method.input?
+					return HTTPResponse.new(StatusCode::BAD_REQUEST) if content and input_serializer == nil and method.input?
 					
 					# TODO: This is ACTUALLY NOT working by the standard (I know, I know, I told you to do it this way.)
 					#
@@ -69,7 +71,14 @@ module ROM
 					
 					resp
 				rescue ApiException => ex
-					HTTPResponse.new(EXCEPTION_CODES[ex.class])
+					status = EXCEPTION_CODES[ex.class]
+					if status != nil
+						HTTPResponse.new(status)
+					else
+						@log.item&.error('Unknown API exception raised during HTTP request!', ex)
+						
+						HTTPResponse.new(StatusCode::INTERNAL_SEVER_ERROR)
+					end
 				rescue Exception => ex
 					@log.item&.error('Unknown exception raised during HTTP request!', ex)
 					
