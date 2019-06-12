@@ -61,7 +61,7 @@ class LoginPage extends React.Component {
         username: this.state.name,
         password: this.state.password
       })
-      .then(function (response) {
+      .then((response) => {
         console.log(response);
       })
       return <Redirect to='/home' />;    
