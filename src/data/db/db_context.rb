@@ -356,6 +356,14 @@ module ROM
 				CollectQuery.new(@db, @tab, expr)
 			end
 			
+			def drop(n)
+				LimitedQuery.new(@db, @tab, @map, nil, n)
+			end
+			
+			def take(n)
+				LimitedQuery.new(@db, @tab, @map, n, nil)
+			end
+			
 			# @overload find()
 			# 	Finds a single entity that matched given expression
 			# 	@yield [tab] Matcher builder function
@@ -445,6 +453,96 @@ module ROM
 			
 			private :get_matcher
 			
+			class LimitedQuery
+				# Instantiates the {ROM::DbContext::TableCollection::CollectQuery} class
+				# @param [ROM::DbConnection] db DB connection handle
+				# @param [ROM::DbTable] tab Table to query from
+				# @param [Integer, nil] limit Maximal number of results
+				# @param [Integer, nil] offset Number of results skipped in the result set
+				def initialize(db, tab, map, limit = nil, offset = nil)
+					@db = db
+					@tab = tab
+					@map = map
+					@limit = limit
+					@offset = offset
+				end
+				
+				# Skips the given number of results
+				# @param [Integer] n Number of results to skip
+				# @return [ROM::DbContext::TableCollection::LimitedQuery] Offset query
+				def drop(n)
+					raise('Offset already set!') if @offset != nil
+					self.class.new(@db, @tab, @map, @limit, n)
+				end
+				
+				# Limits the number of results
+				# @param [Integer] n Maximal number of returned results
+				# @return [ROM::DbContext::TableCollection::LimitedQuery] Limited query
+				def take(n)
+					raise('Limit already set!') if @limit != nil
+					self.class.new(@db, @tab, @map, n, @offset)
+				end
+				
+				# Filters only values that match given expression
+				# @yield [v] Filter builder function
+				# @yieldparam [Object] v Reduced value to filter
+				# @yieldreturn [ROM::Queries::QueryExpression] Filtering expression
+				# @return [ROM::DbContext::TableCollection::SelectQuery] Filtered query
+				def select
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					SelectQuery.new(@db, @tab, @map, expr, [], @limit, @offset)
+				end
+				
+				def collect
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					CollectQuery.new(@db, @tab, expr, nil, [], @limit, @offset)
+				end
+				
+				# Sorts (in ascending order) by a value
+				# @return [ROM::DbContext::TableCollection::EntitySortQuery] Sorted query
+				def sort_by
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :asc)], nil, @limit, @offset)
+				end
+				
+				# Sorts (in descending order) by a value
+				# @return [ROM::DbContext::TableCollection::EntitySortQuery] Sorted query
+				def sort_by_desc
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(desc, :asc)], nil, @limit, @offset)
+				end
+				
+				# Executes the query
+				# @return [ROM::DbResults] Query result set
+				def to_query
+					@db.driver.select(@tab, nil, [], nil, @limit, @offset)
+				end
+				
+				# Enumerates through the query results
+				# @yield [v] Block of enumeration
+				# @yieldparam [Object, nil] v Value of returned result set
+				def each
+					@db.query(to_query).each do |row|
+						yield(@map.map(row))
+					end
+				end
+				
+				# Queries the results set as an array
+				# @return [Array<Entity>] Returned entities
+				def to_a
+					ret = []
+					@db.query(to_query).each do |row|
+						ret << @map.map(row)
+					end
+					
+					ret
+				end
+			end
+			
 			# Represents a reduced query
 			class CollectQuery
 				# Instantiates the {ROM::DbContext::TableCollection::CollectQuery} class
@@ -468,7 +566,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::CollectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, @limit, n)
 				end
@@ -555,7 +653,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::SelectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @map, @where, @ord, @limit, n)
 				end
@@ -640,7 +738,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::SelectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, @limit, n)
 				end
