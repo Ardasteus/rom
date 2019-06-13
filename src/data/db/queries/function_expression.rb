@@ -57,6 +57,10 @@ module ROM
 
 			# COUNT aggregation function
 			COUNT = Function.new('count') { Integer }
+			# LOWER function
+			LOWER = Function.new('lower') { String }
+			# UPPER function
+			UPPER = Function.new('upper') { String }
 		end
 	end
 end

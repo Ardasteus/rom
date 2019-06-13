@@ -268,17 +268,14 @@ module ROM
 				e.entity_model.class.properties.each do |prop|
 					k = prop.name.to_sym
 					changed = changes.has_key?(k)
-					v = e[k]
+					v = changes[k]
 					col = @tab.columns.find { |i| i.mapping.name.to_s == k.to_s }
 					if v.is_a?(Entity)
-						if full or (deep and (changed or v.entity_changed?))
+						if full or (deep and (changed or e[k].entity_changed?))
 							raise('Recursive update required!') if history.include?(v)
 							tgt = col.reference.target
-							sym = tgt.mapping.name.to_sym
-							old = v[sym]
 							@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if v.entity_changed?
-							new = v[sym]
-							with[col.name] = Queries::ConstantValue.new(new) unless new == old
+							with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
 						end
 					elsif v.is_a?(Model) and not v.is_a?(Fake)
 						if full or deep
@@ -439,6 +436,15 @@ module ROM
 					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
 				end
 				@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }))
+			end
+			
+			def any?
+				expr = nil
+				if block_given?
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				end
+				@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, 1)) == 1
 			end
 			
 			# Enumerates all entities

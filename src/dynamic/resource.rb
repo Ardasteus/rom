@@ -199,7 +199,7 @@ module ROM
 		# @param [Class] klass Class of the attribute to fetch
 		# @return [ROM::Attribute, nil] First attribute of the given type; nil of no such attribute could be found
 		def attribute(klass)
-			@att.each { |i| return i if i.is_a?(klass) }
+			@att.find { |i| i.is_a?(klass) }
 		end
 		
 		# Gets whether the action has a metadata attribute of the given type

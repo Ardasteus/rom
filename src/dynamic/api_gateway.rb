@@ -80,6 +80,7 @@ module ROM
 			# Instantiates the {ROM::ApiGateway::ApiPlan} class
 			def initialize
 				@plan = []
+				@sig = nil
 			end
 			
 			# Gets the length of the call chain
@@ -91,12 +92,9 @@ module ROM
 			# Gets the signature of call chain
 			# @return [ROM::ActionSignature] Signature of call chain
 			def signature
-				f = @plan.first.signature
-				args = {}
-				f.arguments.each do |i|
-					args[i] = f[i]
-				end
-				ActionSignature.new(@plan.last.signature.return_type, args)
+				rebuild if @sig == nil
+				
+				@sig
 			end
 			
 			# Executes the API call plan
@@ -105,13 +103,20 @@ module ROM
 			def run(ctx, *args)
 				raise(SignatureException.new(signature, args)) unless signature.accepts(*args)
 				tail = @plan.last
-				@plan.reduce(nil) do |last, act|
+				@plan.zip(@slices).reduce(nil) do |last, pair|
+					act = pair[0]
+					slice = pair[1]
+					arg = if slice[1] == 0
+						[]
+					else
+						args[slice[0], slice[0] + slice[1]]
+					end
 					if last == nil
-						act.invoke(ctx, nil, *args)
+						act.invoke(ctx, nil, *arg)
 					else
 						ret = nil
 						begin
-							ret = act.invoke(ctx, last)
+							ret = act.invoke(ctx, last, *arg)
 						rescue
 							last.close(true)
 							raise
@@ -123,9 +128,43 @@ module ROM
 				end
 			end
 			
+			def rebuild
+				sig = []
+				slices = []
+				@plan.each do |act|
+					args = act.signature.arguments.collect { |i| [i, act.signature[i]] }.to_h
+					if args.length == 0
+						slices << [0, 0]
+						next
+					end
+					
+					start = nil
+					length = 0
+					args.each_pair do |k, v|
+						idx = sig.index { |i| i[:name] == k }
+						other = (idx == nil ? nil : sig[idx])
+						if start == nil
+							start = (idx == nil ? sig.length : idx)
+						elsif sig.length > start + length
+							raise(Exception.new('Action signatures are incompatible!: Disjoint')) unless other == sig[start + length]
+						end
+						raise(Exception.new('Action signatures are incompatible!: Type mismatch')) if other != nil and v[:type] <= other[:type]
+						sig << v if other == nil
+						
+						length += 1
+					end
+					
+					slices << [start, length]
+				end
+				
+				@slices = slices
+				@sig = ActionSignature.new(@plan.last.signature.return_type, sig.collect { |i| [i[:name], i] }.to_h)
+			end
+			
 			# Adds a resource action call to the plan
 			# @param [ROM::ResourceAction] act Action to add
 			def <<(act)
+				@sig = nil
 				@plan << act
 			end
 			

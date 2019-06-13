@@ -22,6 +22,12 @@ module ROM
 				UserModel.new(:login => identity.login, :name => identity.user.full_name, :super => identity.super)
 			end
 			
+			action :contact, ContactsResource::ContactResource do
+				db = interconnect.fetch(DbServer).open(DB::RomDbContext)
+				
+				ContactsResource::ContactResource.new(db, db.protect { db.users.find(identity.id).contact }, true)
+			end
+			
 			action :password, Types::Void, AuthorizeAttribute[], :body! => PasswordModel do |body|
 				interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
 					user = ctx.users.find(identity.id)
