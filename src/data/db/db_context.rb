@@ -304,10 +304,10 @@ module ROM
 				raise('Block cannot be used when entity was given!') if e != nil and block_given?
 				if e == nil
 					raise('Matching function expected!') unless block_given?
-					raise('Only entities may be deleted!') unless e.is_a?(Entity)
 					where = yield(@tab.double)
-					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					raise('Block must result in expression!') unless where.is_a?(Queries::QueryExpression)
 				else
+					raise('Only entities may be deleted!') unless e.is_a?(Entity)
 					where = get_matcher(e)
 				end
 				

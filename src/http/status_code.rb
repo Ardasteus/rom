@@ -45,6 +45,7 @@ module ROM
 			UNSUPPORTED_MEDIA_TYPE = self.new(415, 'Unsupported Media Type')
 			RANGE_NOT_SATISFIABLE = self.new(416, 'Range Not Satisfiable')
 			INTERNAL_SEVER_ERROR = self.new(500, 'Internal Server Error')
+			NOT_IMPLEMENTED = self.new(501, 'Not Implemented')
 		end
 	end
 end

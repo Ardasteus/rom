@@ -27,7 +27,7 @@ module ROM
 			table :mails, Mail
 			table :mail_participants, MailParticipant
 			table :mail_tags, MailTag
-			table :collection_mail, CollectionMail
+			table :collection_mails, CollectionMail
 			table :attachments, Attachment
 			table :media, Media
 			table :channels, Channel
