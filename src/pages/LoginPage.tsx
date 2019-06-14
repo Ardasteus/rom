@@ -55,16 +55,17 @@ class LoginPage extends React.Component {
     });
   }
   // If declarable redirectLogin is true, redirect to login page
-  homeRedirect = () => {
+  async homeRedirect() {
     if (this.state.redirectLogin) {
-      axios.post('login', {
+      const response = await axios.post('login', {
         username: this.state.name,
         password: this.state.password
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      return <Redirect to='/home' />;    
+      });
+
+      if(response.status == 201) {
+        console.log(response.status);
+        return <Redirect to='/home' />
+      }
     }
   }
   // If declarable redirectRegister is true, redirect to register page
