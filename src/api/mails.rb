@@ -15,7 +15,7 @@ module ROM
 					property! :path, String
 				end
 				
-				RGX_PATH = /^(\/[a-z0-9 _.\-]+)+$/mi
+				RGX_PATH = /^(\/|(\/[a-z0-9 _.\-]+)+)$/mi
 				
 				def initialize(db, root, col, path)
 					@db = db

@@ -66,8 +66,6 @@ module ROM
 		# Converts model to human readable string representation for debugging inspection
 		# @return [String] String representation of this model
 		def inspect
-			return '###'
-			
 			str = "<#{self.class.name}"
 			self.class.properties.each do |prop|
 				str += " :#{prop.name}=#{@values[prop.name.to_sym].inspect}"
@@ -237,7 +235,11 @@ module ROM
 						return from_object(obj, type.type)
 					when Types::Union
 						type.types.each do |t|
-							return from_object(obj, t) if t.is(obj)
+							begin
+								return from_object(obj, t)
+							rescue
+								# ignored
+							end
 						end
 					when Types::Array
 						return obj.collect { |i| from_object(i, type.type) } if obj.is_a?(Array)

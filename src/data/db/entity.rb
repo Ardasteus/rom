@@ -78,6 +78,12 @@ module ROM
 				ctr[k] = v unless v.is_a?(LazyPromise)
 			end
 			@mod = tab.table.model.new(ctr)
+			
+			me = self
+			tab.table.model.properties.collect { |i| i.name.to_sym }.each do |sym|
+				@mod.send(:define_singleton_method, sym) { me[sym] }
+				@mod.send(:define_singleton_method, "#{sym}=".to_sym) { |value| me[sym] = value }
+			end
 		end
 		
 		# Fetches property of model
@@ -104,6 +110,19 @@ module ROM
 				@changes[key] = value
 				@mod[key] = value
 			end
+		end
+		
+		def ==(other)
+			return false unless other.is_a?(Entity) and other.entity_table == @tab
+			@tab.table.keys.collect { |i| i.name.to_sym }.each do |k|
+				return false if self[k] != other[k]
+			end
+			
+			true
+		end
+		
+		def !=(other)
+			not (self == other)
 		end
 		
 		# Sets property to a given value

@@ -29,7 +29,7 @@ module ROM
 			@tab.columns.each do |col|
 				val = row[col.name]
 				keys = { col => val }
-				vals[col.mapping.name.to_sym] = (is_lazy?(col.mapping.type) ? LazyPromise.new(keys, @tab) { @lazy[col.name.to_sym].fetch(keys) } : val)
+				vals[col.mapping.name.to_sym] = ((val != nil and is_lazy?(col.mapping.type)) ? LazyPromise.new(keys, @tab) { @lazy[col.name.to_sym].fetch(keys) } : val)
 			end
 			
 			Entity.new(@tab, vals)
