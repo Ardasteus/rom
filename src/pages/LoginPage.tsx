@@ -40,6 +40,7 @@ class LoginPage extends React.Component {
     }).then(response => {
       if (response.status === 201 && this.state.authenticated) {
         this.setState({ redirectLogin: true });
+        localStorage.setItem('token', response.data.token);
       }
     });
   }
@@ -59,7 +60,7 @@ class LoginPage extends React.Component {
   }
 
   // Redirects to login page
-  async homeRedirect() {
+  homeRedirect =() => {
     return <Redirect to='/home' />;
   }
   // Redirects to register page
@@ -94,7 +95,7 @@ class LoginPage extends React.Component {
               value={this.state.name}
               onChange={this.handleChange('name')}
             />
-            <TextField
+            <TextField 
               variant='outlined'
               color='secondary'
               id='password'

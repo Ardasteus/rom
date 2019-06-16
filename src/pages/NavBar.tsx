@@ -32,6 +32,8 @@ import WriteMail from './WriteMail';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { ListItemAvatar, Avatar, DialogTitle } from '@material-ui/core';
+import PersonalData from './PersonalData';
+
 
 const accounts = ['username@gmail.com', 'username02@gmail.com'];
 const theme = createMuiTheme({
@@ -76,6 +78,8 @@ export interface State {
   value: boolean;
   open: boolean;
   openAcc: boolean;
+  settingsAcc: boolean;
+  gettingAccSetting: boolean;
 }
 
 class NavBar extends React.Component<Props, State> {
@@ -86,6 +90,8 @@ class NavBar extends React.Component<Props, State> {
     value: false,
     open: false,
     openAcc: false,
+    settingsAcc: false,
+    gettingAccSetting: true,
   };
   TabContainer = (props) => {
     return (
@@ -133,6 +139,25 @@ class NavBar extends React.Component<Props, State> {
   handleCloseAcc = () => {
     this.setState({ openAcc: false });
   }
+  
+
+  ShowingPersonalData = () => {
+    if (this.state.settingsAcc === true) {
+      return <PersonalData updatePersonalData={this.updatePersonalData} />;
+    }
+  }
+
+  PersDataopen = () => {
+    this.setState({
+      settingsAcc: true,
+    });
+  }
+
+  updatePersonalData = (event: any) => {
+    this.setState({
+      settingsAcc: false,
+    });
+  }
 
   render() {
     const { classes } = this.props;
@@ -162,13 +187,12 @@ class NavBar extends React.Component<Props, State> {
                 Save
               </Button>
             </Toolbar>
-          </AppBar>
+          </AppBar>         
           <List>
             <ListItem button>
               <ListItemText primary='Dashboard'/>
             </ListItem>
-
-            <ListItem button>
+            <ListItem button onClick={this.PersDataopen}>
               <ListItemText primary='Personal data'/>
             </ListItem>
 
@@ -191,6 +215,7 @@ class NavBar extends React.Component<Props, State> {
               <ListItemText primary='Report bugs'/>
             </ListItem>
           </List>
+          {this.ShowingPersonalData()}       
         </Dialog>
       <Dialog open={this.state.openAcc} onClose={this.handleCloseAcc} aria-labelledby='account-dialog'>
       <DialogTitle id='account-dialog'>Switch account</DialogTitle>

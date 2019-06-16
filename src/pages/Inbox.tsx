@@ -7,7 +7,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardContent, CardActions, CardHeader, Paper } from '@material-ui/core';
+import { Card, CardContent, CardActions, CardHeader, Paper, TextField } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
@@ -16,14 +16,19 @@ import Mail from './Mail';
 import Checkbox from '@material-ui/core/Checkbox';
 import CloseIcon from '@material-ui/icons/Close';
 import ShowMail from './ShowMail';
+import SearchField from "react-search-field";
+import axios from 'classes/axios.instance';
 
 const emails = ['Email01', 'Email02', 'Email03', 'Email04', 'Email05'];
+
+const data = []
 
 interface State {
   addingMail: boolean;
   showingMail: boolean;
   sentMail: boolean;
   text: string;
+  gettingCollections: boolean;
 }
 
 class Inbox extends React.Component<{}, State> {
@@ -34,6 +39,7 @@ class Inbox extends React.Component<{}, State> {
       showingMail: false,
       sentMail: false,
       text: 'TODO: Mails',
+      gettingCollections: true,
     };
   }
 
@@ -86,11 +92,27 @@ class Inbox extends React.Component<{}, State> {
       showingMail: true,
     });
   }
+  getCollections = () => {
+    if(this.state.gettingCollections){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token}
+  };  
+    axios.get('mails', config)
+    .then(response => {
+      console.log(response) 
+      data.push(response.data.items)
+      console.log(data)
+      }
+    )
+    this.setState({gettingCollections: false});
+    }   
+  }
 
   render() {
     return (
-      <div>
-
+      <div>      
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            {emails.map(email => (
@@ -100,24 +122,23 @@ class Inbox extends React.Component<{}, State> {
             ))}
            </List>
         </Paper>
+        <SearchField
+         placeholder="Search..."
+         classNames="search-field"
+        />
         {this.showingMail()}
+        {this.getCollections()} 
         <Card className='inbox-menu'>
           <CardContent>
           <List>
-            <ListItem button>
-              <ListItemText primary='Inbox'/>
+          {data.map(collection => (
+            <ListItem key={collection} button>
+              <ListItemText primary={collection}/>
             </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary='Spam'/>
-            </ListItem>
-            <Divider/>
-            <ListItem button>
-              <ListItemText primary='Drafts'/>
-            </ListItem>
+              ))}
           </List>
           </CardContent>
-        </Card>
+        </Card>      
         <div className='writeMailButton'>
            {this.MailWriting()}
              <Fab color='primary' aria-label='Add' onClick={this.newMailWrite}>
