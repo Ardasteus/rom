@@ -17,8 +17,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CloseIcon from '@material-ui/icons/Close';
 import ShowMail from './ShowMail';
 
-
-const emails = ['Email01', 'Email02', 'Email03','Email04','Email05'];
+const emails = ['Email01', 'Email02', 'Email03', 'Email04', 'Email05'];
 
 interface State {
   addingMail: boolean;
@@ -30,14 +29,13 @@ interface State {
 class Inbox extends React.Component<{}, State> {
   constructor(props) {
     super(props);
-    this.state = { 
-      addingMail: false, 
+    this.state = {
+      addingMail: false,
       showingMail: false,
       sentMail: false,
       text: 'TODO: Mails',
     };
   }
-
 
   // Sets declarable addingMail true
   newMailWrite = () => {
@@ -51,14 +49,14 @@ class Inbox extends React.Component<{}, State> {
       addingMail: false,
     });
   }
-   
+
   // If declarable addingMail is true, show component WriteMail
   MailWriting = () => {
     if (this.state.addingMail === true) {
       return <WriteMail updateAddingMail={this.updateAddingMail} />;
     }
   }
-  
+
   sendingMail = (event: any) => {
     this.setState({
       sentMail: false,
@@ -67,7 +65,7 @@ class Inbox extends React.Component<{}, State> {
 
   SendingMail = () => {
     if (this.state.sentMail === true) {
-      
+
     }
   }
 
@@ -91,18 +89,18 @@ class Inbox extends React.Component<{}, State> {
 
   render() {
     return (
-      <div>     
-        
-        <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>        
+      <div>
+
+        <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            {emails.map(email => (
            <ListItem key={email} button onClick={this.newShowMail}>
               <ListItemText primary={email}/>
             </ListItem>
-            ))}           
+            ))}
            </List>
         </Paper>
-        {this.showingMail()}   
+        {this.showingMail()}
         <Card className='inbox-menu'>
           <CardContent>
           <List>

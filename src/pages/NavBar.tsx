@@ -60,7 +60,7 @@ const styles = createStyles({
   appBar: {
     position: 'relative',
     backgroundColor: 'black',
-    Color: 'white'
+    Color: 'white',
   },
   flex: {
     flex: 1,
@@ -68,7 +68,6 @@ const styles = createStyles({
 });
 
 export interface Props extends WithStyles<typeof styles> {}
-
 
 export interface State {
   redirect: any;
@@ -193,8 +192,8 @@ class NavBar extends React.Component<Props, State> {
             </ListItem>
           </List>
         </Dialog>
-      <Dialog open={this.state.openAcc} onClose={this.handleCloseAcc} aria-labelledby="account-dialog">
-      <DialogTitle id="account-dialog">Switch account</DialogTitle>
+      <Dialog open={this.state.openAcc} onClose={this.handleCloseAcc} aria-labelledby='account-dialog'>
+      <DialogTitle id='account-dialog'>Switch account</DialogTitle>
       <List>
         {accounts.map(account => (
           <ListItem button key={account}>
@@ -212,11 +211,11 @@ class NavBar extends React.Component<Props, State> {
               <AddIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary="add account" />
+          <ListItemText primary='add account' />
         </ListItem>
       </List>
     </Dialog>
-          <AppBar className="header">
+          <AppBar className='header'>
             <Typography variant='h6' color='secondary' className={classes.grow}>
               Ruby On Mails
               <Tabs value={value} onChange={this.handleChangeTab}>
@@ -224,7 +223,7 @@ class NavBar extends React.Component<Props, State> {
                <Tab label='Chat' />
               </Tabs>
               {auth && (
-              <div className="AccountCircle">
+              <div className='AccountCircle'>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : undefined}
                   aria-haspopup='true'
@@ -254,7 +253,7 @@ class NavBar extends React.Component<Props, State> {
                 </Menu>
               </div>
             )}
-            </Typography>           
+            </Typography>
           </AppBar>
         </AppBar>
         {value == false && <this.TabContainer><Inbox /></this.TabContainer>}

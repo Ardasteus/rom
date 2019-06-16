@@ -10,7 +10,6 @@ class ChatMessage extends React.Component<Props, {}> {
     super(props);
   }
 
-
   render() {
     return (
       <Card className='personChat'>
@@ -22,14 +21,14 @@ class ChatMessage extends React.Component<Props, {}> {
           <TextField
           id='message'
           label='Message'
-          variant="outlined"
+          variant='outlined'
           margin='normal'
           fullWidth>
         </TextField>
-        </CardContent> 
+        </CardContent>
         <div className='sendButton'>
           <Button variant='contained' onClick={this.props.updateShowingMessage} >Send</Button>
-        </div>      
+        </div>
       </Card>
     );
   }

@@ -16,7 +16,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
-
 const theme = createMuiTheme({
   palette: {
       primary: {
@@ -90,7 +89,7 @@ class RegisterPage extends React.Component {
       <Card className='create-card'>
       <CardContent>
       <TextField
-          variant="outlined"
+          variant='outlined'
           id='new-name'
           label='Choose a Name'
           margin='normal'
@@ -98,7 +97,7 @@ class RegisterPage extends React.Component {
           onChange={this.handleChange('name')}
         />
         <TextField
-          variant="outlined"
+          variant='outlined'
           id='new-password'
           label='Create a Password'
           type='password'
@@ -107,7 +106,7 @@ class RegisterPage extends React.Component {
           onChange={this.handleChange('password')}
         />
         <TextField
-          variant="outlined"
+          variant='outlined'
           id='confirm-password'
           label='Confirm your Password'
           type='password'

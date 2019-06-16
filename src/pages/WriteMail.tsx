@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-
 interface Props {
   updateAddingMail: (event: any) => void;
 }
@@ -35,7 +34,7 @@ class WriteMail extends React.Component<Props, {}> {
   //  const { message } = this.state;
     return (
     <div>
-      <Card className='writemail-card'>      
+      <Card className='writemail-card'>
           <CardContent>
           <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateAddingMail}>
                 <CloseIcon />
@@ -62,7 +61,7 @@ class WriteMail extends React.Component<Props, {}> {
             />
             <div>
               <Button variant='contained'>Send</Button>
-            </div> 
+            </div>
           </CardContent>
         </Card>
        </div>

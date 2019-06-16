@@ -10,7 +10,6 @@ import axios from 'classes/axios.instance';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
-
 const theme = createMuiTheme({
   palette: {
       primary: {
@@ -32,20 +31,24 @@ class LoginPage extends React.Component {
     password: '',
     authenticated: true,
   };
+
   // Sets declarable redirectLogin true
   setRedirectLogin = () => {
-    if (this.state.authenticated) {
-      this.setState({
-        redirectLogin: true,
-      });
-    }
+    axios.post('login', {
+      username: this.state.name,
+      password: this.state.password,
+    }).then(response => {
+      if (response.status === 201 && this.state.authenticated) {
+        this.setState({ redirectLogin: true });
+      }
+    });
   }
+
   // Sets declarable redirectRegister true
   setRedirectRegister = () => {
       this.setState({
         redirectRegister: true,
       });
-
   }
 
   // Handles change in name/password field
@@ -54,32 +57,28 @@ class LoginPage extends React.Component {
       [name]: event.target.value,
     });
   }
-  // If declarable redirectLogin is true, redirect to login page
-  async homeRedirect() {
-    if (this.state.redirectLogin) {
-      const response = await axios.post('login', {
-        username: this.state.name,
-        password: this.state.password
-      });
 
-      if(response.status == 201) {
-        console.log(response.status);
-        return <Redirect to='/home' />
-      }
-    }
+  // Redirects to login page
+  async homeRedirect() {
+    return <Redirect to='/home' />;
   }
-  // If declarable redirectRegister is true, redirect to register page
+  // Redirects to register page
   registerRedirect = () => {
-    if (this.state.redirectRegister) {
       return <Redirect to='/register' />;
-    }
   }
 
   render() {
     const { name, password } = this.state;
-    const enabled =
-      name.length > 0 &&
-      password.length > 0;
+    const enabled = name.length > 0 && password.length > 0;
+
+    if (this.state.redirectLogin) {
+      return this.homeRedirect();
+    }
+
+    if (this.state.redirectRegister) {
+      return this.registerRedirect();
+    }
+
     return (
       <div className='login-page'>
         <MuiThemeProvider theme={theme}>
@@ -87,7 +86,7 @@ class LoginPage extends React.Component {
         <Card className='login-card' color='primary'>
           <CardContent>
             <TextField
-              variant="outlined"
+              variant='outlined'
               color='secondary'
               id='name'
               label='Name'
@@ -96,7 +95,7 @@ class LoginPage extends React.Component {
               onChange={this.handleChange('name')}
             />
             <TextField
-              variant="outlined"
+              variant='outlined'
               color='secondary'
               id='password'
               type='password'
@@ -107,14 +106,13 @@ class LoginPage extends React.Component {
             />
           </CardContent>
           <CardActions>
-            {this.homeRedirect()}
+
             <Button variant='contained' disabled={!enabled} color='secondary' onClick={this.setRedirectLogin}>Login</Button>
           </CardActions>
         </Card>
         <div>
           <Card className='register-Link' color='primary'>
             <CardActions>
-            {this.registerRedirect()}
              <Button variant='contained' color='secondary' >Login</Button>
              <Button variant='contained' onClick={this.setRedirectRegister}>Register</Button>
             </CardActions>

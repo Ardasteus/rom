@@ -9,12 +9,12 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import ChatMessage from './ChatMessage';
 
-const contacts = ['John generic', 'Roman Spanko', 'Matyas Pokorny']
+const contacts = ['John generic', 'Roman Spanko', 'Matyas Pokorny'];
 
 class Chat extends React.Component {
   state = {
     message: '',
-    showingMessage: false
+    showingMessage: false,
   };
   handleChange = name => event => {
     this.setState({
@@ -48,8 +48,8 @@ class Chat extends React.Component {
                <AccountCircle />
              </ListItemIcon>
               <ListItemText  primary={contact}/>
-            </ListItem>     
-            ))}       
+            </ListItem>
+            ))}
            </List>
         </Paper>
         {this.showMessage()}

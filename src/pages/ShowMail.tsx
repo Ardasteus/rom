@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-
 interface Props {
   updateShowingMail: (event: any) => void;
 }
@@ -16,7 +15,6 @@ class ShowMail extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
   }
-
 
   closeMailWrite = () => {
     this.setState({
@@ -43,7 +41,7 @@ class ShowMail extends React.Component<Props, {}> {
               label='Title'
               margin='normal'
             />
-            <TextField 
+            <TextField
               variant='filled'
               id='message'
               label='Message'
