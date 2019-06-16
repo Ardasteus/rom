@@ -50,7 +50,7 @@ module ROM
 				end
 				
 				def self.from_db(mod)
-					self.new(:host => mod.host, :port => mod.port, :user => mod.user, :password => mod.password, :protection => mod.protection&.moniker)
+					self.new(:host => mod.host, :port => mod.port, :user => mod.user, :protection => mod.protection&.moniker)
 				end
 			end
 			
@@ -172,7 +172,7 @@ module ROM
 				class MapsResource < Resource
 					class MapModel < Model
 						property :id, Integer
-						property! :collection, String
+						property! :path, String
 						property! :filter, String
 					end
 					
@@ -196,7 +196,7 @@ module ROM
 						end
 						
 						action :fetch, MapModel, AuthorizeAttribute[] do
-							MapModel.new(:id => @map.id, :collection => @map.collection.full_path, :filter => @map.filter)
+							MapModel.new(:id => @map.id, :path => @map.collection.full_path, :filter => @map.filter)
 						end
 						
 						action :delete, Types::Void, AuthorizeAttribute[] do
@@ -207,7 +207,7 @@ module ROM
 					action :fetch, DataPage, AuthorizeAttribute[] do
 						ret = []
 						@db.maps.select { |i| i.mailbox == @box }.each do |map|
-							ret << MapModel.new(:id => map.id, :collection => map.collection.full_path, :filter => map.filter)
+							ret << MapModel.new(:id => map.id, :path => map.collection.full_path, :filter => map.filter)
 						end
 						
 						DataPage.new(:items => ret, :total => ret.length)
@@ -218,7 +218,7 @@ module ROM
 						raise(ArgumentException.new('filter', 'Invalid path format!')) unless body.filter =~ ApiConstants::RGX_PATH
 						raise(ArgumentException.new('filter', 'Filter cannot be root!')) if body.filter == '/'
 						
-						col = @db.users.find(identity.id).collection.find(@db, body.collection[1..body.collection.length - 1])
+						col = @db.users.find(identity.id).collection.find(@db, body.path[1..body.path.length - 1])
 						raise(NotFoundException.new('Collection not found!')) if col == nil
 						
 						@db.maps << DB::Map.new(:mailbox => @box, :collection => col, :filter => body.filter)
@@ -268,7 +268,7 @@ module ROM
 					action :fetch, ConnectionModel, AuthorizeAttribute[] do
 						raise(NotFoundException.new('Connection not found!')) if @con == nil
 						
-						ConnectionModel.new(:host => @con.host, :port => @con.port, :user => @con.user, :password => @con.password, :protection => @con.protection&.moniker)
+						ConnectionModel.from_db(@con)
 					end
 				end
 				
