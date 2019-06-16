@@ -276,6 +276,9 @@ module ROM
 		'net' => {
 			'content_type' => 'ROM::ContentType'
 		},
+		'api' => {
+			'contacts' => 'ROM::API::ContactsResource'
+		},
 		'api_constants' => 'ROM::ApiConstants',
 		'application' => 'ROM::Application',
 		'filesystem' => 'ROM::Filesystem'
