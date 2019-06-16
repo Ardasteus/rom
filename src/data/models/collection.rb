@@ -21,7 +21,7 @@ module ROM
 			def find(db, path)
 				ret = self
 				path.split('/').each do |part|
-					ret = db.collections.find { |i| (i.collection == root).and(i.name == part)}
+					ret = db.collections.find { |i| (i.collection == ret).and(i.name == part)}
 					break if ret == nil
 				end
 				

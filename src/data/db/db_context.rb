@@ -270,19 +270,36 @@ module ROM
 					changed = changes.has_key?(k)
 					v = changes[k]
 					col = @tab.columns.find { |i| i.mapping.name.to_s == k.to_s }
-					if v.is_a?(Entity)
-						if full or (deep and (changed or e[k].entity_changed?))
-							raise('Recursive update required!') if history.include?(v)
-							tgt = col.reference.target
-							@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if v.entity_changed?
-							with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
-						end
-					elsif v.is_a?(Model) and not v.is_a?(Fake)
-						if full or deep
-							raise('Recursive insert required!') if history.include?(v)
-							tgt = col.reference.target
-							v = @ctx[tgt.table.table.name].add_recursive(v, deep, full, e, *history)
-							with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+					if is_reference?(col.mapping.type)
+						if v != nil
+							next unless (full or deep)
+							
+							if v.is_a?(Entity)
+								raise('Recursive update required!') if history.include?(v)
+								tgt = col.reference.target
+								@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if full or (deep and v.entity_changed?)
+								with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+							elsif not v.is_a?(Fake)
+								raise('Recursive insert required!') if history.include?(v)
+								tgt = col.reference.target
+								v = @ctx[tgt.table.table.name].add_recursive(v, deep, full, e, *history)
+								with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+							end
+						else
+							if changed
+								with[col.name] = Queries::ConstantValue.new(v)
+							else
+								v = e[k]
+								next if v == nil
+								
+								changed = v.entity_changed?
+								if full or (deep and changed)
+									raise('Recursive update required!') if history.include?(v)
+									tgt = col.reference.target
+									@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if (full or changed)
+									with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+								end
+							end
 						end
 					elsif changed
 						with[col.name] = Queries::ConstantValue.new(v)
@@ -290,6 +307,17 @@ module ROM
 				end
 				
 				@db.execute(@db.driver.update(@tab, get_matcher(e), with)) if with.size > 0
+			end
+			
+			def is_reference?(klass)
+				case klass
+					when Types::Just
+						klass.type <= Model
+					when Types::Union
+						klass.types.any?(&method(:is_reference?))
+					else
+						false
+				end
 			end
 			
 			# @overload delete()
