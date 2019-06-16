@@ -215,7 +215,7 @@ module ROM
 					
 					action :create, Types::Void, AuthorizeAttribute[],
 						:body! => MapModel do |body|
-						raise(ArgumentException.new('filter', 'Invalid path format!')) unless body.filter =~ MailsController::CollectionResource::RGX_PATH
+						raise(ArgumentException.new('filter', 'Invalid path format!')) unless body.filter =~ ApiConstants::RGX_PATH
 						raise(ArgumentException.new('filter', 'Filter cannot be root!')) if body.filter == '/'
 						
 						col = @db.users.find(identity.id).collection.find(@db, body.collection[1..body.collection.length - 1])
@@ -305,7 +305,7 @@ module ROM
 					:body! => MailboxUpdateModel do |body|
 					
 					if body.address != nil
-						raise(ArgumentException.new('body', 'Invalid address!')) unless body.address =~ ContactsResource::RGX_ADDRESS
+						raise(ArgumentException.new('body', 'Invalid address!')) unless body.address =~ ApiConstants::RGX_ADDRESS
 						@box.address = body.address
 					end
 					@box.name = body.name unless body.name == nil
@@ -343,8 +343,8 @@ module ROM
 			
 			action :create, Types::Void, AuthorizeAttribute[],
 				:body! => MailboxCreateModel do |body|
-				raise(ArgumentException.new('body', 'Invalid address!')) unless body.address =~ ContactsResource::RGX_ADDRESS
-				rgx = MailsController::CollectionResource::RGX_PATH
+				raise(ArgumentException.new('body', 'Invalid address!')) unless body.address =~ ApiConstants::RGX_ADDRESS
+				rgx = ApiConstants::RGX_PATH
 				body.maps.each do |i|
 					raise(ArgumentException.new('path', 'Invalid path format!')) unless i.path =~ rgx
 					raise(ArgumentException.new('filter', 'Invalid path format!')) unless i.filter =~ rgx

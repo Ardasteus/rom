@@ -5,8 +5,6 @@ module ROM
 		class ContactsResource < StaticResource
 			namespace :api, :v1, :contacts
 			
-			RGX_ADDRESS = /^(?'local'[!#$%&'*+\-\/=?^_`{|}~A-Z0-9][!#$%&'*+\-\/=?^_`{|}~A-Z0-9.]{0,63}(?<=[!#$%&'*+\-\/=?^_`{|}~A-Z0-9])|"[^"]+")@(?'host'[A-Z0-9][A-Z0-9\-.]{0,62}(?<=[A-Z0-9]))$/mi
-			
 			class ContactModel < Model
 				property! :id, Integer
 				property! :first_name, String
@@ -63,7 +61,7 @@ module ROM
 						action :update, Types::Void, AuthorizeAttribute[],
 							:body => AddressRequestModel do |body|
 							if body.address != nil
-								raise(ArgumentException.new('address', 'Address is in invalid format!')) unless body.address =~ ContactsResource::RGX_ADDRESS
+								raise(ArgumentException.new('address', 'Address is in invalid format!')) unless body.address =~ ApiConstants::RGX_ADDRESS
 								@adr.address = body.address
 							end
 							if body.type != nil
@@ -95,7 +93,7 @@ module ROM
 						raise(ArgumentException.new('type', 'Is nil!')) if body.type == nil
 						raise(ArgumentException.new('name', 'Is nil!')) if body.name == nil
 						
-						raise(ArgumentException.new('address', 'Address is in invalid format!')) unless body.address =~ ContactsResource::RGX_ADDRESS
+						raise(ArgumentException.new('address', 'Address is in invalid format!')) unless body.address =~ ApiConstants::RGX_ADDRESS
 						type = @db.address_types.find { |i| i.moniker == body.type.downcase }
 						raise(ArgumentException.new('type', 'Address type not found!')) if type == nil
 						name = body.name.downcase.strip

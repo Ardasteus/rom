@@ -15,8 +15,6 @@ module ROM
 					property! :path, String
 				end
 				
-				RGX_PATH = /^(\/|(\/[a-z0-9 _.\-]+)+)$/mi
-				
 				def initialize(db, root, col, path)
 					@db = db
 					@root = root
@@ -50,7 +48,7 @@ module ROM
 				
 				action :update, Types::Void, AuthorizeAttribute[],
 					:body! => UpdateModel do |body|
-					raise(ArgumentException.new('path', 'Invalid path!')) unless body.path =~ RGX_PATH
+					raise(ArgumentException.new('path', 'Invalid path!')) unless body.path =~ ApiConstants::RGX_PATH
 					raise(NotFoundException.new('Collection not found!')) unless @col.is_a?(Entity)
 					lag = nil
 					dest = @root
