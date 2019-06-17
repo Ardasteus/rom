@@ -32,6 +32,7 @@ interface State {
   open: boolean;
   newCollection: string;
   gettingNewCollection: boolean;
+  collectionData: Array<string>;
 }
 
 class Inbox extends React.Component<{}, State> {
@@ -46,8 +47,11 @@ class Inbox extends React.Component<{}, State> {
       open: false,
       newCollection: 'yikes',
       gettingNewCollection: false,
+      collectionData: []
     };
+
   }
+
 
   // Sets declarable addingMail true
   newMailWrite = () => {
@@ -108,8 +112,8 @@ class Inbox extends React.Component<{}, State> {
     axios.get('mails', config)
     .then(response => {
       console.log(response) 
-      data.push(response.data.items)
-      console.log(data)
+      this.state.collectionData.push(response.data.items)
+      console.log(this.state.collectionData)
       }
     )
     this.setState({gettingCollections: false});
@@ -125,8 +129,6 @@ class Inbox extends React.Component<{}, State> {
     axios.post('mails/' + this.state.newCollection, config)
     .then(response => {
       console.log(response) 
-      data.push(response.data.items)
-      console.log(data)
       }
     )
     this.setState({gettingNewCollection: false});
@@ -194,11 +196,11 @@ class Inbox extends React.Component<{}, State> {
         <Card className='inbox-menu'>
           <CardContent>
           <List>
-
-            <ListItem button>
-              <ListItemText />
+          {this.state.collectionData.map(cocdata => (
+            <ListItem key={cocdata} button>
+              <ListItemText primary={cocdata} />
             </ListItem>
-
+          ))}
             <ListItem button  onClick={this.handleOpenTrue}>
               <AddIcon />
           <ListItemText primary='add collection' />
