@@ -29,10 +29,21 @@ module ROM
 			@tab.columns.each do |col|
 				val = row[col.name]
 				keys = { col => val }
-				vals[col.mapping.name.to_sym] = (col.mapping.type <= Model ? LazyPromise.new(keys, @tab) { @lazy[col.name.to_sym].fetch(keys) } : val)
+				vals[col.mapping.name.to_sym] = ((val != nil and is_lazy?(col.mapping.type)) ? LazyPromise.new(keys, @tab) { @lazy[col.name.to_sym].fetch(keys) } : val)
 			end
 			
 			Entity.new(@tab, vals)
+		end
+		
+		def is_lazy?(klass)
+			case klass
+				when Types::Just
+					klass.type <= Model
+				when Types::Union
+					klass.types.any?(&method(:is_lazy?))
+				else
+					false
+			end
 		end
 	end
 end

@@ -6,7 +6,7 @@ module ROM
 		class MailboxUser < Model
 			property! :mailbox, Mailbox, KeyAttribute[]
 			property! :user, User, KeyAttribute[]
-			property! :can_write, Types::Boolean
+			property! :can_write, Integer, LengthAttribute[1]
 		end
 	end
 end

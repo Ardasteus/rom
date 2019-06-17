@@ -5,7 +5,6 @@ module ROM
 	module DB
 		# Master ROM DB context
 		class RomDbContext < DbContext
-			table :driver_types, TypeDriver
 			table :address_types, TypeAddress
 			table :protection_types, TypeProtection
 			table :media_types, TypeMedia
@@ -28,12 +27,13 @@ module ROM
 			table :mails, Mail
 			table :mail_participants, MailParticipant
 			table :mail_tags, MailTag
-			table :collection_mail, CollectionMail
+			table :collection_mails, CollectionMail
 			table :attachments, Attachment
 			table :media, Media
 			table :channels, Channel
 			table :channel_contacts, ChannelContact
 			table :messages, Message
+			table :passwords, Password
 
 			convention(:table) do |tab|
 				nm = tab.downcase

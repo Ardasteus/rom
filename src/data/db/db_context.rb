@@ -29,7 +29,7 @@ module ROM
 				lazy = {}
 				map = { :map => EntityMapper.new(t, lazy), :lazy => lazy }
 				col = TableCollection.new(@db, self, t, map[:map])
-				self.class.send(:define_method, tab.name.to_sym) do
+				self.define_singleton_method(tab.name.to_sym) do
 					col
 				end
 				@tabs[tab.name.to_sym] = col
@@ -62,7 +62,16 @@ module ROM
 		def close
 			@db.close
 		end
-
+		
+		def protect
+			begin
+				yield
+			rescue
+				@db.close
+				raise
+			end
+		end
+		
 		# @overload self.convention(nm, args)
 		# 	Defines a naming convention
 		# 	@param [Symbol] nm Name of convention
@@ -259,24 +268,38 @@ module ROM
 				e.entity_model.class.properties.each do |prop|
 					k = prop.name.to_sym
 					changed = changes.has_key?(k)
-					v = e[k]
+					v = changes[k]
 					col = @tab.columns.find { |i| i.mapping.name.to_s == k.to_s }
-					if v.is_a?(Entity)
-						if full or (deep and (changed or v.entity_changed?))
-							raise('Recursive update required!') if history.include?(v)
-							tgt = col.reference.target
-							sym = tgt.mapping.name.to_sym
-							old = v[sym]
-							@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if v.entity_changed?
-							new = v[sym]
-							with[col.name] = Queries::ConstantValue.new(new) unless new == old
-						end
-					elsif v.is_a?(Model)
-						if full or deep
-							raise('Recursive insert required!') if history.include?(v)
-							tgt = col.reference.target
-							v = @ctx[tgt.table.table.name].add_recursive(v, deep, full, e, *history)
-							with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+					if is_reference?(col.mapping.type)
+						if v != nil
+							next unless (full or deep)
+							
+							if v.is_a?(Entity)
+								raise('Recursive update required!') if history.include?(v)
+								tgt = col.reference.target
+								@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if full or (deep and v.entity_changed?)
+								with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+							elsif not v.is_a?(Fake)
+								raise('Recursive insert required!') if history.include?(v)
+								tgt = col.reference.target
+								v = @ctx[tgt.table.table.name].add_recursive(v, deep, full, e, *history)
+								with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+							end
+						else
+							if changed
+								with[col.name] = Queries::ConstantValue.new(v)
+							else
+								v = e[k]
+								next if v == nil
+								
+								changed = v.entity_changed?
+								if full or (deep and changed)
+									raise('Recursive update required!') if history.include?(v)
+									tgt = col.reference.target
+									@ctx[tgt.table.table.name].update_recursive(v, deep, e, *history) if (full or changed)
+									with[col.name] = Queries::ConstantValue.new(v[tgt.mapping.name.to_sym])
+								end
+							end
 						end
 					elsif changed
 						with[col.name] = Queries::ConstantValue.new(v)
@@ -284,6 +307,17 @@ module ROM
 				end
 				
 				@db.execute(@db.driver.update(@tab, get_matcher(e), with)) if with.size > 0
+			end
+			
+			def is_reference?(klass)
+				case klass
+					when Types::Just
+						klass.type <= Model
+					when Types::Union
+						klass.types.any?(&method(:is_reference?))
+					else
+						false
+				end
 			end
 			
 			# @overload delete()
@@ -298,10 +332,10 @@ module ROM
 				raise('Block cannot be used when entity was given!') if e != nil and block_given?
 				if e == nil
 					raise('Matching function expected!') unless block_given?
-					raise('Only entities may be deleted!') unless e.is_a?(Entity)
 					where = yield(@tab.double)
-					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					raise('Block must result in expression!') unless where.is_a?(Queries::QueryExpression)
 				else
+					raise('Only entities may be deleted!') unless e.is_a?(Entity)
 					where = get_matcher(e)
 				end
 				
@@ -345,6 +379,14 @@ module ROM
 				expr = yield(@tab.double)
 				raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
 				CollectQuery.new(@db, @tab, expr)
+			end
+			
+			def drop(n)
+				LimitedQuery.new(@db, @tab, @map, nil, n)
+			end
+			
+			def take(n)
+				LimitedQuery.new(@db, @tab, @map, n, nil)
 			end
 			
 			# @overload find()
@@ -415,6 +457,24 @@ module ROM
 				EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :desc)])
 			end
 			
+			def count
+				expr = nil
+				if block_given?
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				end
+				@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }))
+			end
+			
+			def any?
+				expr = nil
+				if block_given?
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+				end
+				@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, 1)) == 1
+			end
+			
 			# Enumerates all entities
 			# @yield [e] Block to execute for each entity
 			# @yieldparam [Entity] e Fetched entity
@@ -425,7 +485,97 @@ module ROM
 				end
 			end
 			
-			private :add_recursive, :update_recursive, :get_matcher
+			private :get_matcher
+			
+			class LimitedQuery
+				# Instantiates the {ROM::DbContext::TableCollection::CollectQuery} class
+				# @param [ROM::DbConnection] db DB connection handle
+				# @param [ROM::DbTable] tab Table to query from
+				# @param [Integer, nil] limit Maximal number of results
+				# @param [Integer, nil] offset Number of results skipped in the result set
+				def initialize(db, tab, map, limit = nil, offset = nil)
+					@db = db
+					@tab = tab
+					@map = map
+					@limit = limit
+					@offset = offset
+				end
+				
+				# Skips the given number of results
+				# @param [Integer] n Number of results to skip
+				# @return [ROM::DbContext::TableCollection::LimitedQuery] Offset query
+				def drop(n)
+					raise('Offset already set!') if @offset != nil
+					self.class.new(@db, @tab, @map, @limit, n)
+				end
+				
+				# Limits the number of results
+				# @param [Integer] n Maximal number of returned results
+				# @return [ROM::DbContext::TableCollection::LimitedQuery] Limited query
+				def take(n)
+					raise('Limit already set!') if @limit != nil
+					self.class.new(@db, @tab, @map, n, @offset)
+				end
+				
+				# Filters only values that match given expression
+				# @yield [v] Filter builder function
+				# @yieldparam [Object] v Reduced value to filter
+				# @yieldreturn [ROM::Queries::QueryExpression] Filtering expression
+				# @return [ROM::DbContext::TableCollection::SelectQuery] Filtered query
+				def select
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					SelectQuery.new(@db, @tab, @map, expr, [], @limit, @offset)
+				end
+				
+				def collect
+					expr = yield(@tab.double)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					CollectQuery.new(@db, @tab, expr, nil, [], @limit, @offset)
+				end
+				
+				# Sorts (in ascending order) by a value
+				# @return [ROM::DbContext::TableCollection::EntitySortQuery] Sorted query
+				def sort_by
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :asc)], nil, @limit, @offset)
+				end
+				
+				# Sorts (in descending order) by a value
+				# @return [ROM::DbContext::TableCollection::EntitySortQuery] Sorted query
+				def sort_by_desc
+					expr = yield(@expr)
+					raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					EntitySortQuery.new(@db, @tab, @map, [Queries::Order.new(expr, :desc)], nil, @limit, @offset)
+				end
+				
+				# Executes the query
+				# @return [ROM::DbResults] Query result set
+				def to_query
+					@db.driver.select(@tab, nil, [], nil, @limit, @offset)
+				end
+				
+				# Enumerates through the query results
+				# @yield [v] Block of enumeration
+				# @yieldparam [Object, nil] v Value of returned result set
+				def each
+					@db.query(to_query).each do |row|
+						yield(@map.map(row))
+					end
+				end
+				
+				# Queries the results set as an array
+				# @return [Array<Entity>] Returned entities
+				def to_a
+					ret = []
+					@db.query(to_query).each do |row|
+						ret << @map.map(row)
+					end
+					
+					ret
+				end
+			end
 			
 			# Represents a reduced query
 			class CollectQuery
@@ -450,7 +600,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::CollectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, @limit, n)
 				end
@@ -461,6 +611,16 @@ module ROM
 				def take(n)
 					raise('Limit already set!') if @limit != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, n, @offset)
+				end
+				
+				def count
+					expr = nil
+					if block_given?
+						expr = yield(@tab.double)
+						raise('Block must result in expression!') unless expr.is_a?(Queries::QueryExpression)
+					end
+					expr = @where.and(expr) unless @where == nil
+					@db.scalar(@db.driver.select(@tab, expr, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, @limit, @offset))
 				end
 				
 				# Filters only values that match given expression
@@ -537,7 +697,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::SelectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @map, @where, @ord, @limit, n)
 				end
@@ -548,6 +708,10 @@ module ROM
 				def take(n)
 					raise('Limit already set!') if @limit != nil
 					self.class.new(@db, @tab, @map, @where, @ord, n, @offset)
+				end
+				
+				def count
+					@db.scalar(@db.driver.select(@tab, @where, nil, { :_ => Queries::FunctionExpression.new(Queries::FunctionExpression::COUNT) }, @limit, @offset))
 				end
 				
 				# Reduces each entity into a single scalar value
@@ -622,7 +786,7 @@ module ROM
 				# Skips the given number of results
 				# @param [Integer] n Number of results to skip
 				# @return [ROM::DbContext::TableCollection::SelectQuery] Offset query
-				def skip(n)
+				def drop(n)
 					raise('Offset already set!') if @offset != nil
 					self.class.new(@db, @tab, @expr, @where, @ord, @limit, n)
 				end

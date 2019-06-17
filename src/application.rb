@@ -14,30 +14,12 @@ module ROM
 			raise("Data directory '#{data}' doesn't exist!") unless Dir.exist?(data)
 			@data = File.expand_path(data)
 			@debug = true # (opt[:debug] or false)
-			@debug = (opt[:debug] or false)
 			@itc = Interconnect.new
 			@itc.register(LogServer)
 			@log = @itc.fetch(LogServer)
 			@log << TextLogger.new(ShortFormatter.new, STDOUT)
-			@itc.register(JobServer)
-			@itc.register(ApiGateway)
-			@itc.register(Filesystem)
-			@itc.register(DbServer)
-			@itc.register(DbConfig)
-			@itc.register(MySql::MySqlDriver)
-			@itc.register(Sqlite::SqliteDriver)
-			@itc.register(RomDbHook)
-			@itc.register(Authentication::AuthenticationService)
-			@itc.register(Authentication::AuthenticationConfig)
 			
-			@itc.load(ROM::API)
-			@itc.load(ROM::DataSerializers)
-			@itc.load(ROM::HTTP)
-			@itc.load(ROM::HTTP::Methods)
-			@itc.load(ROM::Authentication::Factories)
-			@itc.load(ROM::Authentication::Providers)
-			
-			# TODO: Add all interconnect imports
+			@itc.load(ROM)
 		end
 		
 		# Starts the application

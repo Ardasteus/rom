@@ -4,6 +4,7 @@ module ROM
 	# Component of a DB context
 	class DbHook
 		include Component
+		modifiers :abstract
 		
 		# Gets the name of a context
 		# @return [String] Name of context

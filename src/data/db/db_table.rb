@@ -61,9 +61,16 @@ module ROM
 			@cols << col
 			
 			val = Queries::ColumnValue.new(col)
-			@dub.define_singleton_method map.name.to_sym do
-			  val
+			if tp.primitive <= String
+				val.define_singleton_method :include? do |other|
+					raise('Expected pattern!') unless other.is_a?(String)
+					Queries::LikeExpression.new(val, :any_string, other, :any_string)
+				end
+				val.define_singleton_method(:upcase) { Queries::FunctionExpression.new(Queries::FunctionExpression::UPPER, val) }
+				val.define_singleton_method(:downcase) { Queries::FunctionExpression.new(Queries::FunctionExpression::LOWER, val) }
 			end
+			@dub.define_singleton_method(map.name.to_sym) { val }
+			@dub.define_singleton_method(:to_s) { "TableDouble:#{nm}" }
 
 			col
 		end

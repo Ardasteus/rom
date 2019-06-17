@@ -1,60 +1,141 @@
 module ROM
-  module HTTP
-    module Methods
-
-      # Base class for all HTTP method handlers
-      class HTTPMethod
-        include Component
-
-        # Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
-        # @param [ROM::Interconnect] itc Interconnect
-        def initialize(itc)
-          @itc = itc
-					@gateway = itc.fetch(ApiGateway)
-        end
-
-        # Resolves the given http request and formats the content with the given input/output serializers
-        # @param [ROM::HTTP::HTTPRequest] http_request HTTP request to resolve
-        # @param [ROM::DataSerializers::Serializer] input_serializer Input serializer, based on the Content-Type header
-        # @param [ROM::DataSerializers::Serializer] output_serializer Output serializer, based on the Accepts header, defaults to {ROM::DataSerializers::JSONSerializer}
-        def resolve(http_request, input_serializer, output_serializer)
-        end
-
-        # Checks if the given method is corresponding to the method of [HTTPMethod] class
-        # @return [Boolean]
-        def is_name(method_name)
-          @name == method_name
-        end
-
-        # Creates an array of symbols from the request path
-        # @param [String] input Path to format
-        def format_path(input)
-          path = input
-          path[0] = '' if path[0] == '/'
-          path = path.split('/')
-          
-					path.map(&:to_sym)
-        end
-
-        # Runs the given api plan, invoking it with arguments depending on the type of the request's content
-        # @param [ROM::ApiPlan] plan Plan to run
-        # @param [ROM:HTTP:HTTPRequest] request HTTP Request
-        # @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
-        def run_plan(plan, request, serializer, ctx = ApiContext.new(@itc))
-          args = []
-          arg = plan.signature[0]
-          if arg != nil
-            if arg[:type] <= IO
-              args << request.stream
-            elsif arg[:type] <= Model
-              args << arg[:type].type.from_object(serializer.to_object(request.stream.read(request[:content_length].to_i)))
-            elsif arg[:required]
-              raise("Unknown input argument type !")
-            end
-          end
-          plan.run(ctx, *args)
-        end
-      end
-    end
-  end
+	module HTTP
+		# Base class for all HTTP method handlers
+		class HTTPMethod
+			include Component
+			modifiers :abstract
+			
+			def input?
+				@input
+			end
+			
+			def output?
+				@output
+			end
+			
+			# Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
+			# @param [ROM::Interconnect] itc Interconnect
+			def initialize(itc, name, i, o)
+				@itc = itc
+				@name = name.upcase
+				@input = i
+				@output = o
+				@gateway = itc.pin(ApiGateway)
+				@handlers = itc.view(HTTPHeaderHandler)
+			end
+			
+			# Resolves the given http request and formats the content with the given input/output serializers
+			# @param [ROM::HTTP::HTTPRequest] http_request HTTP request to resolve
+			# @param [ROM::DataSerializers::Serializer] input_serializer Input serializer, based on the Content-Type header
+			# @param [ROM::DataSerializers::Serializer] output_serializer Output serializer, based on the Accepts header, defaults to {ROM::DataSerializers::JSONSerializer}
+			def resolve(http_request, input_serializer, output_serializer)
+			end
+			
+			def get_plan(*paths)
+				f = nil
+				paths.each do |path|
+					begin
+						plan = @gateway.plan(*path)
+						raise('API call plan returns a resource!') if plan.signature.return_type <= Resource
+						return plan
+					rescue Exception => ex
+						f = ex if f == nil
+					end
+				end
+				
+				raise(PlanningException.new(paths.first))
+			end
+			
+			# Checks if the given method is corresponding to the method of [HTTPMethod] class
+			# @return [Boolean]
+			def is_method?(mtd)
+				@name == mtd.upcase
+			end
+			
+			# Creates an array of symbols from the request path
+			# @param [String] input Path to format
+			def format_path(input)
+				path = input
+				path[0] = '' if path[0] == '/'
+				path = path.split('/')
+				
+				path.map(&:to_sym)
+			end
+			
+			# Runs the given api plan, invoking it with arguments depending on the type of the request's content
+			# @param [ROM::ApiPlan] plan Plan to run
+			# @param [ROM:HTTP:HTTPRequest] request HTTP Request
+			# @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
+			def run_plan(plan, request, serializer)
+				ctx = ApiContext.new(@itc)
+				request.headers.each_pair do |k, v|
+					@handlers.select { |i| i.accepts?(k) }.each do |h|
+						h.handle(k, v, ctx)
+					end
+				end
+				
+				if plan.attribute?(AuthorizeAttribute)
+					raise(UnauthenticatedException.new) if ctx.identity == nil
+					plan.attribute(AuthorizeAttribute).each do |att|
+						att.judgements.each do |jdg|
+							raise(UnauthorizedException.new) unless jdg.judge(ctx.identity)
+						end
+					end
+				end
+				args = []
+				body = (plan.signature[0] != nil and plan.signature[0][:type] <= Model) ? plan.signature[0] : nil
+				if body != nil
+					type = body[:type]
+					if type <= IO
+						args << request.stream
+					elsif type <= Model
+						length = request[:content_length].to_i
+						args << if length == 0
+							raise(ArgumentException.new(body[:name], 'Body expected!')) unless type <= NilClass
+							args << nil
+						else
+							buffer = StringIO.new
+							bytes = IO.copy_stream(request.stream, buffer, request[:content_length].to_i)
+							raise('Failed to read body!') if bytes != length
+							buffer.pos = 0
+							type.type.from_object(serializer.to_object(buffer))
+						end
+					elsif body[:required]
+						raise("Unknown API action input argument type '#{type}'!")
+					end
+				end
+				plan.signature.each do |arg|
+					next if arg == body
+					
+					val = request.query[arg[:name].to_s]
+					raise(ArgumentException.new(arg[:name], 'Argument required!')) if arg[:required] and val == nil
+					args << (val == nil ? arg[:default] : arg_val(arg[:name], arg[:type], val))
+				end
+				unk = request.query.keys.find { |k| plan.signature[k.to_sym] == nil }
+				raise(ArgumentException.new(unk, 'Unknown action argument!')) if unk != nil
+				
+				plan.run(ctx, *args)
+			end
+			
+			def arg_val(name, type, val)
+				if type <= String
+					val
+				elsif type <= Integer
+					return val.to_i if val =~ /(\+|\-)?\d+/
+					raise(ArgumentException.new(name, "Cannot cast '#{val}' as integer!"))
+				elsif type <= Types::Boolean
+					case val.downcase.strip
+						when 'true', '1'
+							true
+						when 'false', '0'
+							false
+						else
+							raise(ArgumentException.new(name, "Cannot cast '#{val}' as boolean!"))
+					end
+				else
+					raise(ArgumentException.new(name, "Argument is of unsupported type!: #{type.name}"))
+				end
+			end
+		end
+	end
 end

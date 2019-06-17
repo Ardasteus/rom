@@ -26,7 +26,7 @@ module ROM
 		def index(rsc)
 			mod = rsc.class.path.split(Resource::PATH_SEPARATOR)
 			rsc.class.actions.each do |act|
-				@root.add(act, *mod)
+				@root.add(act.bind(rsc), *mod)
 			end
 		end
 		
@@ -50,7 +50,7 @@ module ROM
 		# @param [String] path Path to plan
 		# @return [ROM::ApiGateway::ApiPlan] Plan of the API call
 		def plan(*path)
-			ret  = ApiPlan.new
+			ret = ApiPlan.new
 			last = path.collect(&:to_s).reduce(@root) do |last, part|
 				n = nil
 				case last
@@ -69,7 +69,8 @@ module ROM
 				next n
 			end
 			raise("Path doesn't specify an action!") if last.is_a?(ResourceModule)
-			return ret
+			
+			ret
 		end
 		
 		private :index
@@ -79,6 +80,7 @@ module ROM
 			# Instantiates the {ROM::ApiGateway::ApiPlan} class
 			def initialize
 				@plan = []
+				@sig = nil
 			end
 			
 			# Gets the length of the call chain
@@ -90,30 +92,79 @@ module ROM
 			# Gets the signature of call chain
 			# @return [ROM::ActionSignature] Signature of call chain
 			def signature
-				f = @plan.first.signature
-				args = {}
-				f.arguments.each do |i|
-					args[i] = f[i]
-				end
-				ActionSignature.new(@plan.last.signature.return_type, args)
+				rebuild if @sig == nil
+				
+				@sig
 			end
 			
 			# Executes the API call plan
 			# @param [Object] args Arguments to invoke the API plan with
 			# @return [Object, nil] Result of API call
 			def run(ctx, *args)
-				raise('Plan signature not met!') unless signature.accepts(*args)
-				@plan.reduce(nil) do |last, act|
-					if last == nil
-						next act.invoke(ctx, nil, *args)
+				raise(SignatureException.new(signature, args)) unless signature.accepts(*args)
+				tail = @plan.last
+				@plan.zip(@slices).reduce(nil) do |last, pair|
+					act = pair[0]
+					slice = pair[1]
+					arg = if slice[1] == 0
+						[]
+					else
+						args[slice[0], slice[0] + slice[1]]
 					end
-					next last.class.actions.first {|i| i.name == act.name}.invoke(ctx, last)
+					if last == nil
+						act.invoke(ctx, nil, *arg)
+					else
+						ret = nil
+						begin
+							ret = act.invoke(ctx, last, *arg)
+						rescue
+							last.close(true)
+							raise
+						end
+						last.close(tail == act)
+						
+						ret
+					end
 				end
+			end
+			
+			def rebuild
+				sig = []
+				slices = []
+				@plan.each do |act|
+					args = act.signature.arguments.collect { |i| [i, act.signature[i]] }.to_h
+					if args.length == 0
+						slices << [0, 0]
+						next
+					end
+					
+					start = nil
+					length = 0
+					args.each_pair do |k, v|
+						idx = sig.index { |i| i[:name] == k }
+						other = (idx == nil ? nil : sig[idx])
+						if start == nil
+							start = (idx == nil ? sig.length : idx)
+						elsif sig.length > start + length
+							raise(Exception.new('Action signatures are incompatible!: Disjoint')) unless other == sig[start + length]
+						end
+						raise(Exception.new('Action signatures are incompatible!: Type mismatch')) if other != nil and v[:type] <= other[:type]
+						sig << v if other == nil
+						
+						length += 1
+					end
+					
+					slices << [start, length]
+				end
+				
+				@slices = slices
+				@sig = ActionSignature.new(@plan.last.signature.return_type, sig.collect { |i| [i[:name], i] }.to_h)
 			end
 			
 			# Adds a resource action call to the plan
 			# @param [ROM::ResourceAction] act Action to add
 			def <<(act)
+				@sig = nil
 				@plan << act
 			end
 			
@@ -122,6 +173,14 @@ module ROM
 			# @return [ROM::ResourceAction] Requested action; nil if not found
 			def [](idx)
 				@plan[idx]
+			end
+			
+			def attribute(t)
+				@plan.collect { |i| i.attribute(t) }.select { |i| i != nil }
+			end
+			
+			def attribute?(t)
+				@plan.any? { |i| i.attribute?(t) }
 			end
 		end
 		
@@ -133,7 +192,7 @@ module ROM
 			def initialize(act, *prepend)
 				@act = act
 				@pre = prepend
-				super(@act.name, @act.resource, @act.signature, @act.attributes) do |*args|
+				super(@act.name, @act.parent, @act.signature, @act.attributes) do |*args|
 					act.invoke(context, nil, *prepend, *args)
 				end
 			end
@@ -163,11 +222,11 @@ module ROM
 			# @param [String] name Name of module
 			# @param [ROM::ApiGateway::ResourceModule, nil] parent Parent module
 			def initialize(name, parent = nil)
-				@name    = name
-				@parent  = parent
+				@name = name
+				@parent = parent
 				@actions = {}
 				@modules = {}
-				@def     = nil
+				@def = nil
 			end
 			
 			# Adds a resource action to the module

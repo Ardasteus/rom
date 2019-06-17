@@ -4,10 +4,11 @@ module ROM
 	# A generic driver base for SQL-based DBs
 	# @abstract
 	class SqlDriver < DbDriver
+		modifiers :abstract
+		
 		# Default types map
 		TYPES = {
-			String => 'NVARCHAR',
-			Types::Boolean => 'TINYINT'
+			String => 'NVARCHAR'
 		}
 		# Default map of int types based on their sizes
 		INTS = {
@@ -56,7 +57,7 @@ module ROM
 				qry += " WHERE #{expression(where, args)}"
 			end
 			
-			if ord.size > 0
+			if ord != nil and ord.size > 0
 				qry += " ORDER BY "
 				qry += ord.collect { |o|
 					res = expression(o.expression, args)
@@ -148,6 +149,26 @@ module ROM
 					"#{expr.function.name}(#{expr.arguments.collect { |i| expression(i, args) }.join(', ')})"
 				when Queries::UnaryOperator
 					"#{expr.operator.name}#{(expr.operator.name.length > 1 ? ' ' : '')}(#{expression(expr.operand, args)})"
+				when Queries::LikeExpression
+					like = ''
+					expr.segments.each do |seg|
+						case seg[:type]
+							when :string
+								seg[:value].chars.collect(&:downcase).each do |c|
+									case c
+										when "'", '"', '%', '*', '\\'
+											like += "\\#{c}"
+										else
+										like += c
+									end
+								end
+							when :any_char
+								like += '_'
+							when :any_string
+								like += '%'
+						end
+					end
+					"LOWER(#{expression(expr.expression, args)}) LIKE '#{like}'"
 				else
 					raise('Expresion type not supported!')
 			end
