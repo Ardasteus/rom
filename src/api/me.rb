@@ -28,6 +28,20 @@ module ROM
 				ContactsResource::ContactResource.new(db, db.protect { db.users.find(identity.id).contact }, true)
 			end
 			
+			action :has_password, Types::Boolean[], AuthorizeAttribute[] do
+				has = false
+				
+				interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
+					user = ctx.users.find(identity.id)
+					ctx.logins.select { |i| i.user == user }.each do |login|
+						has = ctx.passwords.any? { |i| i.login == login }
+						break if has
+					end
+				end
+				
+				has
+			end
+			
 			action :password, Types::Void, AuthorizeAttribute[], :body! => PasswordModel do |body|
 				one = false
 				
