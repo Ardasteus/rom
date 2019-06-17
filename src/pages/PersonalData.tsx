@@ -79,8 +79,11 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({ open: true });
   }
 
-  handleOpenFalse = () => {
+  handleOpenFalseConfirm = () => {
     this.setState({gettingPasswordData: true});
+    this.setState({ open: false });
+  }
+  handleOpenFalse = () => {
     this.setState({ open: false });
   }
 
@@ -116,8 +119,11 @@ class PersonalData extends React.Component<Props, State> {
           </DialogContent>
           <DialogActions>
           {this.getPasswordData()}
-            <Button onClick={this.handleOpenFalse} color='primary' autoFocus>
+            <Button onClick={this.handleOpenFalseConfirm} color='primary' autoFocus>
               Ok
+            </Button>
+            <Button onClick={this.handleOpenFalse} color='primary' autoFocus>
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>

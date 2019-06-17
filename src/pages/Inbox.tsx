@@ -7,7 +7,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardContent, CardActions, CardHeader, Paper, TextField } from '@material-ui/core';
+import { Card, CardContent, CardActions, CardHeader, Paper, TextField, DialogActions, DialogContent, Dialog, DialogTitle } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
@@ -29,6 +29,9 @@ interface State {
   sentMail: boolean;
   text: string;
   gettingCollections: boolean;
+  open: boolean;
+  newCollection: string;
+  gettingNewCollection: boolean;
 }
 
 class Inbox extends React.Component<{}, State> {
@@ -40,6 +43,9 @@ class Inbox extends React.Component<{}, State> {
       sentMail: false,
       text: 'TODO: Mails',
       gettingCollections: true,
+      open: false,
+      newCollection: 'yikes',
+      gettingNewCollection: false,
     };
   }
 
@@ -109,10 +115,71 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingCollections: false});
     }   
   }
+  newCollections = () => {
+    if(this.state.gettingNewCollection){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token}
+  };  
+    axios.post('mails/' + this.state.newCollection, config)
+    .then(response => {
+      console.log(response) 
+      data.push(response.data.items)
+      console.log(data)
+      }
+    )
+    this.setState({gettingNewCollection: false});
+    }   
+  }
+  handleOpenTrue = () => {
+    this.setState({ open: true });
+  }
+
+  handleOpenFalseConfirm = () => {
+    this.setState({gettingNewCollection: true});
+    this.setState({ open: false });
+  }
+  handleOpenFalse = () => {
+    this.setState({ open: false });
+  }
+
+//  handleChange = name => event => {
+//    this.setState({
+//      [name]: event.target.value,
+//    });
+//  }
 
   render() {
     return (
-      <div>      
+      <div>
+        {this.newCollections()}
+        <Dialog
+          open={this.state.open}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>{'Create a collection'}</DialogTitle>
+          <DialogContent>
+          <TextField 
+              variant='outlined'
+              color='secondary'
+              id='collection'
+              label='New Collection'
+              margin='normal'
+            />
+
+          </DialogContent>
+          <DialogActions>
+
+            <Button onClick={this.handleOpenFalseConfirm} color='primary' autoFocus>
+              Ok
+            </Button>
+            <Button onClick={this.handleOpenFalse} color='primary' autoFocus>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>      
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            {emails.map(email => (
@@ -132,7 +199,7 @@ class Inbox extends React.Component<{}, State> {
               <ListItemText />
             </ListItem>
 
-            <ListItem button >
+            <ListItem button  onClick={this.handleOpenTrue}>
               <AddIcon />
           <ListItemText primary='add collection' />
         </ListItem>
