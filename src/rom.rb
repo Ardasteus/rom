@@ -143,7 +143,6 @@ module ROM
 				'type_protection' => 'ROM::DB::TypeProtection',
 				'connection' => 'ROM::DB::Connection',
 				'mailbox' => 'ROM::DB::Mailbox',
-				'mailbox_user' => 'ROM::DB::MailboxUser',
 				'map' => 'ROM::DB::Map',
 				'tag' => 'ROM::DB::Tag',
 				'participant' => 'ROM::DB::Participant',

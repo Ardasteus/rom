@@ -64,6 +64,8 @@ module ROM
 				property! :address, String
 				property! :author, String
 				property! :maps, Types::Array[MapSimpleModel]
+				property! :drafts, String
+				property! :outbox, String
 				property :imap, ConnectionModel
 				property :smtp, ConnectionModel
 			end
@@ -81,6 +83,8 @@ module ROM
 					property! :author, String
 					property! :writable, Types::Boolean[]
 					property! :owner, PersonModel
+					property! :drafts, String
+					property! :outbox, String
 					property :imap, ConnectionModel
 					property :smtp, ConnectionModel
 				end
@@ -89,85 +93,11 @@ module ROM
 					property :name, String
 					property :address, String
 					property :author, String
+					property :drafts, String
+					property :outbox, String
 					property :imap, ConnectionModel
 					property :smtp, ConnectionModel
 				end
-				
-				# class SharesResource < Resource
-				# 	class ShareModel < Model
-				# 		property! :user, PersonModel
-				# 		property! :can_write, Types::Boolean[]
-				# 	end
-				#
-				# 	class ShareCreateModel < Model
-				# 		property! :user, Integer
-				# 		property :can_write, Types::Boolean[], false
-				# 	end
-				#
-				# 	def initialize(db, box)
-				# 		@db = db
-				# 		@box = box
-				# 	end
-				#
-				# 	def close(tail)
-				# 		@db.close if tail
-				# 	end
-				#
-				# 	class ShareResource < Resource
-				# 		class ShareUpdateModel < Model
-				# 			property! :can_write, Types::Boolean[]
-				# 		end
-				#
-				# 		def initialize(db, share)
-				# 			@db = db
-				# 			@share = share
-				# 		end
-				#
-				# 		def close(tail)
-				# 			@db.close if tail
-				# 		end
-				#
-				# 		action :delete, Types::Void, AuthorizeAttribute[] do
-				# 			@db.mailbox_users.delete(@share)
-				# 		end
-				#
-				# 		action :update, Types::Void, AuthorizeAttribute[],
-				# 		:body! => ShareUpdateModel do |body|
-				# 			@share.can_write = (body.can_write ? 1 : 0)
-				# 			@db.mailbox_users.update(@share)
-				# 		end
-				# 	end
-				#
-				# 	action :create, Types::Void, AuthorizeAttribute[],
-				# 		:body! => ShareCreateModel do |body|
-				# 		user = @db.users.find(body.user)
-				# 		raise(NotFoundException.new('User not found!')) if user == nil
-				# 		raise(InvalidOperationException.new('User already set!')) if @db.mailbox_users.any? { |i| (i.mailbox == @box).and(i.user == user) }
-				#
-				# 		@db.mailbox_users << DB::MailboxUser.new(:mailbox => @box, :user => user, :can_write => (body.can_write ? 1 : 0))
-				# 	end
-				#
-				# 	action :fetch, DataPage, AuthorizeAttribute[] do
-				# 		ret = []
-				# 		@db.mailbox_users.select { |i| i.mailbox == @box }.each do |share|
-				# 			contact = share.user.contact
-				# 			ret << ShareModel.new(:user => PersonModel.new(:user => share.user.id, :contact => contact.id, :name => contact.full_name), :can_write => share.can_write == 1)
-				# 		end
-				#
-				# 		DataPage.new(:items => ret, :total => ret.length)
-				# 	end
-				#
-				# 	action :select, ShareResource, AuthorizeAttribute[], DefaultAction[] do |id|
-				# 		raise(ArgumentException.new('id', 'Id must be positive integer!')) unless id =~ /^\d+$/
-				# 		id = id.to_i
-				# 		user = @db.users.find(id)
-				# 		raise(NotFoundException.new('User not found!')) if user == nil
-				# 		share = @db.mailbox_users.find(:mailbox => @box, :user => user)
-				# 		raise(NotFoundException.new('Share not found!')) if share == nil
-				#
-				# 		ShareResource.new(@db, share)
-				# 	end
-				# end
 				
 				class MapsResource < Resource
 					class MapModel < Model
@@ -283,11 +213,6 @@ module ROM
 				end
 				
 				action :fetch, MailboxModel, AuthorizeAttribute[] do
-					# writable = @box.owner == @user
-					# unless writable
-					# 	share = @db.mailbox_users.find { |i| (i.mailbox == @box).and(i.user == @user) }
-					# 	writable = (share.can_write == 1) if share != nil
-					# end
 					owner = PersonModel.new(:user => @box.owner.id, :contact => @box.owner.contact.id, :name => @box.owner.contact.full_name)
 					
 					MailboxModel.new(
@@ -296,6 +221,8 @@ module ROM
 						:author => @box.author,
 						:writable => true,
 						:owner => owner,
+						:drafts => @box.drafts.full_path,
+						:outbox => @box.outbox.full_path,
 						:imap => (@box.imap != nil ? ConnectionModel.from_db(@box.imap) : nil),
 						:smtp => (@box.smtp != nil ? ConnectionModel.from_db(@box.smtp) : nil)
 					)
@@ -312,6 +239,18 @@ module ROM
 					@box.author = body.author unless body.author == nil
 					@box.imap = (@box.imap == nil ? body.imap.to_db(@db) : body.imap.to_entity(@db, @box.imap)) if body.imap != nil
 					@box.smtp = (@box.smtp == nil ? body.smtp.to_db(@db) : body.smtp.to_entity(@db, @box.smtp)) if body.smtp != nil
+					if body.drafts != nil
+						raise(ArgumentException.new('drafts', 'Invalid path!')) unless body.drafts =~ ApiConstants::RGX_PATH
+						col = @user.collection.find(@db, body.drafts[1..body.drafts.length - 1])
+						raise(NotFoundException.new('Draft collection not found!')) if col == nil
+						@box.drafts = col
+					end
+					if body.outbox != nil
+						raise(ArgumentException.new('outbox', 'Invalid path!')) unless body.outbox =~ ApiConstants::RGX_PATH
+						col = @user.collection.find(@db, body.outbox[1..body.outbox.length - 1])
+						raise(NotFoundException.new('Outbox collection not found!')) if col == nil
+						@box.outbox = col
+					end
 					
 					@db.mailboxes.update(@box)
 				end
@@ -333,21 +272,16 @@ module ROM
 					db = @db
 					ConnectionResource.new(@db, @box.smtp) { |smtp| box.smtp = smtp; db.mailboxes.update(box) }
 				end
-				
-				# action :shares, SharesResource, AuthorizeAttribute[] do
-				# 	raise(UnauthorizedException.new) unless @box.owner == @user
-				#
-				# 	SharesResource.new(@db, @box)
-				# end
 			end
 			
 			action :create, Types::Void, AuthorizeAttribute[],
 				:body! => MailboxCreateModel do |body|
 				raise(ArgumentException.new('body', 'Invalid address!')) unless body.address =~ ApiConstants::RGX_ADDRESS
-				rgx = ApiConstants::RGX_PATH
+				raise(ArgumentException.new('drafts', 'Invalid path!')) unless body.drafts =~ ApiConstants::RGX_PATH
+				raise(ArgumentException.new('outbox', 'Invalid path!')) unless body.outbox =~ ApiConstants::RGX_PATH
 				body.maps.each do |i|
-					raise(ArgumentException.new('path', 'Invalid path format!')) unless i.path =~ rgx
-					raise(ArgumentException.new('filter', 'Invalid path format!')) unless i.filter =~ rgx
+					raise(ArgumentException.new('path', 'Invalid path format!')) unless i.path =~ ApiConstants::RGX_PATH
+					raise(ArgumentException.new('filter', 'Invalid path format!')) unless i.filter =~ ApiConstants::RGX_PATH
 					raise(ArgumentException.new('filter', 'Filter cannot be root!')) if i.filter == '/'
 				end
 				interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
@@ -361,7 +295,12 @@ module ROM
 						maps << { :collection => col, :filter => m.filter }
 					end
 					
-					box = DB::Mailbox.new(:name => body.name, :author => body.author, :address => body.address, :owner => user)
+					drafts = user.collection.find(ctx, body.drafts[1..body.drafts.length - 1])
+					raise(NotFoundException.new('Drafts collection not found!')) if drafts == nil
+					outbox = user.collection.find(ctx, body.outbox[1..body.outbox.length - 1])
+					raise(NotFoundException.new('Outbox collection not found!')) if outbox == nil
+					
+					box = DB::Mailbox.new(:name => body.name, :author => body.author, :address => body.address, :owner => user, :outbox => outbox, :drafts => drafts)
 					box.imap = body.imap.to_db(ctx) if body.imap != nil
 					box.smtp = body.smtp.to_db(ctx) if body.smtp != nil
 					
@@ -377,10 +316,6 @@ module ROM
 					ctx.mailboxes.select { |i| i.owner == user }.each do |box|
 						ret << MailboxSmallModel.new(:id => box.id, :name => box.name, :address => box.address, :own => true, :writable => true)
 					end
-					# ctx.mailbox_users.select { |i| i.user == user }.each do |share|
-					# 	box = share.mailbox
-					# 	ret << MailboxSmallModel.new(:id => box.id, :name => box.name, :address => box.address, :own => false, :writable => share.can_write == 1)
-					# end
 				end
 				
 				DataPage.new(:items => ret, :total => ret.length)
@@ -395,7 +330,6 @@ module ROM
 				db.protect do
 					user = db.users.find(identity.id)
 					box = db.mailboxes.find { |i| (i.id == id).and(i.owner == user) }
-					# box = db.mailbox_users.find { |i| (i.mailbox == id).and(i.user == user) }&.mailbox if box == nil
 					raise(NotFoundException.new('Mailbox not found!')) if box == nil
 				end
 				

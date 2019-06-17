@@ -13,7 +13,7 @@ module ROM
 				CharsetNotFoundException => StatusCode::BAD_REQUEST,
 				UnauthorizedException => StatusCode::FORBIDDEN,
 				NotFoundException => StatusCode::NOT_FOUND,
-				InvalidOperationException => StatusCode::BAD_REQUEST,
+				InvalidOperationException => StatusCode::CONFLICT,
 				NotImplementedException => StatusCode::NOT_IMPLEMENTED
 			}
 			DEFAULT_ENCODING = Encoding::UTF_8

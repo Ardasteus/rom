@@ -12,7 +12,7 @@ module ROM
 				root = db.collections << DB::Collection.new(:name => '/')
 				contact = db.contacts << DB::Contact.new(:first_name => fn, :last_name => ln)
 				user = db.users << DB::User.new(:login => login, :collection => root, :contact => contact, :super => sa ? 1 : 0)
-				%w(inbox sent spam trash).each do |folder|
+				%w(inbox outbox sent drafts spam trash).each do |folder|
 					db.collections << DB::Collection.new(:name => folder, :collection => root)
 				end
 				

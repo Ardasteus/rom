@@ -15,11 +15,12 @@ module ROM
 					property! :path, String
 				end
 				
-				def initialize(db, root, col, path)
+				def initialize(db, root, col, path, validate = true)
 					@db = db
 					@root = root
 					@col = col
 					@path = path
+					@val = validate
 				end
 				
 				def name?
@@ -65,13 +66,19 @@ module ROM
 						raise(InvalidOperationException.new('Name already taken!')) if @db.collections.any? { |i| (i.collection == dest).and(i.name == @col.name) }
 						@col.collection = dest
 					end
-				
+					
 					@db.collections.update(@col)
 				end
 				
 				action :delete, Types::Void, AuthorizeAttribute[] do
-					raise(InvalidOperationException.new('Collection is root!')) if @path == ''
-					raise(NotFoundException.new('Collection not found!')) unless @col.is_a?(Entity)
+					if @val
+						raise(InvalidOperationException.new('Collection is root!')) if @path == ''
+						raise(NotFoundException.new('Collection not found!')) unless @col.is_a?(Entity)
+						
+						([@col] + @col.children(@db, true)).each do |col|
+							raise(InvalidOperationException.new('Collection is used by a mailbox!')) if @db.mailboxes.any? { |i| (i.outbox == col).or(i.drafts == col) }
+						end
+					end
 					
 					@db.maps.delete { |i| i.collection == @col }
 					@db.collection_mails.select { |i| i.collection == @col }.each do |join|
@@ -80,7 +87,7 @@ module ROM
 					end
 					@db.collection_mails.delete { |i| i.collection == @col }
 					@db.collections.select { |i| i.collection == @col }.each do |child|
-						CollectionResource.new(@db, @root, child, '_').delete
+						CollectionResource.new(@db, @root, child, '_', false).delete
 					end
 					@db.collections.delete(@col)
 				end

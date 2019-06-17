@@ -20,7 +20,6 @@ module ROM
 			table :contact_addresses, ContactAddress
 			table :connections, Connection
 			table :mailboxes, Mailbox
-			table :mailbox_users, MailboxUser
 			table :maps, Map
 			table :tags, Tag
 			table :participants, Participant
