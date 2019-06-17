@@ -29,6 +29,8 @@ module ROM
 			end
 			
 			action :password, Types::Void, AuthorizeAttribute[], :body! => PasswordModel do |body|
+				one = false
+				
 				interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
 					user = ctx.users.find(identity.id)
 					ctx.logins.select { |i| i.user == user }.each do |login|
@@ -40,8 +42,11 @@ module ROM
 						ctx.passwords.update(pwd)
 						login.generation += 1
 						ctx.logins.update(login)
+						one = true
 					end
 				end
+				
+				raise(NotFoundException.new('Password not found!')) unless one
 			end
 		end
 	end
