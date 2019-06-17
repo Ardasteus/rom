@@ -227,6 +227,11 @@ module ROM
 			'job_pool' => 'ROM::JobPool',
 			'job_server' => 'ROM::JobServer'
 		},
+		'imap' => {
+				'imap_job' => 'ROM::IMAP::IMAPJob',
+				'imap_mail' => 'ROM::IMAP::IMAPMail',
+				'imap_mail_data' => 'ROM::IMAP::IMAPMailData'
+		},
 		'authentication' => {
 				'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
 				'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
