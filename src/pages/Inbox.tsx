@@ -122,20 +122,21 @@ class Inbox extends React.Component<{}, State> {
             ))}
            </List>
         </Paper>
-        <SearchField
-         placeholder="Search..."
-         classNames="search-field"
-        />
         {this.showingMail()}
         {this.getCollections()} 
         <Card className='inbox-menu'>
           <CardContent>
           <List>
-          {data.map(collection => (
-            <ListItem key={collection} button>
-              <ListItemText primary={collection}/>
+
+            <ListItem button>
+              <ListItemText />
             </ListItem>
-              ))}
+
+            <ListItem button >
+              <AddIcon />
+          <ListItemText primary='add collection' />
+        </ListItem>
+
           </List>
           </CardContent>
         </Card>      

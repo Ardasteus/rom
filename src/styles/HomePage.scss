@@ -42,13 +42,15 @@
   position: fixed;
 }
 .inbox {
-  margin-left: 15%;
+  margin-left: 25%;
+  width: 500px;
   margin-top: 10%;
   height: 200px;
 }
 .inbox-menu {
   margin-right: 90%;
   margin-top: -10.7%;
+  width: 200px;
 }
 .chat {
   color: black;
@@ -130,7 +132,8 @@
 .personal-card {
   width: 250px;
   height: 500px;
-  margin-left: 30%;
+  margin-left: 40%;
+  margin-top: 5%;
 }
 
 .search-field{
