@@ -15,6 +15,20 @@ module ROM
 					property! :path, String
 				end
 				
+				class MailShortModel < Model
+					property! :id, Integer
+					property! :subject, String
+					property! :date, String
+					property! :sender, String
+					property! :state, String
+					property! :read, Types::Boolean[]
+					property! :attachments, Integer
+				end
+				
+				class MailResource < Resource
+				
+				end
+				
 				def initialize(db, root, col, path, validate = true)
 					@db = db
 					@root = root
@@ -25,6 +39,44 @@ module ROM
 				
 				def name?
 					@col.name =~ /^[a-z0-9 _.\-]+$/i
+				end
+				
+				action :@mails, DataPage, AuthorizeAttribute[],
+					:page => { :type => Integer, :default => 0 },
+					:limit => { :type => Integer, :default => 0 } do |page, limit|
+					raise(ArgumentException.new('page', 'Must be positive!')) if page < 0
+					raise(ArgumentException.new('limit', 'Must be positive!')) if limit < 0
+					
+					ret = []
+					total = nil
+					
+					interconnect.fetch(DbServer).open(DB::RomDbContext) do |ctx|
+						enum = ctx.collection_mails.select { |i| i.collection == @col }
+						total = enum.count
+						enum = enum.drop(page * limit).take(limit) if limit > 0
+						
+						enum.each do |join|
+							sender = nil
+							sender = join.mail.sender.name if join.mail.sender.name != nil
+							if sender == nil
+								sender = join.mail.sender.address
+							else
+								sender = "#{sender} <#{join.mail.sender.address}>"
+							end
+							
+							ret << MailShortModel.new(
+								:id => join.mail.id,
+								:subject => join.mail.subject,
+								:date => Time.at(join.mail.date).to_s,
+								:sender => sender,
+								:state => join.mail.state.moniker,
+								:read => join.mail.is_read == 1,
+								:attachments => ctx.attachments.count { |i| i.mail == join.mail }
+							)
+						end
+					end
+					
+					DataPage.new(:items => ret, :total => total)
 				end
 				
 				action :fetch, DataPage, AuthorizeAttribute[] do

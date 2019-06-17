@@ -10,6 +10,7 @@ module ROM
 			table :media_types, TypeMedia
 			table :channel_types, TypeChannel
 			table :message_types, TypeMessage
+			table :state_types, TypeStates
 			table :users, User
 			table :collections, Collection
 			table :contacts, Contact

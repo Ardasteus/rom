@@ -159,7 +159,8 @@ module ROM
 				'type_message' => 'ROM::DB::TypeMessage',
 				'message' => 'ROM::DB::Message',
 				'password' => 'ROM::DB::Password',
-				'data_page' => 'ROM::DataPage'
+				'data_page' => 'ROM::DataPage',
+				'type_states' => 'ROM::DB::TypeStates'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [

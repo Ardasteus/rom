@@ -6,10 +6,11 @@ module ROM
 		class Mail < Model
 			property :id, Integer
 			property! :subject, String, IndexAttribute[]
-			property! :identifier, String, IndexAttribute[]
+			property :identifier, String, IndexAttribute[]
 			property! :date, Integer
 			property! :excerpt, String
 			property! :sender, Participant, SuffixAttribute['sender']
+			property! :state, TypeStates
 			property :reply_address, String
 			property! :mailbox, Mailbox
 			property :references, Integer, 1
