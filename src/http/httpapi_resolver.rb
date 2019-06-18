@@ -14,7 +14,8 @@ module ROM
 				UnauthorizedException => StatusCode::FORBIDDEN,
 				NotFoundException => StatusCode::NOT_FOUND,
 				InvalidOperationException => StatusCode::CONFLICT,
-				NotImplementedException => StatusCode::NOT_IMPLEMENTED
+				NotImplementedException => StatusCode::NOT_IMPLEMENTED,
+				UnknownMediaTypeException => StatusCode::UNSUPPORTED_MEDIA_TYPE
 			}
 			DEFAULT_ENCODING = Encoding::UTF_8
 			
@@ -23,7 +24,6 @@ module ROM
 			def initialize(itc)
 				@itc = itc
 				@gateway = itc.fetch(ApiGateway)
-				@serializers = itc.view(SerializerProvider)
 				@http_methods = itc.view(HTTPMethod)
 				@header_filters = itc.view(HTTPHeaderFilter)
 				@log = itc.pin(LogServer)
@@ -53,21 +53,7 @@ module ROM
 					method = @http_methods.find { |mtd| mtd.is_method?(request.method) }
 					return HTTPResponse.new(StatusCode::METHOD_NOT_ALLOWED) if method == nil
 					
-					content = (request[:content_length] != nil and request[:content_length])
-					content_type = (request[:content_type] == nil ? nil : ContentType.from_header(request[:content_type]))
-					input_serializer = get_serializer(content_type)
-					return HTTPResponse.new(StatusCode::UNSUPPORTED_MEDIA_TYPE) if input_serializer == nil and request[:content_type] != nil
-					return HTTPResponse.new(StatusCode::BAD_REQUEST) if content and input_serializer == nil and method.input?
-					
-					# TODO: This is ACTUALLY NOT working by the standard (I know, I know, I told you to do it this way.)
-					#
-					# accepts_type = (request[:accept] == nil ? nil : ContentType.from_header(request[:accept]))
-					# output_serializer = get_serializer(accepts_type)
-					# return HTTPResponse.new(StatusCode::NOT_ACCEPTABLE) if output_serializer == nil and request[:accept] != nil
-					
-					output_serializer = @json.get_serializer(nil, DEFAULT_ENCODING) # (output_serializer or @json.get_serializer(nil, DEFAULT_ENCODING))
-					
-					resp = method.resolve(request, input_serializer, output_serializer)
+					resp = method.resolve(request)
 					resp[:access_control_allow_origin] = request[:origin] if (request[:origin] != nil and resp[:access_control_allow_origin] == nil)
 					
 					resp
@@ -85,22 +71,6 @@ module ROM
 					
 					HTTPResponse.new(StatusCode::INTERNAL_SEVER_ERROR)
 				end
-			end
-			
-			def get_serializer(hdr)
-				return nil if hdr == nil
-				
-				encoding = if hdr.charset != nil
-					begin
-						Encoding.find(hdr.charset)
-					rescue ArgumentError
-						raise(CharsetNotFoundException.new(hdr.charset))
-					end
-				else
-					DEFAULT_ENCODING
-				end
-				
-				@serializers.find { |i| i.accepts?(hdr.type) }&.get_serializer(hdr, encoding)
 			end
 		end
 	end

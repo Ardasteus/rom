@@ -40,13 +40,40 @@ module ROM
 					property! :attachments, Types::Array[AttachmentModel]
 				end
 				
-				def initialize(db, mail)
+				def initialize(db, link)
 					@db = db
-					@mail = mail
+					@link = link
+					@mail = link.mail
 				end
 				
 				def close(tail)
 					@db.close if tail
+				end
+				
+				class BodyResource < Resource
+					def initialize(db, stg, mail)
+						@db = db
+						@stg = stg
+						@mail = mail
+					end
+					
+					def close(tail)
+						@db.close if tail
+					end
+					
+					action :fetch, MimeStream, AuthorizeAttribute[] do
+						raise(NotFoundException.new('Mail file not found!')) unless @stg.exists?(@mail.file)
+						part = @stg.load(@mail.file)
+						
+						MimeStream.new(part[:content_type], BoundedIO.new(part.data, part[:content_length]))
+					end
+					
+					action :update, Types::Void, AuthorizeAttribute[], :body! => MimeStream do |body|
+						old = @mail.file
+						@mail.file = @stg.store(MailPart.new({ :content_type => body.type, :content_length => body.io.length }, body.io))
+						@stg.drop(old) if @stg.exists?(old)
+						@db.mails.update(@mail)
+					end
 				end
 				
 				action :fetch, MailModel, AuthorizeAttribute[] do
@@ -64,6 +91,16 @@ module ROM
 						:read => @mail.read?,
 						:attachments => attachments
 					)
+				end
+				
+				action :body, BodyResource, AuthorizeAttribute[] do
+					BodyResource.new(@db, interconnect.fetch(MailStorage), @mail)
+				end
+				
+				action :delete, Types::Void, AuthorizeAttribute[] do
+					@mail.references -= 1
+					@db.mails.update(@mail)
+					@db.collection_mails.delete(@link)
 				end
 			end
 			
@@ -99,10 +136,10 @@ module ROM
 				raise(ArgumentException.new('id', 'Id must be positive integer!')) unless id =~ /^\d+$/
 				id = id.to_i
 				db = interconnect.fetch(DbServer).open(DB::RomDbContext)
-				mail = db.protect { db.mails.find(id) }
-				raise(NotFoundException.new('Mail not found!')) if mail == nil
+				link = db.protect { db.collection_mails.find { |i| (i.collection == @col).and(i.mail == id) } }
+				raise(NotFoundException.new('Mail not found in this collection!')) if link == nil
 				
-				MailResource.new(db, mail)
+				MailResource.new(db, link)
 			end
 		end
 	end
