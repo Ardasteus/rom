@@ -16,6 +16,26 @@ module ROM
 			property :references, Integer, 1
 			property! :is_local, Integer, LengthAttribute[1]
 			property! :is_read, Integer, LengthAttribute[1]
+			
+			def local?
+				is_local == 1
+			end
+			
+			def read?
+				is_read == 1
+			end
+			
+			def read=(val)
+				is_read = (val == 1)
+			end
+			
+			def date_time
+				Time.at(date)
+			end
+			
+			def date_time=(val)
+				date = val.to_i
+			end
 		end
 	end
 end

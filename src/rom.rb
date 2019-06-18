@@ -277,7 +277,8 @@ module ROM
 			'content_type' => 'ROM::ContentType'
 		},
 		'api' => {
-			'contacts' => 'ROM::API::ContactsResource'
+			'contacts' => 'ROM::API::ContactsResource',
+			'mails' => 'ROM::API::MailsResource'
 		},
 		'api_constants' => 'ROM::ApiConstants',
 		'application' => 'ROM::Application',
