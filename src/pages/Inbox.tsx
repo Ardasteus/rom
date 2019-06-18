@@ -111,7 +111,9 @@ class Inbox extends React.Component<{}, State> {
     axios.get('mails', config)
     .then(response => {
       console.log(response) 
-      this.state.collectionData.push(response.data.items)
+      this.setState({
+        collectionData: this.state.collectionData.concat(response.data.items)
+      })
       console.log(this.state.collectionData)
       }
     )
@@ -123,9 +125,9 @@ class Inbox extends React.Component<{}, State> {
     const token = localStorage.getItem('token');   
     console.log(token) 
     var config = {
-      headers: {'Authorization': "Bearer " + token}
+      headers: {'Authorization': "Bearer " + token , 'Content-Type': 'application/json'}
   };  
-    axios.post('mails/' + this.state.newCollection, config)
+    axios.post('mails/' + this.state.newCollection, null, config)
     .then(response => {
       console.log(response) 
       }
@@ -155,6 +157,7 @@ class Inbox extends React.Component<{}, State> {
     return (
       <div>
         {this.newCollections()}
+        {this.getCollections()} 
         <Dialog
           open={this.state.open}
           aria-labelledby='alert-dialog-title'
@@ -192,12 +195,14 @@ class Inbox extends React.Component<{}, State> {
            </List>
         </Paper>
         {this.showingMail()}
-        {this.getCollections()} 
+        
         <Card className='inbox-menu'>
           <CardContent>
           <List>
           {this.state.collectionData.map((cocdata: any) => {
-            {cocdata.name}
+            <ListItem key={cocdata} button>
+            <ListItemText primary={cocdata.name}/>
+          </ListItem>
           })}
             <ListItem button  onClick={this.handleOpenTrue}>
               <AddIcon />
