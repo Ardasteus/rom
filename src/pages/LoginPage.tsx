@@ -111,14 +111,6 @@ class LoginPage extends React.Component {
             <Button variant='contained' disabled={!enabled} color='secondary' onClick={this.setRedirectLogin}>Login</Button>
           </CardActions>
         </Card>
-        <div>
-          <Card className='register-Link' color='primary'>
-            <CardActions>
-             <Button variant='contained' color='secondary' >Login</Button>
-             <Button variant='contained' onClick={this.setRedirectRegister}>Register</Button>
-            </CardActions>
-          </Card>
-        </div>
         </MuiThemeProvider>
       </div>
     );

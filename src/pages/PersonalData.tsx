@@ -8,12 +8,12 @@ interface Props {
 }
 
 const Namedata = []
-const Password = []
 
 export interface State {
   message: string;
   gettingNameData: boolean;
   gettingPasswordData: boolean;
+  gettingPasswordChanging: boolean;
   open: boolean;
   newPassword: string;
   oldPassword: string;
@@ -26,9 +26,10 @@ class PersonalData extends React.Component<Props, State> {
       message: '',
       gettingNameData: true,
       gettingPasswordData: false,
+      gettingPasswordChanging: false,
       open: false,
-      newPassword: '123456',
-      oldPassword: 'Aa0123456',
+      newPassword: '',
+      oldPassword: '',
     };
   }
 
@@ -67,19 +68,42 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({gettingPasswordData: false});
     }   
   }
+  getPasswordChanging = () => {
+    if(this.state.gettingPasswordChanging){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token}
+  };  
+    axios.get('me/has_password', config)
+    .then(response => {
+      console.log(response)   
+      }
+    )
+    this.setState({gettingPasswordChanging: false});
+    }   
+  }
 
-//  handleChange = name => event => {
-//    this.setState({
-//      [name]: event.target.value,
-//    });
-//  }
 
+
+  handleChangeOldPass = event => {
+    this.setState({
+      oldPassword: event.target.value,
+    });
+  }
+
+  handleChangeNewPass = event => {
+    this.setState({
+      newPassword: event.target.value,
+    });
+  }
 
   handleOpenTrue = () => {
     this.setState({ open: true });
   }
 
   handleOpenFalseConfirm = () => {
+    this.setState({gettingPasswordChanging: true});
     this.setState({gettingPasswordData: true});
     this.setState({ open: false });
   }
@@ -106,6 +130,7 @@ class PersonalData extends React.Component<Props, State> {
               label='Old Password'
               margin='normal'
               value={this.state.oldPassword}
+              onChange={this.handleChangeOldPass}
             />
             <TextField 
               variant='outlined'
@@ -115,10 +140,12 @@ class PersonalData extends React.Component<Props, State> {
               label='New Password'
               margin='normal'
               value={this.state.newPassword}
+              onChange={this.handleChangeNewPass}
             />
           </DialogContent>
           <DialogActions>
           {this.getPasswordData()}
+          {this.getPasswordChanging()}
             <Button onClick={this.handleOpenFalseConfirm} color='primary' autoFocus>
               Ok
             </Button>

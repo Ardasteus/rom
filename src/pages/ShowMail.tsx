@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import Divider from '@material-ui/core/Divider';
 
 interface Props {
   updateShowingMail: (event: any) => void;
@@ -29,24 +30,12 @@ class ShowMail extends React.Component<Props, {}> {
           <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateShowingMail}>
                 <CloseIcon />
           </IconButton>
-            <TextField
-              variant='filled'
-              id='sendTo'
-              label='Send to'
-              margin='normal'
-            />
-            <TextField
-              variant='filled'
-              id='title'
-              label='Title'
-              margin='normal'
-            />
-            <TextField
-              variant='filled'
-              id='message'
-              label='Message'
-              margin='normal'
-            />
+            <br />
+            Sender <br />
+            <Divider/>
+            Title <br />
+            <Divider/>
+            Message
           </CardContent>
         </Card>
        </div>

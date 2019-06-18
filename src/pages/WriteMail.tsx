@@ -6,32 +6,46 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import Divider from '@material-ui/core/Divider';
 
 interface Props {
   updateAddingMail: (event: any) => void;
 }
 
-class WriteMail extends React.Component<Props, {}> {
+export interface State {
+    message: string;
+    sendTo: string;
+    title: string;
+}
+
+class WriteMail extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       message: '',
+      sendTo: '',
+      title: '',
     };
   }
 
-  handleChange = name => event => {
+  handleChangeSendTo = event => {
     this.setState({
-      [name]: event.target.value,
+      sendTo: event.target.value,
+    });
+  }
+  handleChangeMessage = event => {
+    this.setState({
+      message: event.target.value,
+    });
+  }
+  handleChangeTitle = event => {
+    this.setState({
+      title: event.target.value,
     });
   }
 
-  closeMailWrite = () => {
-    this.setState({
-      addingMail: false,
-    });
-  }
+
   render() {
-  //  const { message } = this.state;
     return (
     <div>
       <Card className='writemail-card'>
@@ -44,20 +58,24 @@ class WriteMail extends React.Component<Props, {}> {
               id='sendTo'
               label='Send to'
               margin='normal'
+              value={this.state.sendTo}
+              onChange={this.handleChangeSendTo}
             />
             <TextField
               variant='filled'
               id='title'
               label='Title'
               margin='normal'
+              value={this.state.title}
+              onChange={this.handleChangeTitle}
             />
             <TextField
               variant='filled'
               id='message'
               label='Message'
               margin='normal'
-         //     value={this.state.message}
-              onChange={this.handleChange('message')}
+              value={this.state.message}
+              onChange={this.handleChangeMessage}
             />
             <div>
               <Button variant='contained'>Send</Button>

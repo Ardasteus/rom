@@ -21,7 +21,6 @@ import axios from 'classes/axios.instance';
 
 const emails = ['Email01', 'Email02', 'Email03', 'Email04', 'Email05'];
 
-const data = []
 
 interface State {
   addingMail: boolean;
@@ -45,7 +44,7 @@ class Inbox extends React.Component<{}, State> {
       text: 'TODO: Mails',
       gettingCollections: true,
       open: false,
-      newCollection: 'yikes',
+      newCollection: '',
       gettingNewCollection: false,
       collectionData: []
     };
@@ -146,11 +145,11 @@ class Inbox extends React.Component<{}, State> {
     this.setState({ open: false });
   }
 
-//  handleChange = name => event => {
-//    this.setState({
-//      [name]: event.target.value,
-//    });
-//  }
+  handleChangeCollection = event => {
+    this.setState({
+      newCollection: event.target.value,
+    });
+  }
 
   render() {
     return (
@@ -169,6 +168,7 @@ class Inbox extends React.Component<{}, State> {
               id='collection'
               label='New Collection'
               margin='normal'
+              onChange={this.handleChangeCollection}
             />
 
           </DialogContent>
@@ -196,11 +196,9 @@ class Inbox extends React.Component<{}, State> {
         <Card className='inbox-menu'>
           <CardContent>
           <List>
-          {this.state.collectionData.map(cocdata => (
-            <ListItem key={cocdata} button>
-              <ListItemText primary={cocdata} />
-            </ListItem>
-          ))}
+          {this.state.collectionData.map((cocdata: any) => {
+            {cocdata.name}
+          })}
             <ListItem button  onClick={this.handleOpenTrue}>
               <AddIcon />
           <ListItemText primary='add collection' />
