@@ -245,7 +245,8 @@ module ROM
 		},
 		'smtp' => {
 				'smtp_job' => 'ROM::SMTP::SMTPJob',
-				'smtp_message' => 'ROM::SMTP::SMTPMessage'
+				'smtp_message' => 'ROM::SMTP::SMTPMessage',
+				'smtp_attachment' => 'ROM::SMTP::SMTPAttachment'
 		},
 		'serializers' => {
 			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',

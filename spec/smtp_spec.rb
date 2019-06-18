@@ -19,13 +19,13 @@ I am amazing.
 Španko Roman
 
 SMTP Testing.sro"
-        message = SMTPMessage.new(body, :from => "",
-                                  :to => "",
+        message = SMTPMessage.new(body, SMTPAttachment.new("plain/text", "testing,txt,", body), :from => "Roman Španko <spankoroman@sssvt.cz>",
+                                  :to => "Roman Španko <spankoroman@sssvt.cz>",
                                   :subject => "SMTP Testing")
 
-        50.times do
+        1.times do
           sleep(0.1)
-          job_server[:smtp].add_job(SMTPJob.new(message, "mail.sssvt.cz", 25, "", ""))
+          #job_server[:smtp].add_job(SMTPJob.new(message, "mail.sssvt.cz", 25, "", ""))
         end
       end
     end
