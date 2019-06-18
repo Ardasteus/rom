@@ -24,7 +24,8 @@ module ROM
         send_recipients
         send_data("DATA")
         send_headers
-        send_body
+        send_body if @message.body != nil && @message.attachments == nil
+        send_attachments if @message.attachments != nil
         @client.puts("QUITS")
         puts "QUITS"
         resp = @client.gets
@@ -90,8 +91,36 @@ module ROM
       end
 
       def send_body
-        puts @message.body_raw
-        @client.puts(@message.body_raw)
+        puts @message.raw
+        @client.puts(@message.raw)
+        send_data("\r\n.\r\n")
+      end
+
+      def send_attachments
+        delimeter_raw = @message[:content_type].split("; ")[1].split("=")
+        delimeter = delimeter_raw.insert(0, "--")
+        puts delimeter
+        @client.puts(delimeter)
+
+        if @message.raw != nil
+          puts @message.raw
+          @client.puts(@message.raw)
+          @client.puts("\r\n")
+        end
+
+        @message.attachments.all do |attachment|
+          puts delimeter
+          @client.puts(delimeter)
+          puts "Content-Type: #{attachment.content_type}; name=" + '"' + attachment.name + '"'
+          @client.puts("Content-Type: #{attachment.content_type}; name=" + '"' + attachment.name + '"')
+          puts "Content-Transfer-Encoding: base64"
+          @client.puts("Content-Transfer-Encoding: base64")
+          puts "Content-Disposition: attachment; filename=" + '"' + attachment.name + '"'
+          @client.puts("Content-Disposition: attachment; filename=" + '"' + attachment.name + '"')
+          @client.puts("\r\n")
+        end
+        puts delimeter
+        @client.puts(delimeter)
         send_data("\r\n.\r\n")
       end
     end
