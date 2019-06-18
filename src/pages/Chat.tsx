@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, CardHeader, Divider, CardContent, Paper, CardActions, Button } from '@material-ui/core';
+import { Card, CardHeader, Divider, CardContent, Paper, CardActions, Button, ListItemAvatar, Avatar } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -8,6 +8,8 @@ import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import ChatMessage from './ChatMessage';
+import PersonIcon from '@material-ui/icons/Person';
+import { ThemeProvider } from '@livechat/ui-kit'
 
 const contacts = ['John generic', 'Roman Spanko', 'Matyas Pokorny'];
 
@@ -45,7 +47,11 @@ class Chat extends React.Component {
            {contacts.map(contact => (
            <ListItem key={contact} button onClick={this.showingMessage}>
              <ListItemIcon>
-               <AccountCircle />
+             <ListItemAvatar>
+              <Avatar>
+                <PersonIcon />
+              </Avatar>
+            </ListItemAvatar>
              </ListItemIcon>
               <ListItemText  primary={contact}/>
             </ListItem>

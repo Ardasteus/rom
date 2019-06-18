@@ -4,6 +4,7 @@
   "main": "index.tsx",
   "license": "MIT",
   "dependencies": {
+    "@livechat/ui-kit": "^0.4.0-5",
     "@material-ui/core": "^3.9.3",
     "@types/react-router-dom": "^4.3.3",
     "awesome-typescript-loader": "^5.2.1",
@@ -12,6 +13,8 @@
     "material-ui": "^1.0.0-beta.47",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-chat-window": "^1.2.1",
+    "react-columns": "^1.2.1",
     "react-dark-theme": "^1.1.1",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.0",

@@ -19,6 +19,7 @@ import ShowMail from './ShowMail';
 import SearchField from "react-search-field";
 import axios from 'classes/axios.instance';
 
+
 const emails = ['Email01', 'Email02', 'Email03', 'Email04', 'Email05'];
 
 
@@ -29,8 +30,11 @@ interface State {
   text: string;
   gettingCollections: boolean;
   open: boolean;
+  openDel: boolean;
   newCollection: string;
   gettingNewCollection: boolean;
+  deletingCollection: boolean;
+  deleteCollection: string;
   collectionData: Array<string>;
 }
 
@@ -44,8 +48,11 @@ class Inbox extends React.Component<{}, State> {
       text: 'TODO: Mails',
       gettingCollections: true,
       open: false,
+      openDel: false,
       newCollection: '',
       gettingNewCollection: false,
+      deletingCollection: false,
+      deleteCollection: '',
       collectionData: []
     };
 
@@ -135,21 +142,53 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingNewCollection: false});
     }   
   }
+
+  deleteCollections = () => {
+    if(this.state.deletingCollection){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token , 'Content-Type': 'application/json'}
+  };  
+    axios.delete('mails/' + this.state.deleteCollection, config)
+    .then(response => {
+      console.log(response) 
+      }
+    )
+    this.setState({deletingCollection: false});
+    }   
+  }
+
   handleOpenTrue = () => {
     this.setState({ open: true });
+  }
+  handleOpenTrueDel = () => {
+    this.setState({ openDel: true });
   }
 
   handleOpenFalseConfirm = () => {
     this.setState({gettingNewCollection: true});
     this.setState({ open: false });
   }
+  handleOpenFalseDelConfirm = () => {
+    this.setState({deletingCollection: true});
+    this.setState({ openDel: false });
+  }
   handleOpenFalse = () => {
     this.setState({ open: false });
+  }
+  handleOpenFalseDel = () => {
+    this.setState({ openDel: false });
   }
 
   handleChangeCollection = event => {
     this.setState({
       newCollection: event.target.value,
+    });
+  }
+  handleChangeDelCollection = event => {
+    this.setState({
+      deleteCollection: event.target.value,
     });
   }
 
@@ -158,6 +197,7 @@ class Inbox extends React.Component<{}, State> {
       <div>
         {this.newCollections()}
         {this.getCollections()} 
+        {this.deleteCollections()} 
         <Dialog
           open={this.state.open}
           aria-labelledby='alert-dialog-title'
@@ -171,6 +211,7 @@ class Inbox extends React.Component<{}, State> {
               id='collection'
               label='New Collection'
               margin='normal'
+              value={this.state.newCollection}
               onChange={this.handleChangeCollection}
             />
 
@@ -184,7 +225,35 @@ class Inbox extends React.Component<{}, State> {
               Cancel
             </Button>
           </DialogActions>
-        </Dialog>      
+        </Dialog>
+        <Dialog
+          open={this.state.openDel}
+          aria-labelledby='alert-dialog-title-del'
+          aria-describedby='alert-dialog-description-del'
+        >
+          <DialogTitle id='alert-dialog-title-del'>{'Delete a collection'}</DialogTitle>
+          <DialogContent>
+          <TextField 
+              variant='outlined'
+              color='secondary'
+              id='collection-del'
+              label='Collection to delete'
+              margin='normal'
+              value={this.state.deleteCollection}
+              onChange={this.handleChangeDelCollection}
+            />
+
+          </DialogContent>
+          <DialogActions>
+
+            <Button onClick={this.handleOpenFalseDelConfirm} color='primary' autoFocus>
+              Ok
+            </Button>
+            <Button onClick={this.handleOpenFalseDel} color='primary' autoFocus>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>       
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            {emails.map(email => (
@@ -207,6 +276,11 @@ class Inbox extends React.Component<{}, State> {
             <ListItem button  onClick={this.handleOpenTrue}>
               <AddIcon />
           <ListItemText primary='add collection' />
+        </ListItem>
+
+        <ListItem button  onClick={this.handleOpenTrueDel}>
+              <DeleteIcon />
+          <ListItemText primary='remove collection' />
         </ListItem>
 
           </List>

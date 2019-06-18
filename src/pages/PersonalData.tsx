@@ -17,6 +17,7 @@ export interface State {
   open: boolean;
   newPassword: string;
   oldPassword: string;
+  namedata: string;
 }
 
 class PersonalData extends React.Component<Props, State> {
@@ -30,6 +31,7 @@ class PersonalData extends React.Component<Props, State> {
       open: false,
       newPassword: '',
       oldPassword: '',
+      namedata: '',
     };
   }
 
@@ -43,9 +45,10 @@ class PersonalData extends React.Component<Props, State> {
     axios.get('me', config)
     .then(response => {
       console.log(response) 
-      Namedata.splice(0,1) 
-      Namedata.push(response.data.name)  
-      console.log(Namedata)
+      this.setState({
+        namedata: this.state.namedata.concat(response.data.name)
+      })
+      console.log(this.state.namedata)
       }
     )
     this.setState({gettingNameData: false});
@@ -159,7 +162,7 @@ class PersonalData extends React.Component<Props, State> {
           <IconButton color='secondary'  aria-label='Close' onClick={this.props.updatePersonalData}>
                 <CloseIcon />
           </IconButton>
-            <h2>Name : {Namedata}</h2>
+            <h2>Name : {this.state.namedata}</h2>
             <div className='Change-pass'>
               <Button variant='contained' onClick={this.handleOpenTrue}>Change password</Button>
             </div>

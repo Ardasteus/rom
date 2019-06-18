@@ -16,8 +16,12 @@ class ChatMessage extends React.Component<Props, {}> {
         <CardContent>
           John Generic
           <Divider/>
-          this.state.message
+          <br/>
+          MessageList
           <Divider/>
+          <br/>
+          <br/>
+          <br/>
           <TextField
           id='message'
           label='Message'
