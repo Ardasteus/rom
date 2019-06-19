@@ -7,7 +7,7 @@ interface Props {
   updatePersonalData: (event: any) => void;
 }
 
-const Namedata = []
+
 
 export interface State {
   message: string;
@@ -34,7 +34,7 @@ class PersonalData extends React.Component<Props, State> {
       namedata: '',
     };
   }
-
+  // on load of personal data, get user info
   getNameData = () => {
     if(this.state.gettingNameData){
     const token = localStorage.getItem('token');   
@@ -48,14 +48,14 @@ class PersonalData extends React.Component<Props, State> {
       this.setState({
         namedata: this.state.namedata.concat(response.data.name)
       })
-      console.log(this.state.namedata)
+      console.log(this.state.namedata)   
       }
     )
     this.setState({gettingNameData: false});
     }   
   }
 
-
+  // on press of OK in change password dialog in personal data, send old password and new password to api
   getPasswordData = () => {
     if(this.state.gettingPasswordData){
     const token = localStorage.getItem('token');   
@@ -71,6 +71,7 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({gettingPasswordData: false});
     }   
   }
+  // on press of OK in change password dialog in personal data, get if user can change password
   getPasswordChanging = () => {
     if(this.state.gettingPasswordChanging){
     const token = localStorage.getItem('token');   
@@ -88,28 +89,29 @@ class PersonalData extends React.Component<Props, State> {
   }
 
 
-
+  // handle old password text field
   handleChangeOldPass = event => {
     this.setState({
       oldPassword: event.target.value,
     });
   }
-
+  // handle old password text field
   handleChangeNewPass = event => {
     this.setState({
       newPassword: event.target.value,
     });
   }
-
+  // handle if dialog is open
   handleOpenTrue = () => {
     this.setState({ open: true });
   }
-
+  // handle OK button in dialog
   handleOpenFalseConfirm = () => {
     this.setState({gettingPasswordChanging: true});
     this.setState({gettingPasswordData: true});
     this.setState({ open: false });
   }
+  // handle Cancel button in dialog
   handleOpenFalse = () => {
     this.setState({ open: false });
   }

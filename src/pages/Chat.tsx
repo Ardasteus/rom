@@ -18,21 +18,25 @@ class Chat extends React.Component {
     message: '',
     showingMessage: false,
   };
+  // Handle change of textfields
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
     });
   }
+  // Handle Chatmessage component
   showMessage = () => {
     if (this.state.showingMessage === true) {
       return <ChatMessage updateShowingMessage={this.updateShowingMessage} />;
     }
   }
+  // Set state showingMessage false
   updateShowingMessage = (event: any) => {
     this.setState({
       showingMessage: false,
     });
   }
+  // Set state showingMessage true
   showingMessage = () => {
     this.setState({
       showingMessage: true,

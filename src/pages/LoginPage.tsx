@@ -32,7 +32,7 @@ class LoginPage extends React.Component {
     authenticated: true,
   };
 
-  // Sets declarable redirectLogin true
+  // Posts username and password in text fields, if status is 201, it passes to home screen
   setRedirectLogin = () => {
     axios.post('login', {
       username: this.state.name,

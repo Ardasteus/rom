@@ -29,6 +29,7 @@ interface State {
   sentMail: boolean;
   text: string;
   gettingCollections: boolean;
+  gettingContacts: boolean;
   open: boolean;
   openDel: boolean;
   newCollection: string;
@@ -51,6 +52,7 @@ class Inbox extends React.Component<{}, State> {
       openDel: false,
       newCollection: '',
       gettingNewCollection: false,
+      gettingContacts: true,
       deletingCollection: false,
       deleteCollection: '',
       collectionData: []
@@ -108,6 +110,7 @@ class Inbox extends React.Component<{}, State> {
       showingMail: true,
     });
   }
+  // when the render loads, get collections from api
   getCollections = () => {
     if(this.state.gettingCollections){
     const token = localStorage.getItem('token');   
@@ -127,6 +130,23 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingCollections: false});
     }   
   }
+  // when the render loads, get contacts from api
+  getContacts = () => {
+    if(this.state.gettingContacts){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token}
+  };  
+    axios.get('contacts', config)
+    .then(response => {
+      console.log(response) 
+      }
+    )
+    this.setState({gettingContacts: false});
+    }   
+  }
+  // on press of OK, in create collection dialog, sends the textfield value to api
   newCollections = () => {
     if(this.state.gettingNewCollection){
     const token = localStorage.getItem('token');   
@@ -142,7 +162,7 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingNewCollection: false});
     }   
   }
-
+  // on press of OK, in delete collection dialog, deletes the textfield value to api
   deleteCollections = () => {
     if(this.state.deletingCollection){
     const token = localStorage.getItem('token');   
@@ -196,6 +216,7 @@ class Inbox extends React.Component<{}, State> {
     return (
       <div>
         {this.newCollections()}
+        {this.getContacts()}
         {this.getCollections()} 
         {this.deleteCollections()} 
         <Dialog

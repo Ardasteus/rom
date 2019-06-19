@@ -16,7 +16,7 @@ class ShowMail extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
   }
-
+  // Colse ShowMail component
   closeMailWrite = () => {
     this.setState({
       showingMail: false,

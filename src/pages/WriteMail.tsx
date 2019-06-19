@@ -27,17 +27,19 @@ class WriteMail extends React.Component<Props, State> {
       title: '',
     };
   }
-
+  // Handle send text field
   handleChangeSendTo = event => {
     this.setState({
       sendTo: event.target.value,
     });
   }
+  // Handle message text field
   handleChangeMessage = event => {
     this.setState({
       message: event.target.value,
     });
   }
+  // Handle title text field
   handleChangeTitle = event => {
     this.setState({
       title: event.target.value,

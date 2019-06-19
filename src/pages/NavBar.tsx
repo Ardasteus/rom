@@ -100,59 +100,72 @@ class NavBar extends React.Component<Props, State> {
       </Typography>
     );
   }
-  // Set declarable redirect to true
+  /** 
+   * Set declarable redirect to true */ 
   setRedirect = () => {
     this.setState({
       redirect: true,
     });
   }
-  // If declarable redirect is true, redirect to LoginPage
+  /** 
+   *If declarable redirect is true, redirect to LoginPage */ 
   loginRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/' />;
     }
   }
-  // Tab switching between chat and inbox
+  /**
+   * Tab switching between chat and inbox  */ 
   handleChangeTab = (event, value) => {
     this.setState({ value });
   }
-  // Opening menu
+   /** 
+   * Opening menu */ 
   handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     this.setState({ anchorEl: event.currentTarget });
   }
-  // Closing menu
+   /** 
+   * Closing menu */ 
   handleClose = () => {
     this.setState({ anchorEl: null });
   }
-  // Opens settings dialog
+  /** 
+   * Opens settings dialog */ 
   handleClickOpen = () => {
     this.setState({ open: true });
   }
-  // Close settings dialog
+  /**
+   * Close settings dialog */ 
   handleCloseSettings = () => {
     this.setState({ open: false });
   }
-
+  /** 
+   * Handle profile dialog, open*/ 
   handleClickOpenAcc = () => {
     this.setState({ openAcc: true });
   }
+  /**
+   *  Handle profile dialog, false */ 
   handleCloseAcc = () => {
     this.setState({ openAcc: false });
   }
   
-
+  /**
+   * Handle PersonalData component in settings  */  
   ShowingPersonalData = () => {
     if (this.state.settingsAcc === true) {
       return <PersonalData updatePersonalData={this.updatePersonalData} />;
     }
   }
-
+  /**
+   *  Handle if acc.settings, true */ 
   PersDataopen = () => {
     this.setState({
       settingsAcc: true,
     });
   }
-
+  /**
+   * Handle if acc.settings, false */ 
   updatePersonalData = (event: any) => {
     this.setState({
       settingsAcc: false,
