@@ -117,6 +117,8 @@ module ROM
           @client.puts("Content-Transfer-Encoding: base64")
           puts "Content-Disposition: attachment; filename=" + '"' + attachment.name + '"'
           @client.puts("Content-Disposition: attachment; filename=" + '"' + attachment.name + '"')
+          puts Base64.urlsafe_encode64(attachment.data)
+          @client.puts(Base64.urlsafe_encode64(attachment.data))
           @client.puts("\r\n")
         end
         puts delimeter
