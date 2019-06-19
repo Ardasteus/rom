@@ -12,6 +12,7 @@ module ROM
 			property! :sender, Participant, SuffixAttribute['sender']
 			property! :state, TypeStates
 			property :file, String
+			property :size, Integer, 0
 			property :reply_address, String
 			property! :mailbox, Mailbox
 			property :references, Integer, 1

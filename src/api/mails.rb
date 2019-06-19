@@ -50,6 +50,7 @@ module ROM
 					property! :state, String
 					property! :excerpt, String
 					property! :read, Types::Boolean[]
+					property! :size, Integer
 					property! :attachments, Types::Array[AttachmentModel]
 					property! :recipients, Types::Array[ParticipantModel]
 				end
@@ -88,6 +89,7 @@ module ROM
 						
 						old = @mail.file
 						@mail.file = stg.store(MailPart.new({ :content_type => body.type, :content_length => body.io.length }, body.io))
+						@mail.size = body.io.length
 						@mail.excerpt = if body.type == 'text/plain'
 							io = stg.load(@mail.file).data
 							ret = nil
@@ -212,6 +214,7 @@ module ROM
 						:sender => ParticipantModel.from_db(@db, @mail.sender),
 						:state => @mail.state.moniker,
 						:read => @mail.read?,
+						:size => @mail.size,
 						:attachments => attachments,
 						:recipients => recp
 					)

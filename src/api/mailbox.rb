@@ -62,7 +62,7 @@ module ROM
 			class MailboxCreateModel < Model
 				property! :name, String
 				property! :address, String
-				property! :author, String
+				property :author, String
 				property! :maps, Types::Array[MapSimpleModel]
 				property! :drafts, String
 				property! :outbox, String
@@ -237,8 +237,8 @@ module ROM
 					end
 					
 					me = @db.users.find(identity.id).contact
-					owner = @db.participants.find { |i| i.contact == me }
-					owner = @db.participants << DB::Participant.new(:name => me.full_name, :address => @box.address, :contact => me, :references => 0) if owner == nil
+					owner = @db.participants.find { |i| (i.contact == me).and(i.address == @box.address) }
+					owner = @db.participants << DB::Participant.new(:name => @box.author, :address => @box.address, :contact => me, :references => 0) if owner == nil
 					
 					idx = recipients.index { |i| i.address == @box.address }
 					recipients[idx] = owner if idx != nil
@@ -366,7 +366,7 @@ module ROM
 					outbox = user.collection.find(ctx, body.outbox[1..body.outbox.length - 1])
 					raise(NotFoundException.new('Outbox collection not found!')) if outbox == nil
 					
-					box = DB::Mailbox.new(:name => body.name, :author => body.author, :address => body.address, :owner => user, :outbox => outbox, :drafts => drafts)
+					box = DB::Mailbox.new(:name => body.name, :author => (body.author or user.contact.full_name), :address => body.address, :owner => user, :outbox => outbox, :drafts => drafts)
 					box.imap = body.imap.to_db(ctx) if body.imap != nil
 					box.smtp = body.smtp.to_db(ctx) if body.smtp != nil
 					

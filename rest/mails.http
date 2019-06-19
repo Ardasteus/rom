@@ -1,0 +1,129 @@
+# Fetch inbox
+GET {{host}}/api/v1/mails/inbox/@mails
+Authorization: Bearer {{token}}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 200, "Expected '200 OK'")
+ });
+
+ client.global.set('mail', response.body.items[0].id);
+ client.log('Selected mail: ' + client.global.get('mail'));
+%}
+
+### Begin mail
+POST {{host}}/api/v1/mailboxes/{{box}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "Test mail",
+  "recipients": [ "{{login}}@company.com" ]
+}
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 201, "Expected '201 Created'")
+ });
+
+  client.global.set('draft', response.body.id);
+  client.log('Selected draft: ' + client.global.get('draft'));
+%}
+
+### Delete draft
+DELETE {{host}}/api/v1/mails/drafts/@mails/{{draft}}
+Authorization: Bearer {{token}}
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+ %}
+
+### View draft
+GET {{host}}/api/v1/mails/drafts/@mails/{{draft}}
+Authorization: Bearer {{token}}
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 200, "Expected '200 OK'")
+ });
+ %}
+
+### Set draft body
+PUT {{host}}/api/v1/mails/drafts/@mails/{{draft}}/body
+Authorization: Bearer {{token}}
+Content-Type: text/plain
+
+This is the body of an email.
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+ %}
+
+### View draft body
+GET {{host}}/api/v1/mails/drafts/@mails/{{draft}}/body
+Authorization: Bearer {{token}}
+
+### List draft attachments
+GET {{host}}/api/v1/mails/drafts/@mails/{{draft}}/attachments
+Authorization: Bearer {{token}}
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 200, "Expected '200 OK'")
+ });
+ %}
+
+### Add attachment
+POST {{host}}/api/v1/mails/drafts/@mails/{{draft}}/attachments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "file.txt" }
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 201, "Expected '201 Created'")
+ });
+
+ client.global.set('attachment', response.body.id);
+ client.log('Selected attachment: ' + client.global.get('attachment'));
+ %}
+
+### Delete attachment
+DELETE {{host}}/api/v1/mails/drafts/@mails/{{draft}}/attachments/{{attachment}}
+Authorization: Bearer {{token}}
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+ %}
+
+### Set attachment body
+PUT {{host}}/api/v1/mails/drafts/@mails/{{draft}}/attachments/{{attachment}}
+Authorization: Bearer {{token}}
+Content-Type: text/plain
+
+This is an attachment!
+
+> {%
+  client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+ %}
+
+### View attachment body
+GET {{host}}/api/v1/mails/drafts/@mails/{{draft}}/attachments/{{attachment}}
+Authorization: Bearer {{token}}
+
+### Send mail
+GET {{host}}/api/v1/mails/drafts/@mails/{{draft}}/send
+Authorization: Bearer {{token}}
+
+### View outbox
+GET {{host}}/api/v1/mails/outbox/@mails
+Authorization: Bearer {{token}}

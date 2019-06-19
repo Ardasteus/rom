@@ -1,0 +1,114 @@
+# List mailboxes
+GET {{host}}/api/v1/mailboxes
+Authorization: Bearer {{token}}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 200, "Expected '200 OK'")
+ });
+
+ client.global.set('box', response.body.items[0].id);
+ client.log('Selected mailbox: ' + client.global.get('box'));
+%}
+
+### Get mailbox
+GET {{host}}/api/v1/mailboxes/{{box}}
+Authorization: Bearer {{token}}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 200, "Expected '200 OK'")
+ });
+%}
+
+### Create primary mailbox (with connections)
+POST {{host}}/api/v1/mailboxes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Primary",
+  "address": "{{login}}@company.com",
+  "drafts": "/drafts",
+  "outbox": "/outbox",
+  "maps": [
+    { "path": "/inbox", "filter": "/inbox" }
+  ],
+  "imap": {
+    "host": "mail.company.com",
+    "port": 143,
+    "user": "{{login}}@company.com",
+    "password": "{{pwd}}"
+  },
+  "smtp": {
+    "host": "mail.company.com",
+    "port": 465,
+    "user": "{{login}}@company.com",
+    "password": "{{pwd}}",
+    "protection": "tls"
+  }
+}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+%}
+
+### Create primary mailbox (without connections)
+POST {{host}}/api/v1/mailboxes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Primary",
+  "address": "{{login}}@company.com",
+  "drafts": "/drafts",
+  "outbox": "/outbox",
+  "maps": [
+    { "path": "/inbox", "filter": "/inbox" }
+  ]
+}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+%}
+
+### Set IMAP
+PUT {{host}}/api/v1/mailboxes/{{box}}/imap
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "host": "mail.company.com",
+  "port": 143,
+  "user": "{{login}}@company.com",
+  "password": "{{pwd}}"
+}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+%}
+
+### Set SMTP
+PUT {{host}}/api/v1/mailboxes/{{box}}/smtp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "host": "mail.company.com",
+  "port": 465,
+  "user": "{{login}}@company.com",
+  "password": "{{pwd}}",
+  "protection": "tls"
+}
+
+> {%
+ client.test('Success', function() {
+ 	client.assert(response.status === 204, "Expected '204 No Content'")
+ });
+%}
