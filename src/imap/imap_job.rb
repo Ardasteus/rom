@@ -13,12 +13,10 @@ module ROM
       def job_task(log)
         @client = TCPSocket.new(@server, @port)
         handle_response
-        send_data("CAPABILITY") 
         send_data("STARTTLS")
         @client = OpenSSL::SSL::SSLSocket.new(@client, OpenSSL::SSL::SSLContext.new())
         handle_response
         @client.connect
-        send_data("CAPABILITY")
         send_data("LOGIN #{@user} #{@password}")
         send_data("SELECT INBOX")
         mail = fetch_mail(75)
