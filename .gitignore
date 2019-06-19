@@ -1,0 +1,17 @@
+# Data
+/data/
+
+# IDEs
+*.sublime-workspace
+.idea/
+.vs/
+
+# SimpleCov
+cover/
+
+# YARD
+.yardoc/
+doc/
+
+# Misc
+Gemfile.lock
