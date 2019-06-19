@@ -19,7 +19,7 @@ Each of our services is configured using the provided values in this config file
 
 ### HTTP Configuration
 #### Single HTTP Server
-```
+```yaml
 http:
   binding:
     - address: 127.0.0.1
@@ -28,7 +28,7 @@ http:
 In this example we create one HTTP server that runs on port 8080, if the port is no specified it is automatically 80.
 
 #### Singe HTTPS Server
-```
+```yaml
 http:
   binding:
     - address: 127.0.0.1
@@ -38,10 +38,10 @@ http:
       key_path: C:\Keys\https.key
 ```
 In this example we create one HTTPS server that uses the specified certificate and key.
-If the certificate is not specified a self-signed cerificate is automatically created.
+If the certificate is not specified a self-signed certificate is automatically created.
 
 #### HTTP Redirect
-```
+```yaml
 http:
   binding:
     - address: 127.0.0.1
@@ -51,20 +51,33 @@ http:
 In this example we create one HTTP server that redirects all its calls onto the provided address.
 
 #### Multiple servers at once
-```
+```yaml
 http:
   binding:
     - address: 127.0.0.1
     
     - address: 127.0.0.1
-    - port: 443
-    - https: true
+      port: 443
+      https: true
 ```
 It is also possible to create multiple servers. In this example we create 2 basic servers, one HTTP and one HTTPS.
 
+#### HSTS
+```yaml
+http:
+  binding:
+    - address: 127.0.0.1
+      redirect: 127.0.01:443
+
+    - address: 127.0.0.1
+      port: 443
+      https: true
+```
+Using two bindings and a redirect we can achieve enforcement of HTTPS (aka. HSTS).
+
 ### DB Configuration
 #### Sqlite3 DB Configuration
-```
+```yaml
 db:
   databases:
     romdb:
@@ -75,12 +88,20 @@ db:
 In this example we tell the application to use an sqlite database and provide it with a file.
 
 #### MySQL DB Configuration
+```yaml
+db:
+  databases:
+    romdb:
+      driver: mysql
+      connection:
+        host: db.company.com
+        user: rom-app
+        database: romdb
 ```
-TODO:
-```
+Note that the only mandatory connection properties are `host` and `user`. The rest have default values (`port = 3306`, `password = null`, `database = 'romdb'`, `charset = 'utf8'`, `collation = 'utf8_general_ci'`, `engine = 'InnoDB'`).
 ### Authentication Configuration
 #### Token Configuration
-```
+```yaml
 authentication:
   tokens:
     factory: jwt
@@ -91,7 +112,7 @@ At the moment we only support jWT tokens, thus this part will always be the same
 The next step is to define the authentication layers of the app. That means to basically tell the application which authentication providers to use.
 
 ##### Database Authentication
-```
+```yaml
 authentication:
   tokens:
     factory: jwt
@@ -104,7 +125,7 @@ authentication:
 The first option is to use a database engine to authenticate the users from. In this case we just specify which database to use.
 
 ##### Local List Authentication
-```
+```yaml
 authentication:
   tokens:
     factory: jwt
@@ -127,7 +148,7 @@ locals:
  Not recommended for real use.
  
  ##### LDAP Authentication
- ```
+ ```yaml
  locals:
       driver: ldap
       config:
@@ -139,20 +160,14 @@ The port property in this case does not need to be specified as the port default
 
 ## Running the application
 
-There are 2 main ways to run the application
-* Using the command line
-* Using rake
+### Using terminal
+To run the application via terminal you have to:
+* Go to the folder where you cloned ROM
+* Run `bundle install` *(only required the first time around)*
+  * Try running `gem update` and `gem install bundler` and repeat the previous step. *(if you encounter issues)*
+* Create a data directory
+* Create a config file `config.yml` in the data directory
+* Run ROM script `bin/run.rb` in your data directory using `ruby`
 
-### Using CMD
-To run the application via CMD you have to:
-* Go to the folder where you installed ruby.
-* Go to the bin folder
-* Run *ridk enable* command, this enables to command line to use other fun services like telnet
-* Go to the folder where you cloned RubyOnMails
-* Skip this part if you are not running the application for the first time. Rub *bundle install* and *gem install sqlite3*
-* Skip if there are no errors. Try running *gem update* and *gem install bundler* and repeat the previous step.
-* Go to the data folder
-* Run *ruby ../bin/run.rb*
-
-### Using Rake
-Never used it, dunno
+### Using rake
+It is also possible to start the application using `rake`. Simply running `rake run` will use folder `data` within the project as data root. Please make sure to exclude your data folder in `.git/info/exclude`. 
