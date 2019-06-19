@@ -249,6 +249,11 @@ module ROM
 			'job_pool' => 'ROM::JobPool',
 			'job_server' => 'ROM::JobServer'
 		},
+		'imap' => {
+				'imap_job' => 'ROM::IMAP::IMAPJob',
+				'imap_mail' => 'ROM::IMAP::IMAPMail',
+				'imap_mail_data' => 'ROM::IMAP::IMAPMailData'
+		},
 		'authentication' => {
 			'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
 			'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
@@ -272,6 +277,11 @@ module ROM
 				'local_auth_provider' => 'ROM::Authentication::Providers::LocalAuthenticationProvider'
 			},
 			'judgements' => 'ROM::SuperJudgement'
+		},
+		'smtp' => {
+				'smtp_job' => 'ROM::SMTP::SMTPJob',
+				'smtp_message' => 'ROM::SMTP::SMTPMessage',
+				'smtp_attachment' => 'ROM::SMTP::SMTPAttachment'
 		},
 		'serializers' => {
 			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',
