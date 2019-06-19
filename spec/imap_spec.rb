@@ -11,10 +11,13 @@ module ROM
         end
 
         it 'should connect to server and fetch inbox' do
-          job_server = @itc.fetch(JobServer)
-          job_server.add_job_pool(:imap, 0)
-          job_server[:imap].add_job(IMAPJob.new("", "","mail.sssvt.cz", 143,))
-          puts "done"
+          job = IMAPJob.new("", "","mail.sssvt.cz", 143,)
+          mails = job.job_task(nil)
+          #job_server = @itc.fetch(JobServer)
+          #job_server.add_job_pool(:imap, 0)
+          #job_pool = job_server[:imap]
+          #job_pool.add_job(IMAPJob.new("", "","mail.sssvt.cz", 143,))
+          #job_pool.await_jobs
         end
       end
     end

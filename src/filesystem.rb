@@ -25,6 +25,10 @@ module ROM
 		def cert
 			path('cert')
 		end
+		
+		def mails
+			path('mails')
+		end
 
 		# Instantiates the {ROM::Filesystem} class
 		# @param [ROM::Interconnect] itc Interconnect which registers this instance
@@ -38,6 +42,7 @@ module ROM
 			temp.rmtree if temp.exist?
 			temp.mkpath
 			cert.mkpath
+			mails.mkpath
 		end
 		
 		# Stops the service. Clears temp

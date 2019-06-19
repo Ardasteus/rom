@@ -130,6 +130,8 @@ module ROM
 			'rom_db_context' => 'ROM::DB::RomDbContext',
 			'rom_db_hook' => 'ROM::RomDbHook',
 			'attribute' => 'ROM::Attribute',
+			'mime_stream' => 'ROM::MimeStream',
+			'bounded_io' => 'ROM::BoundedIO',
 			'models' => {
 				'user' => 'ROM::DB::User',
 				'contact' => 'ROM::DB::Contact',
@@ -143,7 +145,6 @@ module ROM
 				'type_protection' => 'ROM::DB::TypeProtection',
 				'connection' => 'ROM::DB::Connection',
 				'mailbox' => 'ROM::DB::Mailbox',
-				'mailbox_user' => 'ROM::DB::MailboxUser',
 				'map' => 'ROM::DB::Map',
 				'tag' => 'ROM::DB::Tag',
 				'participant' => 'ROM::DB::Participant',
@@ -160,7 +161,9 @@ module ROM
 				'type_message' => 'ROM::DB::TypeMessage',
 				'message' => 'ROM::DB::Message',
 				'password' => 'ROM::DB::Password',
-				'data_page' => 'ROM::DataPage'
+				'data_page' => 'ROM::DataPage',
+				'type_states' => 'ROM::DB::TypeStates',
+				'id' => 'ROM::IdModel'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
@@ -182,7 +185,8 @@ module ROM
 			'unauthorized_exception' => 'ROM::UnauthorizedException',
 			'invalid_operation_exception' => 'ROM::InvalidOperationException',
 			'not_found_exception' => 'ROM::NotFoundException',
-			'not_implemented_exception' => 'ROM::NotImplementedException'
+			'not_implemented_exception' => 'ROM::NotImplementedException',
+			'unknown_media_type_exception' => 'ROM::UnknownMediaTypeException'
 		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
@@ -230,6 +234,7 @@ module ROM
 			'object_content' => 'ROM::HTTP::ObjectContent',
 			'status_code' => 'ROM::HTTP::StatusCode',
 			'security' => 'ROM::HTTP::Security',
+			'stream_content' => 'ROM::HTTP::StreamContent',
 			'header_filters' => {
 				'http_header_filter' => 'ROM::HTTP::HTTPHeaderFilter',
 				'range_filter' => 'ROM::HTTP::Filters::RangeFilter'
@@ -273,6 +278,11 @@ module ROM
 			},
 			'judgements' => 'ROM::SuperJudgement'
 		},
+		'smtp' => {
+				'smtp_job' => 'ROM::SMTP::SMTPJob',
+				'smtp_message' => 'ROM::SMTP::SMTPMessage',
+				'smtp_attachment' => 'ROM::SMTP::SMTPAttachment'
+		},
 		'serializers' => {
 			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',
 			'serializer_provider' => 'ROM::SerializerProvider',
@@ -282,7 +292,12 @@ module ROM
 			'content_type' => 'ROM::ContentType'
 		},
 		'api' => {
-			'contacts' => 'ROM::API::ContactsResource'
+			'contacts' => 'ROM::API::ContactsResource',
+			'mails' => 'ROM::API::MailsResource'
+		},
+		'mails' => {
+			'mail_part' => 'ROM::MailPart',
+			'mail_storage' => 'ROM::MailStorage'
 		},
 		'api_constants' => 'ROM::ApiConstants',
 		'application' => 'ROM::Application',
@@ -290,7 +305,7 @@ module ROM
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'bcrypt', 'sqlite3', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'bcrypt', 'sqlite3', 'uuid'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|

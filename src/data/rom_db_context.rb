@@ -10,6 +10,7 @@ module ROM
 			table :media_types, TypeMedia
 			table :channel_types, TypeChannel
 			table :message_types, TypeMessage
+			table :state_types, TypeStates
 			table :users, User
 			table :collections, Collection
 			table :contacts, Contact
@@ -20,7 +21,6 @@ module ROM
 			table :contact_addresses, ContactAddress
 			table :connections, Connection
 			table :mailboxes, Mailbox
-			table :mailbox_users, MailboxUser
 			table :maps, Map
 			table :tags, Tag
 			table :participants, Participant

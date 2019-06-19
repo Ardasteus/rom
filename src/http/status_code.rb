@@ -41,6 +41,7 @@ module ROM
 			NOT_FOUND = self.new(404, 'Not Found')
 			METHOD_NOT_ALLOWED = self.new(405, 'Method not allowed')
 			NOT_ACCEPTABLE = self.new(406, 'Not acceptable')
+			CONFLICT = self.new(409, 'Conflict')
 			LENGTH_REQUIRED = self.new(411, 'Length Required')
 			UNSUPPORTED_MEDIA_TYPE = self.new(415, 'Unsupported Media Type')
 			RANGE_NOT_SATISFIABLE = self.new(416, 'Range Not Satisfiable')

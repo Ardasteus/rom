@@ -40,6 +40,7 @@ module ROM
 				unless http_response == nil
 					client.set_encoding(Encoding::ASCII_8BIT)
 					client.write(http_response.stringify)
+					http_response.content&.stream&.close
 				end
 				client.close
 			end

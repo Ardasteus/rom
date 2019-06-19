@@ -18,8 +18,11 @@ module ROM
         @data = data
       end
 
-      def initialize(content_type)
-        @content_type = content_type
+      def content_type=(string)
+        @data = string
+      end
+
+      def initialize()
         @headers = {}
         @data = ""
       end

@@ -5,30 +5,22 @@ module ROM
 			include Component
 			modifiers :abstract
 			
-			def input?
-				@input
-			end
-			
-			def output?
-				@output
-			end
+			DEFAULT_ENCODING = Encoding::UTF_8
 			
 			# Instantiates the {ROM::HTTP::Methods::HTTPMethod} class
 			# @param [ROM::Interconnect] itc Interconnect
-			def initialize(itc, name, i, o)
+			def initialize(itc, name)
 				@itc = itc
 				@name = name.upcase
-				@input = i
-				@output = o
 				@gateway = itc.pin(ApiGateway)
 				@handlers = itc.view(HTTPHeaderHandler)
+				@json = itc.pin(DataSerializers::JsonSerializerProvider)
+				@serializers = itc.view(SerializerProvider)
 			end
 			
 			# Resolves the given http request and formats the content with the given input/output serializers
 			# @param [ROM::HTTP::HTTPRequest] http_request HTTP request to resolve
-			# @param [ROM::DataSerializers::Serializer] input_serializer Input serializer, based on the Content-Type header
-			# @param [ROM::DataSerializers::Serializer] output_serializer Output serializer, based on the Accepts header, defaults to {ROM::DataSerializers::JSONSerializer}
-			def resolve(http_request, input_serializer, output_serializer)
+			def resolve(http_request)
 			end
 			
 			def get_plan(*paths)
@@ -65,8 +57,7 @@ module ROM
 			# Runs the given api plan, invoking it with arguments depending on the type of the request's content
 			# @param [ROM::ApiPlan] plan Plan to run
 			# @param [ROM:HTTP:HTTPRequest] request HTTP Request
-			# @param [ROM::DataSerializers::Serializer] serializer Input serializer to read the request's content
-			def run_plan(plan, request, serializer)
+			def run_plan(plan, request)
 				ctx = ApiContext.new(@itc)
 				request.headers.each_pair do |k, v|
 					@handlers.select { |i| i.accepts?(k) }.each do |h|
@@ -83,11 +74,20 @@ module ROM
 					end
 				end
 				args = []
-				body = (plan.signature[0] != nil and plan.signature[0][:type] <= Model) ? plan.signature[0] : nil
+				body = if plan.signature[0] != nil
+					arg = plan.signature[0]
+					if arg[:type] <= Model or arg[:type] <= MimeStream
+						arg
+					else
+						nil
+					end
+				else
+					nil
+				end
 				if body != nil
 					type = body[:type]
-					if type <= IO
-						args << request.stream
+					if type <= MimeStream
+						args << MimeStream.new(ContentType.from_header(request[:content_type]).type, BoundedIO.new(request.stream, request[:content_length].to_i))
 					elsif type <= Model
 						length = request[:content_length].to_i
 						args << if length == 0
@@ -98,7 +98,12 @@ module ROM
 							bytes = IO.copy_stream(request.stream, buffer, request[:content_length].to_i)
 							raise('Failed to read body!') if bytes != length
 							buffer.pos = 0
-							type.type.from_object(serializer.to_object(buffer))
+							data = input_serializer(request).to_object(buffer)
+							begin
+								type.type.from_object(data)
+							rescue Model::ConversionException => ex
+								raise(ArgumentException.new(body[:name], "Failed to convert body!: #{ex.message}"))
+							end
 						end
 					elsif body[:required]
 						raise("Unknown API action input argument type '#{type}'!")
@@ -115,6 +120,43 @@ module ROM
 				raise(ArgumentException.new(unk, 'Unknown action argument!')) if unk != nil
 				
 				plan.run(ctx, *args)
+			end
+			
+			def get_response(status, plan, req, res)
+				return HTTPResponse.new(StatusCode::NO_CONTENT) if plan.signature.return_type <= Types::Void
+				http_content = if plan.signature.return_type <= MimeStream
+					StreamContent.new(res)
+				else
+					ObjectContent.new(res, output_serializer(req))
+				end
+				
+				HTTPResponse.new(status, http_content)
+			end
+			
+			def input_serializer(req)
+				content = (req[:content_length] != nil and req[:content_length].to_i > 0)
+				content_type = (req[:content_type] == nil ? nil : ContentType.from_header(req[:content_type]))
+				return nil if content_type == nil
+				
+				encoding = if content_type.charset != nil
+					begin
+						Encoding.find(content_type.charset)
+					rescue ArgumentError
+						raise(CharsetNotFoundException.new(content_type.charset))
+					end
+				else
+					DEFAULT_ENCODING
+				end
+				
+				ret = @serializers.find { |i| i.accepts?(content_type.type) }&.get_serializer(content_type, encoding)
+				raise(UnknownMediaTypeException.new(content_type.type)) if ret == nil
+				raise(ArgumentException.new('Content-Type', 'Content type required!')) if content and ret == nil
+				
+				ret
+			end
+			
+			def output_serializer(req)
+				@json.get_serializer(nil, DEFAULT_ENCODING)
 			end
 			
 			def arg_val(name, type, val)

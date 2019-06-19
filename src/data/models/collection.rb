@@ -27,6 +27,16 @@ module ROM
 				
 				ret
 			end
+			
+			def children(db, rec = false)
+				ret = []
+				db.collections.select { |i| i.collection == self }.each do |child|
+					ret << child
+					ret += child.children(db, true) if rec
+				end
+				
+				ret
+			end
 		end
 	end
 end
