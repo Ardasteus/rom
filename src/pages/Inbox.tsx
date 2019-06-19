@@ -146,7 +146,8 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingContacts: false});
     }   
   }
-  // on press of OK, in create collection dialog, sends the textfield value to api
+  /** 
+   *  on press of OK, in create collection dialog, sends the textfield value to api */
   newCollections = () => {
     if(this.state.gettingNewCollection){
     const token = localStorage.getItem('token');   
