@@ -50,6 +50,12 @@ module ROM
         return mails
       end
 
+      def close
+        @client.puts("QUITS")
+        @client.gets
+        @client.close
+      end
+
       def fetch(id)
         string = "#{@counter} FETCH #{id} RFC822.HEADER"
         @counter += 1
@@ -100,7 +106,6 @@ module ROM
         @counter += 1
         puts string
         @client.puts(string)
-        responses = []
         response = ""
         temp = @client.gets
         first = true
@@ -116,7 +121,6 @@ module ROM
             response = handle_response
             first = false
           end
-          #responses.push(resp) if (resp != nil && (resp[0] != "-" && resp[1] != "-"))
           if response != nil && (response[0] != "-" && response[1] != "-")
 
             key, value = response.split(": ")
