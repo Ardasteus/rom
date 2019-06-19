@@ -12,7 +12,6 @@ import ShowMail from './ShowMail';
 import axios from 'classes/axios.instance';
 
 
-const emails = ['Email01', 'Email02', 'Email03', 'Email04', 'Email05'];
 
 
 interface State {
@@ -28,6 +27,7 @@ interface State {
   deletingCollection: boolean;
   deleteCollection: string;
   collectionData: Array<string>;
+  emails: Array<string>
 }
 
 class Inbox extends React.Component<{}, State> {
@@ -45,7 +45,8 @@ class Inbox extends React.Component<{}, State> {
       gettingNewCollection: false,
       deletingCollection: false,
       deleteCollection: '',
-      collectionData: []
+      collectionData: [],
+      emails: ['Email01', 'Email02'],
     };
 
   }
@@ -65,6 +66,7 @@ class Inbox extends React.Component<{}, State> {
     this.setState({
       addingMail: false,
     });
+    this.updateMailList();
   }
 
   /**
@@ -72,6 +74,7 @@ class Inbox extends React.Component<{}, State> {
   MailWriting = () => {
     if (this.state.addingMail === true) {
       return <WriteMail updateAddingMail={this.updateAddingMail} />;
+      
     }
   }
   /**
@@ -221,6 +224,15 @@ class Inbox extends React.Component<{}, State> {
       deleteCollection: event.target.value,
     });
   }
+  /**
+   * Updates mail list when title in WriteMail is added
+   */
+  updateMailList = () => {
+    const newListitem = localStorage.getItem('mail-title'); 
+    console.log(newListitem)
+    this.state.emails.push(newListitem) 
+    localStorage.removeItem('mail-title');
+  }
 
   render() {
     return (
@@ -286,7 +298,7 @@ class Inbox extends React.Component<{}, State> {
         </Dialog>       
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
-           {emails.map(email => (
+           {this.state.emails.map(email => (
            <ListItem key={email} button onClick={this.newShowMail}>
               <ListItemText primary={email}/>
             </ListItem>

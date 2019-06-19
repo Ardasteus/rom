@@ -27,13 +27,15 @@
 .writemail-card {
   width: 250px;
   height: 500px;
+  margin-left: -80%;
+  position: fixed;
 }
 .showmail-card {
-  width: 1600px;
+  width: 800px;
   height: 200px;
   position: fixed;
-  margin-left: 14.5%;
-  margin-top: -10.9%;
+  margin-left: 19.5%;
+  margin-top: -14.9%;
 }
 
 .writeMailButton{

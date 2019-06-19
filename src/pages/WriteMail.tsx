@@ -27,6 +27,9 @@ class WriteMail extends React.Component<Props, State> {
       title: '',
     };
   }
+  storageInfo = event => {
+    localStorage.setItem('mail-title', this.state.title);
+  }
   /**
    * Handle send text field  */ 
   handleChangeSendTo = event => {
@@ -51,6 +54,7 @@ class WriteMail extends React.Component<Props, State> {
 
 
   render() {
+    const enabled = this.state.title.length > 0;
     return (
     <div>
       <Card className='writemail-card'>
@@ -81,13 +85,12 @@ class WriteMail extends React.Component<Props, State> {
               margin='normal'
               value={this.state.message}
               onChange={this.handleChangeMessage}
-            />
-            <div>
-              <Button variant='contained'>Send</Button>
-            </div>
+            />           
           </CardContent>
           <CardActions>
-            
+          <div>
+              <Button onClick={this.storageInfo} disabled={!enabled} variant='contained'>Send</Button>
+            </div>
           </CardActions>
         </Card>
        </div>
