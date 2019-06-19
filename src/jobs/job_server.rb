@@ -18,13 +18,17 @@ module ROM
     #   Adds a {ROM::JobPool} to the server
     #   @param [symbol] key Symbol defining the job pool
     #   @param [ROM::JobPool] job_pool Pool to add
-    def add_job_pool(key, job_pool)
+    def add_job_pool(key, job_pool = 0)
       job_pool = JobPool.new(job_pool) if job_pool.is_a?(Integer)
       if self[key] == nil
         @job_pools[key] = job_pool
 			end
 			job_pool.logger = @itc.fetch(LogServer)
-    end
+		end
+		
+		def job_pool?(key)
+			@job_pools.has_key?(key)
+		end
 
     # Returns {ROM::JobPool} from the server
     # @param [symbol] key Symbol defining the job pool

@@ -33,11 +33,6 @@ module ROM
 				@attachments = attachments
 				@ccs = get_recipients(:cc)
 				@sender = @message_headers[:from]
-				if attachments != []
-					headers[:mime_version] = "1.0" if headers[:mime_version] == nil
-					headers[:content_type] = 'multipart/mixed; boundary=Boundary' if headers[:content_type] == nil
-					headers[:content_description] = "multipart-1"
-				end
 			end
 			
 			def get_recipients(hdr)
@@ -60,15 +55,18 @@ module ROM
 			end
 			
 			def format_header(header)
+				key = header.to_s.split('_').collect(&:capitalize).join('-') + ": "
 				case @message_headers[header]
-					when String
-						str = header.to_s.split('_').collect(&:capitalize).join('-') + ": " + @message_headers[header]
+					when String, Integer
+						str = key + @message_headers[header].to_s
 						
-						"MIME-Version: " + str.split(': ')[1] if header == :mime_version
+						str = "MIME-Version: " + str.split(': ')[1] if header == :mime_version
+						
+						str
 					when Array
 						val = @message_headers[header]
 						
-						header.to_s.split('_').collect(&:capitalize).join('-') + ": " + val.join(', ')
+						key + val.join(', ')
 					else
 						raise('Invalid header value!')
 				end

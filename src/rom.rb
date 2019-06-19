@@ -181,7 +181,7 @@ module ROM
 			'argument_exception' => 'ROM::ArgumentException',
 			'signature_exception' => 'ROM::SignatureException',
 			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
-			'charset_not_found_exception'=>'ROM::CharsetNotFoundException',
+			'charset_not_found_exception' => 'ROM::CharsetNotFoundException',
 			'unauthorized_exception' => 'ROM::UnauthorizedException',
 			'invalid_operation_exception' => 'ROM::InvalidOperationException',
 			'not_found_exception' => 'ROM::NotFoundException',
@@ -250,9 +250,9 @@ module ROM
 			'job_server' => 'ROM::JobServer'
 		},
 		'imap' => {
-				'imap_job' => 'ROM::IMAP::IMAPJob',
-				'imap_mail' => 'ROM::IMAP::IMAPMail',
-				'imap_mail_data' => 'ROM::IMAP::IMAPMailData'
+			'imap_job' => 'ROM::IMAP::IMAPJob',
+			'imap_mail' => 'ROM::IMAP::IMAPMail',
+			'imap_mail_data' => 'ROM::IMAP::IMAPMailData'
 		},
 		'authentication' => {
 			'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
@@ -279,9 +279,10 @@ module ROM
 			'judgements' => 'ROM::SuperJudgement'
 		},
 		'smtp' => {
-				'smtp_job' => 'ROM::SMTP::SMTPJob',
-				'smtp_message' => 'ROM::SMTP::SMTPMessage',
-				'smtp_attachment' => 'ROM::SMTP::SMTPAttachment'
+			'smtp_message' => 'ROM::SMTP::SMTPMessage',
+			'smtp_attachment' => 'ROM::SMTP::SMTPAttachment',
+			'mailbox_send_job' => 'ROM::SMTP::MailboxSendJob',
+			'smtp_client' => 'ROM::SMTP::SMTPClient'
 		},
 		'serializers' => {
 			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',

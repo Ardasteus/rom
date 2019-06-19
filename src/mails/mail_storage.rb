@@ -22,6 +22,18 @@ module ROM
 			(@root + id).exist?
 		end
 		
+		def open(hdr)
+			id = new_id
+			
+			(@root + "#{id}#{HEADERS_SUFFIX}").open('w+') do |h|
+				h.write(JSON.generate(hdr))
+			end
+			
+			data = (@root + id).open('wb+')
+			
+			MailPart.new(hdr, data)
+		end
+		
 		def store(part)
 			id = new_id
 			(@root + id).open('wb+') do |h|

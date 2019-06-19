@@ -6,14 +6,15 @@ module ROM
 		class TypeProtection < Model
 			include DbSeed
 			
+			TLS = 'tls'
+			
 			property :enum, Integer, KeyAttribute[], AutoAttribute[]
 			property! :moniker, String, IndexAttribute[]
 			property :description, String
 			
 			seed do
 				add(
-					TypeProtection.new(:moniker => 'none', :description => 'No channel protection'),
-					TypeProtection.new(:moniker => 'tls', :description => 'Channel secured using TLS')
+					TypeProtection.new(:moniker => TLS, :description => 'Channel secured using TLS')
 					)
 			end
 		end

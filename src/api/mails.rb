@@ -194,6 +194,10 @@ module ROM
 					@db.collection_mails.update(@link)
 					@mail.state = @db.state_types.find { |i| i.moniker == DB::TypeStates::OUTBOUND }
 					@db.mails.update(@mail)
+					
+					jobs = interconnect.fetch(JobServer)
+					jobs.add_job_pool(:smtp) unless jobs.job_pool?(:smtp)
+					jobs.add_job_to_pool(:smtp, SMTP::MailboxSendJob.new(interconnect.fetch(DbServer), interconnect.fetch(MailStorage), @mail.mailbox.id, @mail.mailbox.address))
 				end
 				
 				action :fetch, MailModel, AuthorizeAttribute[] do

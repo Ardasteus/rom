@@ -21,6 +21,10 @@ module ROM
 				command("EHLO #{@username}.#{@host}").lines.select { |i| i.downcase.start_with?('250') }.collect { |i| i[4..i.length].strip.downcase }
 			end
 			
+			def boundary(mail)
+				'MAIL_BOUNDARY'
+			end
+			
 			def open
 				@client = TCPSocket.new(@host, @port)
 				if @tls
@@ -48,17 +52,13 @@ module ROM
 					command("RCPT TO:" + recp.split(" ")[-1])
 				end
 				command("DATA")
-				mail.headers.each_key do |hdr|
-					@client.puts(mail.format_header(hdr))
-				end
-				@client.puts
 				send_body(mail) if mail.body != nil and mail.attachments.length == 0
 				send_attachments(mail) if mail.attachments.length > 0
 				transmit("\r\n.\r\n", true)
 			end
 			
 			def close
-				transmit('QUITS', true)
+				transmit('QUITS')
 				@client.close
 			end
 			
@@ -81,17 +81,28 @@ module ROM
 				pool_response if resp
 			end
 			
-			def send_body(message)
-				IO.copy_stream(message.body, @client)
+			def send_body(mail)
+				mail.headers.each_key do |hdr|
+					@client.puts(mail.format_header(hdr))
+				end
+				@client.puts
+				
+				IO.copy_stream(mail.body, @client)
 			end
 			
 			def send_attachments(message)
-				bounrady_raw = message[:content_type].split("; ")[1].split("=")[1]
-				boundary = bounrady_raw.insert(0, "--")
-				@client.puts(boundary)
+				message.headers.each_key do |hdr|
+					@client.puts(message.format_header(hdr)) unless hdr.to_s.downcase.start_with?('content')
+				end
+				bound = boundary(message)
+				@client.puts("Content-Type: multipart/mixed; boundary=#{bound}")
+				@client.puts
+				
+				bound = "--#{bound}"
+				@client.puts(bound)
 				
 				if message.body != nil
-					@client.puts("Content-Type: text/plain")
+					@client.puts("Content-Type: #{message[:content_type]}")
 					@client.puts("Content-Disposition: inline")
 					@client.puts("Content-Description: text-part-1")
 					@client.puts("Content-Transfer-Encoding: base64")
@@ -101,7 +112,7 @@ module ROM
 				end
 				
 				message.attachments.each do |attachment|
-					@client.puts(boundary)
+					@client.puts(bound)
 					@client.puts("Content-Type: #{attachment.content_type}; name=" + '"' + attachment.name + '"')
 					@client.puts("Content-Transfer-Encoding: base64")
 					@client.puts("Content-Disposition: attachment; filename=" + '"' + attachment.name + '"')
@@ -111,9 +122,9 @@ module ROM
 					@client.puts
 					@client.puts
 				end
-				boundary << "-"
-				boundary << "-"
-				@client.puts(boundary)
+				bound << "-"
+				bound << "-"
+				@client.puts(bound)
 			end
 			
 			def base64_send(io)
