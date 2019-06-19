@@ -22,10 +22,10 @@ module ROM
 			# @param [String] redirect Location where to redirect all requests, if empty then no redirect
 			def initialize(resolver, client, redirect = "")
 				super('HTTP connection handler job')
-				@client       = client
+				@client = client
 				@http_request = HTTPRequest.new(client)
-				@redirect     = redirect
-				@resolver     = resolver
+				@redirect = redirect
+				@resolver = resolver
 			end
 			
 			# Responds to the client, if redirect is turned on it redirects him.
@@ -37,7 +37,11 @@ module ROM
 				end
 				return http_response
 			ensure
-				client.write(http_response.stringify) unless http_response == nil
+				unless http_response == nil
+					client.set_encoding(Encoding::ASCII_8BIT)
+					client.write(http_response.stringify)
+					http_response.content&.stream&.close
+				end
 				client.close
 			end
 		end

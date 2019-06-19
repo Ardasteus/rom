@@ -12,7 +12,7 @@ module ROM
 			ret = self.class.unroll('', msg, sev)
 			if ex != nil
 				ret = self.class.unroll(ret, "<#{ex.class.name}> #{ex.message}", sev, 0, '!')
-				ret = self.class.unroll(ret, ex.backtrace.join($/), sev, 1, '!')
+				ret = self.class.unroll(ret, ex.backtrace.join($/), sev, 1, '!') unless ex.backtrace == nil
 			end
 			return ret
 		end

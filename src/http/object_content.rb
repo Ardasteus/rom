@@ -14,7 +14,7 @@ module ROM
 				@obj = obj
 				@ser = ser
 				io = ser.from_object(obj)
-				super(io, :content_type => ser.type, :content_length => io.length, **headers)
+				super(io, :content_type => ser.type.to_s, :content_length => io.length, **headers)
 			end
 		end
 	end

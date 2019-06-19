@@ -190,7 +190,7 @@ module ROM
 		def self.resolve(val, type)
 			case type
 				when Types::Just
-					if type.type < self
+					if type.type <= self
 						val.to_object
 					else
 						val
@@ -235,7 +235,11 @@ module ROM
 						return from_object(obj, type.type)
 					when Types::Union
 						type.types.each do |t|
-							return from_object(obj, t) if t.is(obj)
+							begin
+								return from_object(obj, t)
+							rescue
+								# ignored
+							end
 						end
 					when Types::Array
 						return obj.collect { |i| from_object(i, type.type) } if obj.is_a?(Array)

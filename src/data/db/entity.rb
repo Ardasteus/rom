@@ -42,6 +42,7 @@ module ROM
 		def initialize(tab, vals = {})
 			@tab = tab
 			@changes = {}
+			@lazy = {}
 			
 			ctr = {}
 			tab.table.model.properties.each do |prop|
@@ -49,33 +50,27 @@ module ROM
 				v = vals[sym]
 				
 				if v.is_a?(LazyPromise)
-					got = false
-					self.class.send(:define_method, sym) do
-						if got
-							@mod[sym]
-						else
-							i = v.fetch
-							@mod[sym] = i
-							got = true
-							
-							i
-						end
+					define_singleton_method(sym) do
+						i = v.fetch
+						@mod[sym] = i
+						@lazy.delete(sym)
+						define_singleton_method(sym) { @mod[sym] }
+						
+						i
 					end
+					@lazy[sym] = v
 					
 					fake = Module.new
 					fake.define_singleton_method :is_a? do |klass|
-						prop.type <= klass
+						klass == Fake or prop.type <= klass
 					end
 					ctr[sym] = fake
 				else
-					self.class.send(:define_method, sym) { @mod[sym] }
+					define_singleton_method(sym) { @mod[sym] }
 				end
 				
-				self.class.send(:define_method, "#{sym}=".to_sym) do |val|
-					if @mod[sym] != val
-						@changes[sym] = val
-						@mod[sym] = val
-					end
+				define_singleton_method("#{sym}=".to_sym) do |val|
+					raw_set(sym, val)
 				end
 			end
 			
@@ -83,21 +78,57 @@ module ROM
 				ctr[k] = v unless v.is_a?(LazyPromise)
 			end
 			@mod = tab.table.model.new(ctr)
+			
+			me = self
+			tab.table.model.properties.collect { |i| i.name.to_sym }.each do |sym|
+				@mod.send(:define_singleton_method, sym) { me[sym] }
+				@mod.send(:define_singleton_method, "#{sym}=".to_sym) { |value| me[sym] = value }
+			end
 		end
 		
 		# Fetches property of model
 		# @param [Symbol, String] key Name of property to fetch
 		# @return [Object, nil] Fetched value of given property
 		def [](key)
-			@mod[key]
+			if @lazy.has_key?(key)
+				send(key)
+			else
+				@mod[key]
+			end
+		end
+		
+		def raw_get(key)
+			if @lazy.has_key?(key)
+				@lazy[key]
+			else
+				@mod[key]
+			end
+		end
+		
+		def raw_set(key, value)
+			if @mod[key] != value
+				@changes[key] = value
+				@mod[key] = value
+			end
+		end
+		
+		def ==(other)
+			return false unless other.is_a?(Entity) and other.entity_table == @tab
+			@tab.table.keys.collect { |i| i.name.to_sym }.each do |k|
+				return false if self[k] != other[k]
+			end
+			
+			true
+		end
+		
+		def !=(other)
+			not (self == other)
 		end
 		
 		# Sets property to a given value
 		# @param [Symbol, String] key Name of property to set
 		# @param [Object, nil] value Value to set the property to
-		def []=(key, value)
-			@mod[key] = value
-		end
+		alias []= raw_set
 		
 		def method_missing(name, *args, &block)
 			@mod.send(name, *args, &block)

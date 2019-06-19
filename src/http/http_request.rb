@@ -38,7 +38,11 @@ module ROM
       # @return [IO]
       def stream
         @io
-      end
+			end
+			
+			def headers
+				@headers
+			end
 
       # Instantiates the {ROM::HTTPRequest} class
       # @param [stream] io Client stream from which the class extracts all the parts of HTTP request. The leftover is the content of the request.
@@ -59,7 +63,7 @@ module ROM
         loop do
           ln = io.readline
           break if ln.strip.chomp == ''
-          header, value = ln.split(':').collect(&:strip)
+          header, value = ln.split(':', 2).collect(&:strip)
           header = header.tr('-', '_').downcase.to_sym
 					case @headers[header]
 						when NilClass

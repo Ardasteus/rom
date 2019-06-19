@@ -10,11 +10,28 @@ module ROM
 		def context
 			self
 		end
-
+		
+		def identity
+			@id
+		end
+		
+		def identity=(val)
+			@id = val
+		end
+		
+		def token
+			@tok
+		end
+		
+		def token=(val)
+			@tok = val
+		end
+		
+		
 		def interconnect
 			@itc
 		end
-
+		
 		def initialize(itc = nil)
 			@itc = itc
 		end

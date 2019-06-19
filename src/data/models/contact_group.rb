@@ -7,7 +7,7 @@ module ROM
 			property :id, Integer
 			property! :name, String, IndexAttribute[]
 			property! :user, User, SuffixAttribute['owner']
-			property! :personal, Types::Boolean
+			property! :personal, Integer, LengthAttribute[1]
 		end
 	end
 end

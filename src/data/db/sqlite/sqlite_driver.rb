@@ -8,8 +8,7 @@ module ROM
 			# Mapping table of types
 			TYPES = {
 				Integer => 'INTEGER',
-				String => 'NVARCHAR',
-				Types::Boolean => 'TINYINT'
+				String => 'NVARCHAR'
 			}
 			# Query builders
 			QUERIES = {
@@ -125,7 +124,7 @@ module ROM
 					qry += " WHERE #{expression(where, args)}"
 				end
 				
-				if ord.size > 0
+				if ord != nil and ord.size > 0
 					qry += " ORDER BY "
 					qry += ord.collect { |o|
 						res = expression(o.expression, args)
@@ -180,6 +179,26 @@ module ROM
 						"#{expr.function.name}(#{expr.arguments.collect { |i| expression(i, args) }.join(', ')})"
 					when Queries::UnaryOperator
 						"#{expr.operator.name}#{(expr.operator.name.length > 1 ? ' ' : '')}(#{expression(expr.operand, args)})"
+					when Queries::LikeExpression
+						like = ''
+						expr.segments.each do |seg|
+							case seg[:type]
+								when :string
+									seg[:value].chars.collect(&:downcase).each do |c|
+										case c
+											when "'", '"', '%', '*', '\\'
+												like += "\\#{c}"
+											else
+												like += c
+										end
+									end
+								when :any_char
+									like += '_'
+								when :any_string
+									like += '%'
+							end
+						end
+						"LOWER(#{expression(expr.expression, args)}) LIKE '#{like}'"
 					else
 						raise('Expresion type not supported!')
 				end
@@ -199,6 +218,7 @@ module ROM
 			# @param [ROM::Interconnect] itc Registering interconnect
 			def initialize(itc)
 				super(itc, 'sqlite', SqliteConfig)
+				@cid = 0
 			end
 			
 			# Opens a DB connection
@@ -206,7 +226,8 @@ module ROM
 			# @return [ROM::DbConnection] Opened connection handle
 			def connect(conf)
 				fs = @itc.fetch(Filesystem)
-				SqliteConnection.new(self, fs.path(conf.file).expand_path.to_s)
+				@cid += 1
+				SqliteConnection.new(self, @cid, fs.path(conf.file).expand_path.to_s)
 			end
 			
 			# Handles connection to an SQLite DB
@@ -227,9 +248,11 @@ module ROM
 				# Instantiates the {ROM::DbConnection} class
 				# @param [ROM::DbDriver] dvr Driver that manages the connection
 				# @param [String] file SQLite file to connect to
-				def initialize(dvr, file)
+				def initialize(dvr, cid, file)
 					super(dvr)
 					@db = SQLite3::Database.new(file, { :type_translation => true })
+					@cid = cid
+					@state = :open
 				end
 				
 				# Gets the ID of the last inserted row
@@ -246,6 +269,7 @@ module ROM
 				# Closes the DB connection
 				def close
 					@db.close
+					@state = :closed
 				end
 				
 				# SQLite query result set

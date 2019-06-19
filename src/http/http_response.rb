@@ -1,6 +1,6 @@
 module ROM
 	module HTTP
-
+		
 		# Class that encapsulates a HTTP response
 		class HTTPResponse
 			# End of line constant
@@ -19,9 +19,13 @@ module ROM
 			end
 			
 			def [](header)
-			   @headers[header]
+				@headers[header]
 			end
-
+			
+			def []=(header, value)
+				@headers[header] = value
+			end
+			
 			# Content of the HTTP response
 			# @return [HTTPContent]
 			def content
@@ -33,7 +37,7 @@ module ROM
 			# @param [ROM::HTTPContent] content Content of the response
 			# @param [hash] headers Custom headers that override the content ones
 			def initialize(code, content = nil, **headers)
-				@code    = code
+				@code = code
 				@headers = create_headers(content, headers)
 				@content = content
 			end
@@ -67,18 +71,22 @@ module ROM
 				response = "HTTP/1.1 #{@code}#{EOL}"
 				
 				@headers.each_pair do |key, value|
-          if value.is_a?(Array)
+					if value.is_a?(Array)
 						value.each do |val|
 							response += header_key(key) + ": " + val.to_s + EOL
 						end
-          else
+					else
 						response += header_key(key) + ": " + value.to_s + EOL
-          end
+					end
 				end
 				response += EOL
-				response += @content.stream.read unless @content&.stream == nil
+				response = response.force_encoding(Encoding::ASCII_8BIT)
+				unless @content&.stream == nil
+					body = @content.stream.read
+					response += body.force_encoding(Encoding::ASCII_8BIT)
+				end
 				
-				return response
+				response
 			end
 		end
 	end

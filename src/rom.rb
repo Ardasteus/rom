@@ -92,7 +92,8 @@ module ROM
 					'function_expression' => 'ROM::Queries::FunctionExpression',
 					'unary_operator' => 'ROM::Queries::UnaryOperator',
 					'constant_value' => 'ROM::Queries::ConstantValue',
-					'order' => 'ROM::Queries::Order'
+					'order' => 'ROM::Queries::Order',
+					'like_expression' => 'ROM::Queries::LikeExpression'
 				},
 				'db_column' => 'ROM::DbColumn',
 				'db_driver' => 'ROM::DbDriver',
@@ -123,14 +124,16 @@ module ROM
 				'length_attribute' => 'ROM::LengthAttribute',
 				'db_status' => 'ROM::DbStatus',
 				'db_config' => 'ROM::DbConfig',
-				'db_hook' => 'ROM::DbHook'
+				'db_hook' => 'ROM::DbHook',
+				'fake' => 'ROM::Fake'
 			},
 			'rom_db_context' => 'ROM::DB::RomDbContext',
 			'rom_db_hook' => 'ROM::RomDbHook',
 			'attribute' => 'ROM::Attribute',
+			'mime_stream' => 'ROM::MimeStream',
+			'bounded_io' => 'ROM::BoundedIO',
 			'models' => {
 				'user' => 'ROM::DB::User',
-				'type_driver' => 'ROM::DB::TypeDriver',
 				'contact' => 'ROM::DB::Contact',
 				'collection' => 'ROM::DB::Collection',
 				'login' => 'ROM::DB::Login',
@@ -142,7 +145,6 @@ module ROM
 				'type_protection' => 'ROM::DB::TypeProtection',
 				'connection' => 'ROM::DB::Connection',
 				'mailbox' => 'ROM::DB::Mailbox',
-				'mailbox_user' => 'ROM::DB::MailboxUser',
 				'map' => 'ROM::DB::Map',
 				'tag' => 'ROM::DB::Tag',
 				'participant' => 'ROM::DB::Participant',
@@ -157,7 +159,11 @@ module ROM
 				'channel' => 'ROM::DB::Channel',
 				'channel_contact' => 'ROM::DB::ChannelContact',
 				'type_message' => 'ROM::DB::TypeMessage',
-				'message' => 'ROM::DB::Message'
+				'message' => 'ROM::DB::Message',
+				'password' => 'ROM::DB::Password',
+				'data_page' => 'ROM::DataPage',
+				'type_states' => 'ROM::DB::TypeStates',
+				'id' => 'ROM::IdModel'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [
@@ -170,6 +176,18 @@ module ROM
 				'ROM::Types::Maybe',
 			]
 		},
+		'exceptions' => {
+			'planning_exception' => 'ROM::PlanningException',
+			'argument_exception' => 'ROM::ArgumentException',
+			'signature_exception' => 'ROM::SignatureException',
+			'unauthenticated_exception' => 'ROM::UnauthenticatedException',
+			'charset_not_found_exception'=>'ROM::CharsetNotFoundException',
+			'unauthorized_exception' => 'ROM::UnauthorizedException',
+			'invalid_operation_exception' => 'ROM::InvalidOperationException',
+			'not_found_exception' => 'ROM::NotFoundException',
+			'not_implemented_exception' => 'ROM::NotImplementedException',
+			'unknown_media_type_exception' => 'ROM::UnknownMediaTypeException'
+		},
 		'diagnostics' => {
 			'buffer_logger' => 'ROM::BufferLogger',
 			'log_server' => 'ROM::LogServer',
@@ -180,6 +198,7 @@ module ROM
 		'dynamic' => {
 			'api_context' => 'ROM::ApiContext',
 			'api_gateway' => 'ROM::ApiGateway',
+			'api_exception' => 'ROM::ApiException',
 			'component' => 'ROM::Component',
 			'config' => 'ROM::Config',
 			'interconnect' => 'ROM::Interconnect',
@@ -201,9 +220,10 @@ module ROM
 			'http_method_handlers' => {
 				'delete_method' => 'ROM::HTTP::Methods::DeleteMethod',
 				'get_method' => 'ROM::HTTP::Methods::GetMethod',
-				'http_method' => 'ROM::HTTP::Methods::HTTPMethod',
+				'http_method' => 'ROM::HTTP::HTTPMethod',
 				'post_method' => 'ROM::HTTP::Methods::PostMethod',
-				'put_method' => 'ROM::HTTP::Methods::PutMethod'
+				'put_method' => 'ROM::HTTP::Methods::PutMethod',
+				'options_method' => 'ROM::HTTP::Methods::OptionsMethod'
 			},
 			'http_config' => 'ROM::HTTP::HTTPConfig',
 			'http_content' => 'ROM::HTTP::HTTPContent',
@@ -214,12 +234,14 @@ module ROM
 			'object_content' => 'ROM::HTTP::ObjectContent',
 			'status_code' => 'ROM::HTTP::StatusCode',
 			'security' => 'ROM::HTTP::Security',
+			'stream_content' => 'ROM::HTTP::StreamContent',
 			'header_filters' => {
-					'http_header_filter' => 'ROM::HTTP::Filters::HTTPHeaderFilter',
-					'content_length_filter' => 'ROM::HTTP::Filters::ContentLengthFilter'
+				'http_header_filter' => 'ROM::HTTP::HTTPHeaderFilter',
+				'range_filter' => 'ROM::HTTP::Filters::RangeFilter'
 			},
 			'header_handlers' => {
-					'http_header_handler' => 'ROM::HTTP::HeaderHandlers::HTTPHeaderHandler'
+				'http_header_handler' => 'ROM::HTTP::HTTPHeaderHandler',
+				'auth_handler' => 'ROM::HTTP::HeaderHandlers::AuthenticationHandler'
 			}
 		},
 		'jobs' => {
@@ -228,31 +250,52 @@ module ROM
 			'job_server' => 'ROM::JobServer'
 		},
 		'authentication' => {
-				'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
-				'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
-				'authentication_service' => 'ROM::Authentication::AuthenticationService',
-				'authenticator' => 'ROM::Authentication::Authenticator',
-				'jwt_token_factory' => 'ROM::Authentication::Factories::JWTTokenFactory',
-				'ldap_authenticator' => 'ROM::Authentication::Authenticators::LDAPAuthenticator',
-				'ldap_provider' => 'ROM::Authentication::Providers::LDAPProvider',
-				'token' => 'ROM::Authentication::Token',
-				'token_factory' => 'ROM::Authentication::TokenFactory',
-				'user' => 'ROM::Authentication::User',
-				'testing' => {
-						'test_provider' => 'ROM::Authentication::Providers::TestProvider',
-						'test_authenticator' => 'ROM::Authentication::Authenticators::TestAuthenticator'
-				}
+			'authentication_config' => 'ROM::Authentication::AuthenticationConfig',
+			'authentication_provider' => 'ROM::Authentication::AuthenticationProvider',
+			'authentication_service' => 'ROM::Authentication::AuthenticationService',
+			'authenticator' => 'ROM::Authentication::Authenticator',
+			'jwt_token_factory' => 'ROM::Authentication::Factories::JWTTokenFactory',
+			'jwt_config' => 'ROM::Authentication::JwtConfig',
+			'ldap_authenticator' => 'ROM::Authentication::Authenticators::LDAPAuthenticator',
+			'ldap_provider' => 'ROM::Authentication::Providers::LDAPProvider',
+			'token' => 'ROM::Authentication::Token',
+			'token_factory' => 'ROM::Authentication::TokenFactory',
+			'user' => 'ROM::Authentication::User',
+			'authorize_attribute' => 'ROM::AuthorizeAttribute',
+			'identity' => 'ROM::Identity',
+			'list' => {
+				'list_provider' => 'ROM::Authentication::Providers::ListProvider',
+				'list_authenticator' => 'ROM::Authentication::Authenticators::ListAuthenticator'
+			},
+			'local' => {
+				'local_auth' => 'ROM::Authentication::Authenticators::LocalAuthenticator',
+				'local_auth_provider' => 'ROM::Authentication::Providers::LocalAuthenticationProvider'
+			},
+			'judgements' => 'ROM::SuperJudgement'
 		},
 		'serializers' => {
-			'json_serializer' => 'ROM::DataSerializers::JSONSerializer',
-			'serializer' => 'ROM::DataSerializers::Serializer'
+			'json_serializer_provider' => 'ROM::DataSerializers::JsonSerializerProvider',
+			'serializer_provider' => 'ROM::SerializerProvider',
+			'data_serializer' => 'ROM::DataSerializer'
 		},
+		'net' => {
+			'content_type' => 'ROM::ContentType'
+		},
+		'api' => {
+			'contacts' => 'ROM::API::ContactsResource',
+			'mails' => 'ROM::API::MailsResource'
+		},
+		'mails' => {
+			'mail_part' => 'ROM::MailPart',
+			'mail_storage' => 'ROM::MailStorage'
+		},
+		'api_constants' => 'ROM::ApiConstants',
 		'application' => 'ROM::Application',
 		'filesystem' => 'ROM::Filesystem'
 	}
 	
 	Importer.new($includes == nil ? File.dirname(__FILE__) : $includes, ($ROM_DYNAMIC == nil or $ROM_DYNAMIC)) do
-		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'sqlite3', 'mysql2'
+		gems 'json', 'safe_yaml', 'set', 'socket', 'openssl', 'net-ldap', 'base64', 'pathname', 'bcrypt', 'sqlite3', 'uuid', 'mysql2'
 		
 		def map(m = MAP, path = nil)
 			m.each_pair do |k, v|
