@@ -98,7 +98,12 @@ module ROM
 							bytes = IO.copy_stream(request.stream, buffer, request[:content_length].to_i)
 							raise('Failed to read body!') if bytes != length
 							buffer.pos = 0
-							type.type.from_object(input_serializer(request).to_object(buffer))
+							data = input_serializer(request).to_object(buffer)
+							begin
+								type.type.from_object(data)
+							rescue Model::ConversionException => ex
+								raise(ArgumentException.new(body[:name], "Failed to convert body!: #{ex.message}"))
+							end
 						end
 					elsif body[:required]
 						raise("Unknown API action input argument type '#{type}'!")

@@ -8,6 +8,7 @@ module ROM
 			property :name, String
 			property! :address, String
 			property :contact, Contact
+			property :references, Integer, 1
 			
 			def tag
 				ret = nil

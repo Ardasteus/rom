@@ -11,7 +11,7 @@ module ROM
 			property! :excerpt, String
 			property! :sender, Participant, SuffixAttribute['sender']
 			property! :state, TypeStates
-			property! :file, String
+			property :file, String
 			property :reply_address, String
 			property! :mailbox, Mailbox
 			property :references, Integer, 1
@@ -27,7 +27,11 @@ module ROM
 			end
 			
 			def read=(val)
-				is_read = (val == 1)
+				is_read = val ? 1 : 0
+			end
+			
+			def local=(val)
+				is_local = val ? 1 : 0
 			end
 			
 			def date_time

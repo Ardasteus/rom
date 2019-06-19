@@ -50,5 +50,9 @@ module ROM
 			
 			ret
 		end
+		
+		def close
+			@io.close
+		end
 	end
 end

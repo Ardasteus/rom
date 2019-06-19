@@ -99,6 +99,11 @@ module ROM
 					property :smtp, ConnectionModel
 				end
 				
+				class MailCreateModel < Model
+					property! :subject, String
+					property! :recipients, Types::Array[String]
+				end
+				
 				class MapsResource < Resource
 					class MapModel < Model
 						property :id, Integer
@@ -210,6 +215,67 @@ module ROM
 				
 				def close(tail)
 					@db.close if tail
+				end
+				
+				action :create, IdModel, AuthorizeAttribute[],
+					:body! => MailCreateModel do |body|
+					raise(ArgumentException.new('subject', 'Subject is empty!')) if body.subject.strip.length == 0
+					raise(ArgumentException.new('recipients', 'No recipient given!')) if body.recipients.length == 0
+					
+					recipients = []
+					body.recipients.each do |r|
+						raise(ArgumentException.new('recipients', 'Same recipient specified multiple times!')) if recipients.any? { |i| i.address == r }
+						
+						addr = @db.contact_addresses.find { |i| i.address == r }
+						recipients << if addr == nil
+							DB::Participant.new(:address => r)
+						else
+							par = @db.participants.find { |i| i.contact == addr.contact }
+							
+							par == nil ? DB::Participant.new(:name => addr.contact.full_name, :address => r, :contact => addr.contact) : par
+						end
+					end
+					
+					me = @db.users.find(identity.id).contact
+					owner = @db.participants.find { |i| i.contact == me }
+					owner = @db.participants << DB::Participant.new(:name => me.full_name, :address => @box.address, :contact => me, :references => 0) if owner == nil
+					
+					idx = recipients.index { |i| i.address == @box.address }
+					recipients[idx] = owner if idx != nil
+					
+					mail = @db.mails << DB::Mail.new(
+						:subject => body.subject,
+						:date => Time.now.to_i,
+						:excerpt => '',
+						:sender => owner,
+						:state => @db.state_types.find { |i| i.moniker == DB::TypeStates::DRAFT },
+						:reply_address => @box.address,
+						:mailbox => @box,
+						:is_local => 1,
+						:is_read => 1
+					)
+					
+					owner.references += 1
+					@db.participants.update(owner)
+					
+					recipients.collect! do |r|
+						if r.is_a?(Entity)
+							r.references += 1
+							@db.participants.update(r)
+							
+							r
+						else
+							@db.participants << r
+						end
+					end
+					
+					recipients.each do |r|
+						@db.mail_participants << DB::MailParticipant.new(:mail => mail, :participant => r)
+					end
+					
+					@db.collection_mails << DB::CollectionMail.new(:collection => @box.drafts, :mail => mail)
+					
+					IdModel.new(:id => mail.id)
 				end
 				
 				action :fetch, MailboxModel, AuthorizeAttribute[] do

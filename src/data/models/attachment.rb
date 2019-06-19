@@ -9,7 +9,7 @@ module ROM
 			property! :type, String
 			property! :size, Integer
 			property! :mail, Mail
-			property! :file, String
+			property :file, String
 		end
 	end
 end
