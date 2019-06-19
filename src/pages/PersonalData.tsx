@@ -34,7 +34,8 @@ class PersonalData extends React.Component<Props, State> {
       namedata: '',
     };
   }
-  // on load of personal data, get user info
+  /**
+   * Get token from localstorage, get list of Me info from API */ 
   getNameData = () => {
     if(this.state.gettingNameData){
     const token = localStorage.getItem('token');   
@@ -55,7 +56,8 @@ class PersonalData extends React.Component<Props, State> {
     }   
   }
 
-  // on press of OK in change password dialog in personal data, send old password and new password to api
+  /**
+   * Get token from localstorage, on press of OK in change password dialog in personal data, post old password and new password to api */ 
   getPasswordData = () => {
     if(this.state.gettingPasswordData){
     const token = localStorage.getItem('token');   
@@ -71,7 +73,8 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({gettingPasswordData: false});
     }   
   }
-  // on press of OK in change password dialog in personal data, get if user can change password
+  /**
+   * Get token from localstorage, on press of OK in change password dialog in personal data, get if user can change password */ 
   getPasswordChanging = () => {
     if(this.state.gettingPasswordChanging){
     const token = localStorage.getItem('token');   
@@ -89,29 +92,34 @@ class PersonalData extends React.Component<Props, State> {
   }
 
 
-  // handle old password text field
+  /**
+   * handle old password text field */ 
   handleChangeOldPass = event => {
     this.setState({
       oldPassword: event.target.value,
     });
   }
-  // handle old password text field
+  /**
+   * handle new password text field */ 
   handleChangeNewPass = event => {
     this.setState({
       newPassword: event.target.value,
     });
   }
-  // handle if dialog is open
+  /**
+   * set state open to true, opens dialog personal data */ 
   handleOpenTrue = () => {
     this.setState({ open: true });
   }
-  // handle OK button in dialog
+  /**
+   * handle OK button in Personal data change password dialog  */ 
   handleOpenFalseConfirm = () => {
     this.setState({gettingPasswordChanging: true});
     this.setState({gettingPasswordData: true});
     this.setState({ open: false });
   }
-  // handle Cancel button in dialog
+  /**
+   * handle Cancel button in Personal data change password dialog */ 
   handleOpenFalse = () => {
     this.setState({ open: false });
   }

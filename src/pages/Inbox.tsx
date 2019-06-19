@@ -1,22 +1,14 @@
 import * as React from 'react';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Card, CardContent, CardActions, CardHeader, Paper, TextField, DialogActions, DialogContent, Dialog, DialogTitle } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import DeleteIcon from '@material-ui/icons/Delete';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
-import Mail from './Mail';
-import Checkbox from '@material-ui/core/Checkbox';
-import CloseIcon from '@material-ui/icons/Close';
 import ShowMail from './ShowMail';
-import SearchField from "react-search-field";
 import axios from 'classes/axios.instance';
 
 
@@ -29,7 +21,6 @@ interface State {
   sentMail: boolean;
   text: string;
   gettingCollections: boolean;
-  gettingContacts: boolean;
   open: boolean;
   openDel: boolean;
   newCollection: string;
@@ -52,7 +43,6 @@ class Inbox extends React.Component<{}, State> {
       openDel: false,
       newCollection: '',
       gettingNewCollection: false,
-      gettingContacts: true,
       deletingCollection: false,
       deleteCollection: '',
       collectionData: []
@@ -61,56 +51,65 @@ class Inbox extends React.Component<{}, State> {
   }
 
 
-  // Sets declarable addingMail true
+  /**
+   * Sets state addingMail true */ 
   newMailWrite = () => {
     this.setState({
       addingMail: true,
     });
   }
-
+  /**
+   * Sets state addingMail false
+   */
   updateAddingMail = (event: any) => {
     this.setState({
       addingMail: false,
     });
   }
 
-  // If declarable addingMail is true, show component WriteMail
+  /**
+   * If state addingMail is true, show component WriteMail */ 
   MailWriting = () => {
     if (this.state.addingMail === true) {
       return <WriteMail updateAddingMail={this.updateAddingMail} />;
     }
   }
-
+  /**
+   * Set state sentMail to false
+   */
   sendingMail = (event: any) => {
     this.setState({
       sentMail: false,
     });
   }
 
-  SendingMail = () => {
-    if (this.state.sentMail === true) {
-
-    }
-  }
-
+  /**
+   * If state showingMail is true, return component ShowMail
+   */
   showingMail = () => {
     if (this.state.showingMail === true) {
       return <ShowMail updateShowingMail={this.updateShowingMail} />;
     }
   }
-
+  /**
+   * Set state showingMail to false
+   */
   updateShowingMail = (event: any) => {
     this.setState({
       showingMail: false,
     });
   }
-
+  /**
+   * Set state showingMail to true
+   */
   newShowMail = () => {
     this.setState({
       showingMail: true,
     });
   }
-  // when the render loads, get collections from api
+  /**
+   * Get list of collections from API
+   */
   getCollections = () => {
     if(this.state.gettingCollections){
     const token = localStorage.getItem('token');   
@@ -130,24 +129,9 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingCollections: false});
     }   
   }
-  // when the render loads, get contacts from api
-  getContacts = () => {
-    if(this.state.gettingContacts){
-    const token = localStorage.getItem('token');   
-    console.log(token) 
-    var config = {
-      headers: {'Authorization': "Bearer " + token}
-  };  
-    axios.get('contacts', config)
-    .then(response => {
-      console.log(response) 
-      }
-    )
-    this.setState({gettingContacts: false});
-    }   
-  }
-  /** 
-   *  on press of OK, in create collection dialog, sends the textfield value to api */
+  /**
+   * Gets token from localstorage, posts new collection to API by sending Create collection dialog text field value
+   */
   newCollections = () => {
     if(this.state.gettingNewCollection){
     const token = localStorage.getItem('token');   
@@ -163,7 +147,9 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingNewCollection: false});
     }   
   }
-  // on press of OK, in delete collection dialog, deletes the textfield value to api
+  /**
+   * Gets token from localstorage, deletes a collection to API by sending Delete collection dialog text field value
+   */
   deleteCollections = () => {
     if(this.state.deletingCollection){
     const token = localStorage.getItem('token');   
@@ -180,33 +166,56 @@ class Inbox extends React.Component<{}, State> {
     }   
   }
 
+  /**
+   * Set state open to true -} open Create collection dialog
+   */
   handleOpenTrue = () => {
     this.setState({ open: true });
   }
+  /**
+   * Set state openDel to true -} open Delete a collection dialog
+   */
   handleOpenTrueDel = () => {
     this.setState({ openDel: true });
   }
 
+  /**
+   * Handle OK button in Create collection dialog, sets state gettingNewCollection true, which sends text field value to API, then sets state open false, which closes the dialog
+   */
   handleOpenFalseConfirm = () => {
     this.setState({gettingNewCollection: true});
     this.setState({ open: false });
   }
+  /**
+   * Handle OK button in Delete a collection dialog, sets state deletingCollection true, which sends text field value to API, then sets state open false, which closes the dialog
+   */
   handleOpenFalseDelConfirm = () => {
     this.setState({deletingCollection: true});
     this.setState({ openDel: false });
   }
+  /**
+   * Set state open to false, closing Create collection dialog
+   */
   handleOpenFalse = () => {
     this.setState({ open: false });
   }
+  /**
+   * Set state openDel to false, closing Delete a collection dialog
+   */
   handleOpenFalseDel = () => {
     this.setState({ openDel: false });
   }
-
+  /**
+   * Handles change in Create collection dialogs text field
+   */
   handleChangeCollection = event => {
     this.setState({
       newCollection: event.target.value,
     });
   }
+  /**
+   * Handles change in Delete a collection dialogs text field
+   */
   handleChangeDelCollection = event => {
     this.setState({
       deleteCollection: event.target.value,
@@ -217,7 +226,6 @@ class Inbox extends React.Component<{}, State> {
     return (
       <div>
         {this.newCollections()}
-        {this.getContacts()}
         {this.getCollections()} 
         {this.deleteCollections()} 
         <Dialog

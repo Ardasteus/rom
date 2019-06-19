@@ -1,9 +1,6 @@
 import * as React from 'react';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
@@ -16,7 +13,8 @@ class ShowMail extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
   }
-  // Colse ShowMail component
+  /**
+   * Set state showingMail, close ShowMail component */ 
   closeMailWrite = () => {
     this.setState({
       showingMail: false,

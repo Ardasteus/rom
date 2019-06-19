@@ -32,7 +32,8 @@ class LoginPage extends React.Component {
     authenticated: true,
   };
 
-  // Posts username and password in text fields, if status is 201, it passes to home screen
+  /**
+   * Posts username and password textfields values to the API, if status is 201 then set state redirectLogin true, localstorage received token */ 
   setRedirectLogin = () => {
     axios.post('login', {
       username: this.state.name,
@@ -45,25 +46,29 @@ class LoginPage extends React.Component {
     });
   }
 
-  // Sets declarable redirectRegister true
+  /**
+   * Sets state redirectRegister to true  */ 
   setRedirectRegister = () => {
       this.setState({
         redirectRegister: true,
       });
   }
 
-  // Handles change in name/password field
+  /**
+   * Handles change in name/password field */ 
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
     });
   }
 
-  // Redirects to login page
+  /**
+   * Redirects to home page */ 
   homeRedirect =() => {
     return <Redirect to='/home' />;
   }
-  // Redirects to register page
+  /**
+   * Redirects to register page */ 
   registerRedirect = () => {
       return <Redirect to='/register' />;
   }

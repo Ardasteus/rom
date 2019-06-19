@@ -3,8 +3,6 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import 'styles/HomePage.scss';
 import { Redirect, Link } from 'react-router-dom';
@@ -38,36 +36,42 @@ class RegisterPage extends React.Component {
     password: '',
     conpassword: '',
   };
-  // Sets declarable redirectSignIn true
+  /**
+   * Sets declarable redirectSignIn true */ 
   setRedirectSignIn = () => {
     this.setState({
       redirectSignIn: true,
     });
   }
-  // Sets declarable redirectLogin true
+  /**
+   * Sets declarable redirectLogin true */ 
   setRedirectLogin = () => {
     this.setState({
       redirectLogin: true,
     });
   }
-  // If declarable redirectSignIn is true, redirect to home page
+  /**
+   * If declarable redirectSignIn is true, redirect to home page */ 
   homeRedirect = () => {
     if (this.state.redirectSignIn) {
       return <Redirect to='/home' />;
     }
   }
-  // If declarable redirectLogin is true, redirect to login page
+  /**
+   * If declarable redirectLogin is true, redirect to login page */ 
   loginRedirect = () => {
     if (this.state.redirectLogin) {
       return <Redirect to='/' />;
     }
   }
-  // Handles create account dialog
+  /**
+   *  Handles create account dialog */
   handleClickOpen = () => {
     this.setState({ open: true });
   }
 
-  // Handles change in name/password field
+  /**
+   * Handles change in name/password field */ 
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,

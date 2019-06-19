@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import Divider from '@material-ui/core/Divider';
+
 
 interface Props {
   updateAddingMail: (event: any) => void;
@@ -27,19 +27,22 @@ class WriteMail extends React.Component<Props, State> {
       title: '',
     };
   }
-  // Handle send text field
+  /**
+   * Handle send text field  */ 
   handleChangeSendTo = event => {
     this.setState({
       sendTo: event.target.value,
     });
   }
-  // Handle message text field
+  /**
+   * Handle message text field */ 
   handleChangeMessage = event => {
     this.setState({
       message: event.target.value,
     });
   }
-  // Handle title text field
+  /**
+   * Handle title text field */ 
   handleChangeTitle = event => {
     this.setState({
       title: event.target.value,
@@ -83,6 +86,9 @@ class WriteMail extends React.Component<Props, State> {
               <Button variant='contained'>Send</Button>
             </div>
           </CardContent>
+          <CardActions>
+            
+          </CardActions>
         </Card>
        </div>
     );
