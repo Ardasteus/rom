@@ -138,7 +138,9 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingCollections: false});
     }   
   }
-
+  /**
+   * Gets token from localstorage, posts search collection to API by sending Search collection dialog text field value
+   */
   searchCollections = () => {
     if(this.state.searchingCollection){
     const token = localStorage.getItem('token');   
@@ -203,7 +205,9 @@ class Inbox extends React.Component<{}, State> {
   handleOpenTrueDel = () => {
     this.setState({ openDel: true });
   }
-
+  /**
+   * Set state openSrc to true -} open Search collection dialog
+   */
   handleOpenTrueSrc = () => {
     this.setState({ openSrc: true });
   }
@@ -222,7 +226,9 @@ class Inbox extends React.Component<{}, State> {
     this.setState({deletingCollection: true});
     this.setState({ openDel: false });
   }
-
+ /**
+   * Handle OK button in Search collection dialog, sets state searchingCollection true, which sends text field value to API, then sets state openSrc false, which closes the dialog
+   */
   handleOpenFalseSrcConfirm = () => {
     this.setState({searchingCollection: true});
     this.setState({ openSrc: false });
@@ -233,7 +239,9 @@ class Inbox extends React.Component<{}, State> {
   handleOpenFalse = () => {
     this.setState({ open: false });
   }
-
+  /**
+   * Set state openSrc to false, closing Search collection dialog
+   */
   handleOpenFalseSrc = () => {
     this.setState({ openSrc: false });
   }
@@ -259,6 +267,9 @@ class Inbox extends React.Component<{}, State> {
       deleteCollection: event.target.value,
     });
   }
+  /**
+   * Handles change in Search collection dialogs text field
+   */
   handleChangeSrcCollection = event => {
     this.setState({
       searchCollection: event.target.value,
