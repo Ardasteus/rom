@@ -84,7 +84,7 @@ module ROM
 					end
 					
 					action :update, Types::Void, AuthorizeAttribute[], :body! => MimeStream do |body|
-						raise(InvalidOperationException.new('Only drafts can be edited!')) unless @mail.state.moniker == DB::TypeStates::DRAFT
+						raise(InvalidOperationException.new('Only drafts can be edited!')) unless @mail.state.moniker == DB::TypeMailState::DRAFT
 						stg = interconnect.fetch(MailStorage)
 						
 						old = @mail.file
@@ -124,7 +124,7 @@ module ROM
 						end
 						
 						action :delete, Types::Void, AuthorizeAttribute[] do
-							raise(InvalidOperationException.new('Only drafts can be edited!')) unless @att.mail.state.moniker == DB::TypeStates::DRAFT
+							raise(InvalidOperationException.new('Only drafts can be edited!')) unless @att.mail.state.moniker == DB::TypeMailState::DRAFT
 							stg = interconnect.fetch(MailStorage)
 							
 							stg.drop(@att.file) if @att.file != nil and stg.exists?(@att.file)
@@ -140,7 +140,7 @@ module ROM
 						end
 						
 						action :update, Types::Void, AuthorizeAttribute[], :body! => MimeStream do |body|
-							raise(InvalidOperationException.new('Only drafts can be edited!')) unless @att.mail.state.moniker == DB::TypeStates::DRAFT
+							raise(InvalidOperationException.new('Only drafts can be edited!')) unless @att.mail.state.moniker == DB::TypeMailState::DRAFT
 							stg = interconnect.fetch(MailStorage)
 							
 							old = @att.file
@@ -188,11 +188,11 @@ module ROM
 				end
 				
 				action :send, Types::Void, AuthorizeAttribute[] do
-					raise(InvalidOperationException.new('Only drafts can be sent!')) unless @mail.state.moniker == DB::TypeStates::DRAFT
+					raise(InvalidOperationException.new('Only drafts can be sent!')) unless @mail.state.moniker == DB::TypeMailState::DRAFT
 					
 					@link.collection = @mail.mailbox.outbox
 					@db.collection_mails.update(@link)
-					@mail.state = @db.state_types.find { |i| i.moniker == DB::TypeStates::OUTBOUND }
+					@mail.state = @db.mail_state_types.find { |i| i.moniker == DB::TypeMailState::OUTBOUND }
 					@db.mails.update(@mail)
 					
 					jobs = interconnect.fetch(JobServer)

@@ -23,7 +23,7 @@ module ROM
 					
 					smtp = SMTPClient.new(box.smtp.host, box.smtp.port, box.smtp.user, box.smtp.password, box.smtp.protection&.moniker == DB::TypeProtection::TLS)
 					
-					type = ctx.state_types.find { |i| i.moniker == DB::TypeStates::OUTBOUND }
+					type = ctx.mail_state_types.find { |i| i.moniker == DB::TypeMailState::OUTBOUND }
 					ctx.mails.select { |i| (i.references > 0).and(i.mailbox == box).and(i.state == type) }.each do |mail|
 						att = []
 						ctx.attachments.select { |i| i.mail == mail }.each do |a|
@@ -78,7 +78,12 @@ module ROM
 				log.debug('Opening SMTP connection...')
 				tries = 0
 				while tries < 3
-					smtp.open
+					begin
+						smtp.open
+					rescue Exception => ex
+						log.error('SMTP connection failed to open!', ex)
+						raise
+					end
 					begin
 						while mails.length > 0
 							m = mails.last

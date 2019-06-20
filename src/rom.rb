@@ -162,8 +162,10 @@ module ROM
 				'message' => 'ROM::DB::Message',
 				'password' => 'ROM::DB::Password',
 				'data_page' => 'ROM::DataPage',
-				'type_states' => 'ROM::DB::TypeStates',
-				'id' => 'ROM::IdModel'
+				'type_mail_state' => 'ROM::DB::TypeMailState',
+				'id' => 'ROM::IdModel',
+				'type_sync_state' => 'ROM::DB::TypeSyncState',
+				'synchronization' => 'ROM::DB::Synchronization'
 			},
 			'model' => ['ROM::Model', 'ROM::ModelProperty'],
 			'types' => [

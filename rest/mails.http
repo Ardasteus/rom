@@ -18,7 +18,7 @@ Content-Type: application/json
 
 {
   "subject": "Test mail",
-  "recipients": [ "{{login}}@company.com" ]
+  "recipients": [ "{{mail}}" ]
 }
 
 > {%

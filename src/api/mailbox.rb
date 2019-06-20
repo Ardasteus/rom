@@ -248,7 +248,7 @@ module ROM
 						:date => Time.now.to_i,
 						:excerpt => '',
 						:sender => owner,
-						:state => @db.state_types.find { |i| i.moniker == DB::TypeStates::DRAFT },
+						:state => @db.mail_state_types.find { |i| i.moniker == DB::TypeMailState::DRAFT },
 						:reply_address => @box.address,
 						:mailbox => @box,
 						:is_local => 1,
@@ -337,6 +337,12 @@ module ROM
 					box = @box
 					db = @db
 					ConnectionResource.new(@db, @box.smtp) { |smtp| box.smtp = smtp; db.mailboxes.update(box) }
+				end
+				
+				action :sync, Types::Void, AuthorizeAttribute[] do
+					jobs = interconnect.fetch(JobServer)
+					jobs.add_job_pool(:smtp) unless jobs.job_pool?(:smtp)
+					jobs.add_job_to_pool(:smtp, SMTP::MailboxSendJob.new(interconnect.fetch(DbServer), interconnect.fetch(MailStorage), @box.id, @box.address))
 				end
 			end
 			

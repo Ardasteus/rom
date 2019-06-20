@@ -28,24 +28,23 @@ Content-Type: application/json
 
 {
   "name": "Primary",
-  "address": "{{login}}@company.com",
+  "address": "{{mail}}",
   "drafts": "/drafts",
   "outbox": "/outbox",
   "maps": [
     { "path": "/inbox", "filter": "/inbox" }
   ],
   "imap": {
-    "host": "mail.company.com",
-    "port": 143,
-    "user": "{{login}}@company.com",
-    "password": "{{pwd}}"
+    "host": "{{imap_host}}",
+    "port": {{imap_port}},
+    "user": "{{mail}}",
+    "password": "{{mail_pwd}}"
   },
   "smtp": {
-    "host": "mail.company.com",
-    "port": 465,
-    "user": "{{login}}@company.com",
-    "password": "{{pwd}}",
-    "protection": "tls"
+    "host": "{{smtp_host}}",
+    "port": {{smtp_port}},
+    "user": "{{mail}}",
+    "password": "{{mail_pwd}}"
   }
 }
 
@@ -82,10 +81,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "host": "mail.company.com",
-  "port": 143,
-  "user": "{{login}}@company.com",
-  "password": "{{pwd}}"
+  "host": "{{imap_host}}",
+  "port": {{imap_port}},
+  "user": "{{mail}}",
+  "password": "{{mail_pwd}}",
+  "protection": {{imap_protection}}
 }
 
 > {%
@@ -100,11 +100,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "host": "mail.company.com",
-  "port": 465,
-  "user": "{{login}}@company.com",
-  "password": "{{pwd}}",
-  "protection": "tls"
+  "host": {{smtp_host}},
+  "port": {{smtp_port}},
+  "user": "{{mail}}",
+  "password": "{{mail_pwd}}",
+  "protection": {{smtp_protection}}
 }
 
 > {%

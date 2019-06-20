@@ -60,6 +60,8 @@ module ROM
 				rescue ApiException => ex
 					status = EXCEPTION_CODES[ex.class]
 					if status != nil
+						@log.item&.error('API exception raised during HTTP request!', ex)
+						
 						HTTPResponse.new(status)
 					else
 						@log.item&.error('Unknown API exception raised during HTTP request!', ex)

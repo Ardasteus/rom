@@ -10,7 +10,8 @@ module ROM
 			table :media_types, TypeMedia
 			table :channel_types, TypeChannel
 			table :message_types, TypeMessage
-			table :state_types, TypeStates
+			table :mail_state_types, TypeMailState
+			table :sync_state_types, TypeSyncState
 			table :users, User
 			table :collections, Collection
 			table :contacts, Contact
@@ -34,6 +35,7 @@ module ROM
 			table :channel_contacts, ChannelContact
 			table :messages, Message
 			table :passwords, Password
+			table :synchronizations, Synchronization
 
 			convention(:table) do |tab|
 				nm = tab.downcase

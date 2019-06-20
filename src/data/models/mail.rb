@@ -10,7 +10,7 @@ module ROM
 			property! :date, Integer
 			property! :excerpt, String
 			property! :sender, Participant, SuffixAttribute['sender']
-			property! :state, TypeStates
+			property! :state, TypeMailState
 			property :file, String
 			property :size, Integer, 0
 			property :reply_address, String

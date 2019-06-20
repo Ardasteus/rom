@@ -3,7 +3,7 @@
 module ROM
 	module DB
 		# Enum table of mail states
-		class TypeStates < Model
+		class TypeMailState < Model
 			include DbSeed
 			
 			INBOUND = 'inbound'
@@ -16,9 +16,9 @@ module ROM
 			
 			seed do
 				add(
-					TypeStates.new(:moniker => INBOUND, :description => 'Inbound mail, read-only'),
-					TypeStates.new(:moniker => DRAFT, :description => 'Editable mail, not sent yet'),
-					TypeStates.new(:moniker => OUTBOUND, :description => 'Outbound mail, read-only, not sent yet')
+					TypeMailState.new(:moniker => INBOUND, :description => 'Inbound mail, read-only'),
+					TypeMailState.new(:moniker => DRAFT, :description => 'Editable mail, not sent yet'),
+					TypeMailState.new(:moniker => OUTBOUND, :description => 'Outbound mail, read-only, not sent yet')
 				)
 			end
 		end
