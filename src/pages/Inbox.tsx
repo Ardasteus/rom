@@ -27,7 +27,10 @@ interface State {
   deletingCollection: boolean;
   deleteCollection: string;
   collectionData: Array<string>;
-  emails: Array<string>
+  searchCollection: string;
+  searchingCollection: boolean;
+  emails: Array<string>;
+  openSrc: boolean;
 }
 
 class Inbox extends React.Component<{}, State> {
@@ -47,6 +50,9 @@ class Inbox extends React.Component<{}, State> {
       deleteCollection: '',
       collectionData: [],
       emails: ['Email01', 'Email02'],
+      openSrc: false,
+      searchCollection: '',
+      searchingCollection: false,
     };
 
   }
@@ -132,6 +138,22 @@ class Inbox extends React.Component<{}, State> {
     this.setState({gettingCollections: false});
     }   
   }
+
+  searchCollections = () => {
+    if(this.state.searchingCollection){
+    const token = localStorage.getItem('token');   
+    console.log(token) 
+    var config = {
+      headers: {'Authorization': "Bearer " + token}
+  };  
+    axios.get('mails/' + this.state.searchCollection, config)
+    .then(response => {
+      console.log(response) 
+      }
+    )
+    this.setState({searchingCollection: false});
+    }   
+  }
   /**
    * Gets token from localstorage, posts new collection to API by sending Create collection dialog text field value
    */
@@ -182,6 +204,10 @@ class Inbox extends React.Component<{}, State> {
     this.setState({ openDel: true });
   }
 
+  handleOpenTrueSrc = () => {
+    this.setState({ openSrc: true });
+  }
+
   /**
    * Handle OK button in Create collection dialog, sets state gettingNewCollection true, which sends text field value to API, then sets state open false, which closes the dialog
    */
@@ -196,11 +222,20 @@ class Inbox extends React.Component<{}, State> {
     this.setState({deletingCollection: true});
     this.setState({ openDel: false });
   }
+
+  handleOpenFalseSrcConfirm = () => {
+    this.setState({searchingCollection: true});
+    this.setState({ openSrc: false });
+  }
   /**
    * Set state open to false, closing Create collection dialog
    */
   handleOpenFalse = () => {
     this.setState({ open: false });
+  }
+
+  handleOpenFalseSrc = () => {
+    this.setState({ openSrc: false });
   }
   /**
    * Set state openDel to false, closing Delete a collection dialog
@@ -224,6 +259,11 @@ class Inbox extends React.Component<{}, State> {
       deleteCollection: event.target.value,
     });
   }
+  handleChangeSrcCollection = event => {
+    this.setState({
+      searchCollection: event.target.value,
+    });
+  }
   /**
    * Updates mail list when title in WriteMail is added
    */
@@ -240,6 +280,7 @@ class Inbox extends React.Component<{}, State> {
         {this.newCollections()}
         {this.getCollections()} 
         {this.deleteCollections()} 
+        {this.searchCollections()} 
         <Dialog
           open={this.state.open}
           aria-labelledby='alert-dialog-title'
@@ -295,7 +336,35 @@ class Inbox extends React.Component<{}, State> {
               Cancel
             </Button>
           </DialogActions>
-        </Dialog>       
+        </Dialog>  
+        <Dialog
+          open={this.state.openSrc}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>{'Search a collection'}</DialogTitle>
+          <DialogContent>
+          <TextField 
+              variant='outlined'
+              color='secondary'
+              id='src-collection'
+              label='Search collection'
+              margin='normal'
+              value={this.state.searchCollection}
+              onChange={this.handleChangeSrcCollection}
+            />
+
+          </DialogContent>
+          <DialogActions>
+
+            <Button onClick={this.handleOpenFalseSrcConfirm} color='primary' autoFocus>
+              Ok
+            </Button>
+            <Button onClick={this.handleOpenFalseSrc} color='primary' autoFocus>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>     
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
            <List>
            {this.state.emails.map(email => (
@@ -323,6 +392,11 @@ class Inbox extends React.Component<{}, State> {
         <ListItem button  onClick={this.handleOpenTrueDel}>
               <DeleteIcon />
           <ListItemText primary='remove collection' />
+        </ListItem>
+
+        <ListItem button  onClick={this.handleOpenTrueSrc}>
+              
+          <ListItemText primary='search collection' />
         </ListItem>
 
           </List>
