@@ -5,14 +5,27 @@ import List from '@material-ui/core/List';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardContent, CardActions, CardHeader, Paper, TextField, DialogActions, DialogContent, Dialog, DialogTitle } from '@material-ui/core';
+import { Card, CardContent, CardActions, CardHeader, Paper, TextField, DialogActions, DialogContent, Dialog, DialogTitle, AppBar, Typography } from '@material-ui/core';
 import WriteMail from './WriteMail';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ShowMail from './ShowMail';
 import axios from 'classes/axios.instance';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Toolbar from '@material-ui/core/Toolbar';
 
 
-
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 interface State {
   addingMail: boolean;
@@ -287,6 +300,7 @@ class Inbox extends React.Component<{}, State> {
 
   render() {
     return (
+      <MuiThemeProvider theme={theme}>  
       <div>
         {this.newCollections()}
         {this.getCollections()} 
@@ -377,18 +391,32 @@ class Inbox extends React.Component<{}, State> {
           </DialogActions>
         </Dialog>     
         <Paper className='inbox' style={{maxHeight: 200, overflow: 'auto'}}>
-           <List>
+        <AppBar className='inbox-appbar' position='static' color='primary'>
+           <Toolbar>
+           <Typography variant='h6' color='secondary'>
+                Inbox
+            </Typography>
+           </Toolbar>
+            </AppBar>
+           <List>         
            {this.state.emails.map(email => (
            <ListItem key={email} button onClick={this.newShowMail}>
               <ListItemText primary={email}/>
             </ListItem>
-            ))}
+            ))}           
            </List>
         </Paper>
         {this.showingMail()}
         
         <Card className='inbox-menu'>
-          <CardContent>
+        <AppBar className='collection-appbar' position='static' color='primary'>
+           <Toolbar>
+           <Typography variant='h6' color='secondary'>
+                Collections
+            </Typography>
+           </Toolbar>
+            </AppBar>
+          <CardContent>         
           <List>
           {this.state.collectionData.map((cocdata: any) => {
             <ListItem key={cocdata} button>
@@ -419,8 +447,8 @@ class Inbox extends React.Component<{}, State> {
                <AddIcon/>
              </Fab>
         </div>
-
       </div>
+      </MuiThemeProvider>
 
     );
   }

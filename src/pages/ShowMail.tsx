@@ -4,10 +4,25 @@ import CardContent from '@material-ui/core/CardContent';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
 
 interface Props {
   updateShowingMail: (event: any) => void;
 }
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 class ShowMail extends React.Component<Props, {}> {
   constructor(props: Props) {

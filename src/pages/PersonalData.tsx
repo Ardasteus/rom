@@ -2,11 +2,24 @@ import * as React from 'react';
 import { AppBar, Dialog, Toolbar, IconButton, Typography, Button, CardContent, Card, TextField, DialogActions, DialogContentText, DialogContent, DialogTitle } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'classes/axios.instance';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
 interface Props {
   updatePersonalData: (event: any) => void;
 }
 
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 
 export interface State {
@@ -126,6 +139,7 @@ class PersonalData extends React.Component<Props, State> {
 
   render() {
     return (
+      <MuiThemeProvider theme={theme}>  
       <div>
         {this.getNameData()}
         <Dialog
@@ -168,6 +182,13 @@ class PersonalData extends React.Component<Props, State> {
           </DialogActions>
         </Dialog>
       <Card className='personal-card'>
+      <AppBar className='collection-appbar' position='static' color='primary'>
+           <Toolbar>
+           <Typography variant='h6' color='secondary'>
+                Personal Data
+            </Typography>
+           </Toolbar>
+            </AppBar>
           <CardContent>
           <IconButton color='secondary'  aria-label='Close' onClick={this.props.updatePersonalData}>
                 <CloseIcon />
@@ -179,7 +200,7 @@ class PersonalData extends React.Component<Props, State> {
           </CardContent>
         </Card>
        </div>
-          
+       </MuiThemeProvider>            
     );
   }
 }

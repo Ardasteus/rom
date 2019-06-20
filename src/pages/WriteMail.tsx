@@ -4,13 +4,28 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { IconButton } from '@material-ui/core';
+import { IconButton, AppBar, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import Toolbar from '@material-ui/core/Toolbar';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
 
 interface Props {
   updateAddingMail: (event: any) => void;
 }
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#000000',
+          light: '#ffffff',
+      },
+      secondary: {
+          main: '#b71c1c',
+      },
+  },
+});
 
 export interface State {
     message: string;
@@ -56,12 +71,18 @@ class WriteMail extends React.Component<Props, State> {
   render() {
     const enabled = this.state.title.length > 0;
     return (
-    <div>
+      <MuiThemeProvider theme={theme}>     
       <Card className='writemail-card'>
+      <AppBar className='writemail-appbar' position='static' color='primary'>
           <CardContent>
+          <Toolbar>
           <IconButton color='secondary'  aria-label='Close' onClick={this.props.updateAddingMail}>
                 <CloseIcon />
           </IconButton>
+          <Typography variant='h6' color='secondary'>
+                WriteMail
+            </Typography>
+          </Toolbar>
             <TextField
               variant='filled'
               id='sendTo'
@@ -92,8 +113,9 @@ class WriteMail extends React.Component<Props, State> {
               <Button onClick={this.storageInfo} disabled={!enabled} variant='contained'>Send</Button>
             </div>
           </CardActions>
-        </Card>
-       </div>
+          </AppBar>
+        </Card>     
+       </MuiThemeProvider>
     );
   }
 }
