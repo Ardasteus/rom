@@ -25,7 +25,16 @@
         "src/pages/*"
       ],
       "classes/*": [
-        "src/classes/*"
+        "src/modules/classes/*"
+      ],
+      "enums/*": [
+        "src/modules/enums/*"
+      ],
+      "interfaces/*": [
+        "src/modules/interfaces/*"
+      ],
+      "wrappers/*": [
+        "src/modules/wrappers/*"
       ]
     }
   },
