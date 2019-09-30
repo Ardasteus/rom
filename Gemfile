@@ -10,7 +10,7 @@ gem 'uuid', '~> 2.3'
 
 group :development do
   gem 'bundler', '~> 2.0'
-  gem 'rake', '~> 12.3'
+  gem 'rake', '~> 13.0'
   gem 'rspec', '~> 3.8'
   gem 'yard', '~> 0.9.18'
   gem 'inch', '~> 0.8'
